@@ -4,3 +4,6 @@
 [submodule "Scripts/Tools"]
 	path = Scripts/Tools
 	url = git@github.com:piotor87/WorkTools.git
+[submodule "scripts/Tools"]
+	path = scripts/Tools
+	url = git@github.com:piotor87/WorkTools.git
