@@ -1,0 +1,6 @@
+[submodule "PRScs"]
+	path = PRScs
+	url = https://github.com/getian107/PRScs.git
+[submodule "Scripts/Tools"]
+	path = Scripts/Tools
+	url = git@github.com:piotor87/WorkTools.git

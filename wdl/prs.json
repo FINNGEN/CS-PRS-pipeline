@@ -1,0 +1,15 @@
+{
+    "prs_cs.gwas_traits_table": "gs://r4_data_west1/prs/gwas_table.csv",
+    "prs_cs.gwas_data_path": "gs://r4_data_west1/prs/munge/",
+    "prs_cs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:test",
+
+# WEIGHTS SPECIFIC
+    "prs_cs.weights.chrom_list" : ["1","2","3","4","5",'6','7','8','9','10','11','12','13','14','15','16','17','18','19','20',"21","22"],
+    "prs_cs.weights.test" : "False",
+    "prs_cs.weights.file_list": "gs://r4_data_west1/prs/cs/prs_cs_ref_files.txt",
+    "prs_cs.weights.bim_file": "gs://r4_data_west1/prs/cs/R4.hm3.rsid.bim",
+    "prs_cs.weights.map_file": "gs://r4_data_west1/prs/cs/finngen_rsids.tsv",
+    "prs_cs.weights.mem": 16,
+    "prs_cs.weights.cpu": 16,
+    #"prs_cs.weights.weights_docker": "String? (optional)"
+}
