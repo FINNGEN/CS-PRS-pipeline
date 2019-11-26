@@ -55,7 +55,7 @@ task scores{
     String? scores_docker
     String? final_docker = if defined(scores_docker) then scores_docker else docker
     Int cpu
-    Int mem = cpu*6
+    Int mem 
     Int disk_size = ceil(size(all_files[0],'GB')) + 100
     
 
