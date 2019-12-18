@@ -17,7 +17,7 @@
     "prs_cs.scores.cpu": 16,
     "prs_cs.scores.mem": 16,    
     "prs_cs.scores.pgen": "False",
-    #"prs_cs.scores.scores_docker": "String? (optional)"
+    #"prs_cs.scores.scores_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r4"
 
     
     

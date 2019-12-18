@@ -37,7 +37,7 @@ task scores{
     Boolean test
     
     ## fix output file root
-    String suffix = if hm3 then " --suffix hm3"  else "--suffix all" 
+    String suffix = if hm3 then " --suffix cs.hm3"  else "--suffix cs.all" 
         
     ## fix input files
     String input_root
