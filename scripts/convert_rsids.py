@@ -89,7 +89,7 @@ def parse_file(args):
                 rsid = rsid_dict['_'.join([chrom,pos])]
                 if rsid:
                     line[meta_index[0]] = rsid
-                    o.write(separator.join([line[i] for i in out_index]) + '\n')
+                o.write(separator.join([line[i] for i in out_index]) + '\n')
             
     if args.to_chrompos:
         chrompos_dict = load_chrompos_mapping(args.out,args.map)
@@ -105,7 +105,7 @@ def parse_file(args):
                 chrompos = chrompos_dict[rsid]
                 if chrompos:
                     line[meta_index[0]] = f"chr{chrompos}_{a1}_{a2}"
-                    o.write(separator.join([line[i] for i in out_index]) + '\n')
+                o.write(separator.join([line[i] for i in out_index]) + '\n')
     
 def load_chrompos_mapping(out_path,file_map):
     '''

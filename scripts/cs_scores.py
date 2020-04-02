@@ -89,7 +89,7 @@ if __name__ == '__main__':
     parser.add_argument('--suffix',type = str,help = "string to append to output",default = "")
 
     args = parser.parse_args()
-    args.suffix = ".cs" + args.suffix
+    args.suffix = ".cs." + args.suffix
 
     make_sure_path_exists(args.out)
     scores(args)

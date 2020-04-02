@@ -1,7 +1,7 @@
 {
     "prs_cs.gwas_traits_table": "gs://r4_data_west1/prs/gwas_table.csv",
     "prs_cs.gwas_data_path": "gs://r4_data_west1/prs/munge/",
-    "prs_cs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:test",
+    "prs_cs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r4",
     "prs_cs.test" : "False",
 
 # WEIGHTS SPECIFIC
@@ -15,9 +15,9 @@
     "prs_cs.scores.hm3": "True",
     "prs_cs.scores.input_root": "gs://r4_data_west1/prs/inputs/INPUTFILE.txt",
     "prs_cs.scores.cpu": 16,
-    "prs_cs.scores.mem": 16,    
+    "prs_cs.scores.mem": 32,    
     "prs_cs.scores.pgen": "False",
-    #"prs_cs.scores.scores_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r4"
+    "prs_cs.scores.scores_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r4-test"
 
     
     

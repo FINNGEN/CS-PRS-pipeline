@@ -37,7 +37,7 @@ task scores{
     Boolean test
     
     ## fix output file root
-    String suffix = if hm3 then " --suffix cs.hm3"  else "--suffix cs.all" 
+    String suffix = if hm3 then " --suffix hm3"  else "--suffix all" 
         
     ## fix input files
     String input_root
@@ -63,7 +63,8 @@ task scores{
         python3 /scripts/cs_scores.py \
         --out /cromwell_root/results/ \
         --weight-list ${write_lines(weight_files)} \
-        ${cmd} ${all_files[0]}  ${suffix} }
+        ${cmd} ${all_files[0]}  ${suffix}
+    }
 
     output {
         Array[File] scores = glob("/cromwell_root/results/scores/*sscore")
@@ -76,7 +77,6 @@ task scores{
 	memory: "${mem} GB"
         disks: "local-disk " + "${disk_size}" + " HDD"       
         zones: "europe-west1-b"
-        preemptible: 1
     }
 }
 
