@@ -4,7 +4,7 @@ import argparse,os,gzip,itertools,subprocess,shlex,pickle
 import numpy as np
 import os,gzip
 from collections import defaultdict as dd
-from Tools.utils import file_exists,return_open_func,make_sure_path_exists,identify_separator,basic_iterator,get_path_info
+from utils import file_exists,return_open_func,make_sure_path_exists,identify_separator,basic_iterator,get_path_info,return_header
 
 
 def check_inputs(args):
@@ -58,7 +58,8 @@ def check_inputs(args):
         # index of columns to read
         meta_index = [header.index(elem) for elem in args.metadata]
 
-    print(out_index,meta_index)
+    print('columns to keep',out_index)
+    print('metadata columns',meta_index)
     return out_index,meta_index,header,separator
 
 def parse_file(args):
@@ -68,35 +69,39 @@ def parse_file(args):
 
     out_index,meta_index,header,separator = check_inputs(args)
     write_func = gzip.open if args.gz else open
-   
+
+    out_file = os.path.join(args.out,out_root + ".CONVERT")
+    if args.gz: out_file += '.gz'
+
+    #if there is no header, don't skip first row when parsing file
+    skip = 0 if args.no_header else 1
+    iterator = basic_iterator(args.file,skiprows=skip)
     if args.to_rsid:
         rsid_dict = load_rsid_mapping(args.out,args.map)
-        out_file = os.path.join(args.out,out_root + '.rsid' )
+        out_file = out_file.replace('CONVERT','rsid')
         print(f"saving to {out_file}")
-        if args.gz: out_file += '.gz'
-        iterator = basic_iterator(args.file,skiprows=1)
         with write_func(out_file,'wt') as o:
-            if not args.no_header:
+            if not args.no_header:# write header,since it cannot be parsed
                 o.write(separator.join([header[i] for i in out_index]) + '\n')
             for line in iterator:
-                snp,a1,a2 = [line[i] for i in meta_index]
+                #extract chrom/pos from snp id (i.e. the first element of meta_index)
+                snp = line[meta_index[0]]
+                # return all integers in snp string. i assume the first 2 are chrom/pos
                 integers = ''.join((ch if ch.isdigit() else ' ') for ch in snp).split()
-                if 'X' in snp:
+                if 'X' in snp: # unless it's chrom X
                     chrom,pos = 'X',integers[0]
                 else:
                     chrom,pos,*_ = integers
                     
                 rsid = rsid_dict['_'.join([chrom,pos])]
-                if rsid:
+                if rsid: # replace snpid with rsid
                     line[meta_index[0]] = rsid
                 o.write(separator.join([line[i] for i in out_index]) + '\n')
             
     if args.to_chrompos:
         chrompos_dict = load_chrompos_mapping(args.out,args.map)
-        out_file = os.path.join(args.out,out_root + '.chrompos' )
+        out_file = out_file.replace('CONVERT','chrompos')
         print(f"saving to {out_file}")
-        if args.gz: out_file += '.gz'
-        iterator = basic_iterator(args.file,skiprows=1)
         with write_func(out_file,'wt') as o:
             if not args.no_header:
                 o.write(separator.join([header[i] for i in out_index]) + '\n')
@@ -106,12 +111,22 @@ def parse_file(args):
                 if chrompos:
                     line[meta_index[0]] = f"chr{chrompos}_{a1}_{a2}"
                 o.write(separator.join([line[i] for i in out_index]) + '\n')
-    
-def load_chrompos_mapping(out_path,file_map):
+
+
+def map_iterator(rsid_map):
+      header = return_header(rsid_map)
+      print(header)
+      rsid_col = [header.index(elem) for elem in header if 'rs' in elem][0]
+      columns = [0,1] if not rsid_col else [1,0]
+      print(columns)
+      iterator = basic_iterator(rsid_map,columns = columns)
+      return iterator
+  
+def load_chrompos_mapping(out_path,rsid_map):
     '''
     Loads the finngen rsid to chrom_pos mapping
     '''
-    _,map_root,_ = get_path_info(file_map)
+    _,map_root,_ = get_path_info(rsid_map)
     dict_path  = os.path.join(out_path,map_root + '.chrompos.pickle')
     if os.path.isfile(dict_path):
         print('pickling chrompos dict...')
@@ -119,7 +134,7 @@ def load_chrompos_mapping(out_path,file_map):
     else:
         print('generating chrompos dict...')
         chrompos_dict = dd(str)
-        iterator = basic_iterator(file_map)
+        iterator = map_iterator(rsid_map)
         for entry in iterator:
             rsid,chrom_pos = entry
             chrompos_dict[rsid] = chrom_pos
@@ -129,12 +144,11 @@ def load_chrompos_mapping(out_path,file_map):
     print('done.')
     return chrompos_dict
 
-def load_rsid_mapping(out_path,file_map):
+def load_rsid_mapping(out_path,rsid_map):
     '''
     Loads the chrompos to rsid mapping
     '''
-
-    _,map_root,_ = get_path_info(file_map)
+    _,map_root,_ = get_path_info(rsid_map)
     dict_path  = os.path.join(out_path,map_root + '.rsid.pickle')     
     if os.path.isfile(dict_path):
         print('pickling rsid dict...')
@@ -142,7 +156,7 @@ def load_rsid_mapping(out_path,file_map):
     else:
         print('generating rsid dict...')
         rsid_dict = dd(str)
-        iterator = basic_iterator(file_map)
+        iterator = map_iterator(rsid_map)
         for entry in iterator:
             rsid,chrom_pos = entry
             rsid_dict[chrom_pos] = rsid
@@ -161,11 +175,12 @@ if __name__ == '__main__':
     #Basic inputs
     parser.add_argument("-o",'--out',type = str, help = "folder in which to save the results", required = True)
     parser.add_argument("--file",'-f',type = file_exists, help = "File to map", required = True)             
-    parser.add_argument("--map",type = file_exists, help = "Mapping file", required = True)             
+    parser.add_argument("--map",type = file_exists, help = "Mapping file from rsid to chrompos", required = True)             
     parser.add_argument('--gz',action = 'store_true',help = ' Compress output file to gz',default = False)
     parser.add_argument('--no-header',action = 'store_true',help = 'Flag to use when no header is present',default = False)
-    parser.add_argument('--metadata','-m',nargs = 3,metavar = ("ID","A1","A2"),required = True)    
-    parser.add_argument('--columns',action = 'store',type = str,nargs = '*', default = 'all')
+    parser.add_argument('--metadata','-m',nargs = 3,metavar = ("ID","A1","A2"),required = True,help='columns required for parsing')    
+    parser.add_argument('--columns',help = 'column that need to be kept, either numerical integers or column names',action = 'store',type = str,nargs = '*', default = 'all')
+    
     conv_type = parser.add_mutually_exclusive_group(required = True)
     conv_type.add_argument('--to-rsid',action = 'store_true')
     conv_type.add_argument('--to-chrompos',action = 'store_true')

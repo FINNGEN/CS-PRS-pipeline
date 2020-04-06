@@ -16,10 +16,10 @@ for ac in allele_couples:
     allele_couple_dict[ac] = [ac,ac[::-1],[allele_map[a] for a in ac],[allele_map[a] for a in ac[::-1]]]       
 
 
-
 def to_rsid(args):
     """
-    Fixes input sum stat to match cs_prs format
+    Fixes input sum stat to match cs_prs format.
+    Converts chrom_pos_ref_alt summary stats into rsid.
     """
     munge_path = os.path.join(args.out,'munge')
     make_sure_path_exists(munge_path)
@@ -30,11 +30,13 @@ def to_rsid(args):
         cmd = f"python3 {convert} -f {args.sum_stats} -o {munge_path} --map {args.map}  --to-rsid --metadata SNP A1 A2 --columns SNP A1 A2 OR P "
         subprocess.call(shlex.split(cmd))
 
-    args.sum_stats = out_file   
-    
+    args.sum_stats = out_file 
+
     
 def weights(args):
-
+    """
+    Calculates weights with PRS-CS
+    """
     pretty_print("WEIGHTS")
     # manipulate ref dir
     ref_dir,*_ = get_path_info(args.ref_file)
@@ -76,6 +78,10 @@ def weights(args):
     args.force = True
     
 def to_chrompos(args):
+    """
+    Writes out weights in chrom_pos_ref_alt so we can use finngen data. 
+    In order to do so, each rsid + ref/alt is "split" into 4 possible options based on whatever combination of min/maj allele in both strands. 
+    """
     pretty_print("RSID FIX")
     print(args.chrom_requested)
     #chromosomes to check to run
@@ -115,6 +121,8 @@ def to_chrompos(args):
                     o.write('\t'.join(line) + '\n')
                                            
     return
+
+  
     
 if __name__ == '__main__':
     
