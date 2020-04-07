@@ -12,11 +12,9 @@ def check_inputs(args):
     Sanitzes inputs
     """
     open_func = return_open_func(args.file)
-
     # read header no matter what for debug perposes
-    with open_func(args.file) as i: header = i.readline().strip()
-    separator = identify_separator(header)
-    header = header.split(separator)
+    separator = identify_separator(args.file)
+    header = return_header(args.file)
 
     #check if metadata is integers
     int_meta_check = np.prod([elem.isdigit() for elem in args.metadata])
@@ -65,7 +63,6 @@ def check_inputs(args):
 def parse_file(args):
 
     _,out_root,extension = get_path_info(args.file)
-    open_func = return_open_func(args.file)
 
     out_index,meta_index,header,separator = check_inputs(args)
     write_func = gzip.open if args.gz else open
@@ -188,4 +185,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
     make_sure_path_exists(args.out)
+    args.file = os.path.abspath(args.file)
     parse_file(args)

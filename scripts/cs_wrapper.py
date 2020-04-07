@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-import argparse,os.path,shlex,subprocess,sys
+import argparse,os.path,shlex,subprocess,sys,random
 from collections import defaultdict as dd
 from itertools import product
-from Tools.utils import file_exists,make_sure_path_exists,tmp_bash,get_path_info,timing_function,natural_sort,get_filepaths,basic_iterator,pretty_print,mapcount
+from utils import file_exists,make_sure_path_exists,tmp_bash,get_path_info,timing_function,natural_sort,get_filepaths,basic_iterator,pretty_print,mapcount,merge_files
 
 root_path = '/'.join(os.path.realpath(__file__).split('/')[:-2]) + '/'
+data_path = os.path.join(root_path,'data')
+
 convert = os.path.join(root_path,'scripts','convert_rsids.py')
 PRScs =  os.path.join(root_path,'PRScs','PRScs.py')
 
@@ -15,7 +17,7 @@ allele_couple_dict = {}
 for ac in allele_couples:
     allele_couple_dict[ac] = [ac,ac[::-1],[allele_map[a] for a in ac],[allele_map[a] for a in ac[::-1]]]       
 
-
+@timing_function
 def to_rsid(args):
     """
     Fixes input sum stat to match cs_prs format.
@@ -32,12 +34,14 @@ def to_rsid(args):
 
     args.sum_stats = out_file 
 
-    
+
 def weights(args):
     """
     Calculates weights with PRS-CS
     """
     pretty_print("WEIGHTS")
+    log_path = os.path.join(args.out,'logs')
+    make_sure_path_exists(log_path)
     # manipulate ref dir
     ref_dir,*_ = get_path_info(args.ref_file)
     print(f"ref dir: {ref_dir}")
@@ -66,15 +70,25 @@ def weights(args):
             return
     else:
         chrom_list = args.chrom_requested
-        
-    print(f"final chrom list :{' '.join(chrom_list)}")
 
+    print(f"final chrom list :{' '.join(chrom_list)}")
     if args.test:
         args.kwargs += " --n_iter=100"
-    logfile = os.path.join(args.out,f'{args.ss_root}.weights.log')
-    cmd = f'python2.7 -u {PRScs} --ref_dir {ref_dir} --bim_prefix {bim_prefix} --sst_file {args.sum_stats} --n_gwas {args.N} --out_dir {os.path.join(args.weights_path,args.ss_root)} --chrom {",".join(chrom_list)} {args.kwargs} |& tee {logfile}'
-                           
+
+    if args.parallel > 1:random.shuffle(chrom_list)
+    
+    logfile = os.path.join(log_path,f'{args.ss_root}.weights.log')
+    log_template = os.path.join(log_path,f'{args.ss_root}.{{}}.weights.log')
+    cmd = f"""parallel -j {args.parallel} "python2.7 -u {PRScs} --ref_dir {ref_dir} --bim_prefix {bim_prefix} --sst_file {args.sum_stats} --n_gwas {args.N} --out_dir {os.path.join(args.weights_path,args.ss_root)} {args.kwargs} --chrom {{}} >  {log_template} && echo {{}} " :::   {' '.join(chrom_list)} """
+    print(cmd)
     tmp_bash(cmd)
+    logs = [elem for elem in natural_sort(get_filepaths(log_path))]
+    merge_files(logfile,logs)
+
+
+#        cmd = f'python2.7 -u {PRScs} --ref_dir {ref_dir} --bim_prefix {bim_prefix} --sst_file {args.sum_stats} --n_gwas {args.N} --out_dir {os.path.join(args.weights_path,args.ss_root)} --chrom {",".join(chrom_list)} {args.kwargs} |& tee {logfile}'
+ #       print(cmd)
+
     args.force = True
     
 def to_chrompos(args):
@@ -137,10 +151,11 @@ if __name__ == '__main__':
     parser.add_argument('--chrom',action = 'store',type = str,nargs = '*')
     parser.add_argument('--force',action = 'store_true')
     parser.add_argument('--test',action = 'store_true')
+    parser.add_argument('--parallel',type = int,default =1)
     parser.add_argument('--map',type = file_exists,help = 'File that maps to/from rsids',required = True)
                         
     args = parser.parse_args()
-
+    print(args.parallel)
     to_rsid(args)
     weights(args)
     to_chrompos(args)

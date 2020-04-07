@@ -1,7 +1,29 @@
-import os,mmap,sys,subprocess,csv,gzip,pickle
+import os,mmap,sys,subprocess,csv,gzip,pickle,shlex,time
 from tempfile import NamedTemporaryFile
 from functools import partial
 from collections import defaultdict as dd
+
+allele_dict = dd(str)
+for a1,a2 in [('T','A'),('C','G')]:
+    allele_dict[a1] = a2
+    allele_dict[a2] = a1
+
+
+def map_alleles(a1,a2):
+    """
+    Flips alleles to the A strand if neccessary and orders them lexicogaphically
+    """
+    # check if the A variant is present
+    if 'A' not in a1 + a2 and 'a' not in a1+a2:
+        # for both/ref and alt map them to the A strand and order each one lexicographically
+        a1 = flip_strand(a1)
+        a2 = flip_strand(a2)
+    # further sorting
+    return sorted([a1,a2])
+
+
+def flip_strand(allele):
+    return ''.join([allele_dict[elem.upper()] for elem in allele])
 
 def make_sure_path_exists(path):
     import errno
@@ -93,6 +115,24 @@ def identify_separator(f):
     dialect = sniffer.sniff(header)
     return dialect.delimiter
     
+def get_filepaths(directory):
+    """
+    This function will generate the file names in a directory 
+    tree by walking the tree either top-down or bottom-up. For each 
+    directory in the tree rooted at directory top (including top itself), 
+    it yields a 3-tuple (dirpath, dirnames, filenames).
+    """
+    file_paths = []  # List which will store all of the full filepaths.
+
+    # Walk the tree.
+    for root, directories, files in os.walk(directory):
+        for filename in files:
+            # Join the two strings in order to form the full filepath.
+            filepath = os.path.join(root, filename)
+            file_paths.append(filepath)  # Add it to the list.
+
+    return file_paths  # Self-explanatory.
+
 
 def basic_iterator(f,separator = None,skiprows = 0,count = False,columns = 'all'):
     '''
@@ -179,12 +219,10 @@ def mapcount_gzip(filename):
     
 def count_gzip(myfile):
 
-    i = 0
-    with gzip.open(myfile, 'rb') as f:
-        for i, l in enumerate(f,1):
-            pass
-    return i
-
+    scriptFile = NamedTemporaryFile(delete=True)
+    with open(scriptFile.name, 'w') as f:
+        tmp_bash(f"zcat {myfile} | wc -l > {scriptFile.name} ")
+    return int(open(scriptFile.name).read())  
 
 def progressBar(value, endvalue, bar_length=20):
     '''
@@ -198,7 +236,7 @@ def progressBar(value, endvalue, bar_length=20):
     sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
     sys.stdout.flush()
 
-def load_pos_mapping(rsid_map,out_path):
+def load_pos_mapping(chrompos_map,out_path):
     '''
     Loads the chrom_pos to ref/alt mapping for finngen
     '''
@@ -237,3 +275,32 @@ def load_rsid_mapping(rsid_map,out_path):
             pickle.dump(rsid_dict,o,protocol = pickle.HIGHEST_PROTOCOL)
         print('done.')
     return rsid_dict
+
+def natural_sort(l):
+    import re
+    convert = lambda text: int(text) if text.isdigit() else text.lower() 
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+    return sorted(l, key = alphanum_key)
+
+def timing_function(some_function):
+
+    """
+    Outputs the time a function takes  to execute.
+    """
+
+    def wrapper(*args,**kwargs):
+        t1 = time.time()
+        some_function(*args)
+        t2 = time.time()
+        print("Time it took to run the function: " + str((t2 - t1)))
+
+    return wrapper
+
+
+
+def merge_files(o_file,file_list):
+    with open(o_file,'wt') as o:
+        for f in file_list:
+            with open(f,'rt') as i:
+                for line in i:
+                    o.write(line)
