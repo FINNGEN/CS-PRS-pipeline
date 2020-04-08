@@ -73,7 +73,7 @@ def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
         variant_check = map_alleles(a1,a2)
         for finngen_ref,finngen_alt in finngen_variant:
             if map_alleles(finngen_ref,finngen_alt) == variant_check:
-                finngen_snp = f"chr{chrom}_{pos}_{finngen_ref}_{finngen_alt}"
+                finngen_snp = f"chr{chrom}_{pos}"
                 out_line = '\t'.join([chrom,finngen_snp,a1,a2,pos,OR,pval]) + '\n'
                 return True,out_line
        
@@ -178,7 +178,7 @@ def parse_file(args):
                     out_line,out_file = '\t'.join([file_root,'effect_missing'] + info),rej
 
                 else:
-                    if 'rs' in variant: # RSID FORMAT --> check if rsid exsists in our data
+                    if 'rs' in variant: # RSID FORMAT --> check if rsid exsists in our data. Update position!
                         chrompos = rsid_dict[variant]
                         if chrompos:
                             chrom,pos = chrompos.split('_')

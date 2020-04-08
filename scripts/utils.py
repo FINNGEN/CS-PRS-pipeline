@@ -3,6 +3,13 @@ from tempfile import NamedTemporaryFile
 from functools import partial
 from collections import defaultdict as dd
 
+import multiprocessing,csv 
+cpus = multiprocessing.cpu_count()
+
+mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')  # e.g. 4015976448
+mem_mib = mem_bytes/(1024.**2) 
+proc_mem = mem_mib / (cpus +1)
+
 allele_dict = dd(str)
 for a1,a2 in [('T','A'),('C','G')]:
     allele_dict[a1] = a2

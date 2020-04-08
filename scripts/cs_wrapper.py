@@ -29,7 +29,7 @@ def to_rsid(args):
     if os.path.isfile(out_file) and not args.force:
         print(f"{out_file} already esists")        
     else:
-        cmd = f"python3 {convert} -f {args.sum_stats} -o {munge_path} --map {args.map}  --to-rsid --metadata SNP A1 A2 --columns SNP A1 A2 OR P "
+        cmd = f"python3 {convert} -f {args.sum_stats} -o {munge_path} --map {args.map}  --to-rsid --metadata SNP  --columns SNP A1 A2 OR P "
         subprocess.call(shlex.split(cmd))
 
     args.sum_stats = out_file 
@@ -115,21 +115,19 @@ def to_chrompos(args):
     
     with open(out_file,'wt') as o:
         for f in file_list:
-            # check if chrompos file already exists
+            # convert from rsid to chrompos based on our data!
             chrompos_path,chrompos_root,_ = get_path_info(f)
             chrompos_file = os.path.join(chrompos_path,chrompos_root + '.chrompos')
             if not os.path.isfile(chrompos_file):
                 cmd = f"python3 {convert} -f {f} --map {args.map} -o {args.weights_path} -m 1 3 4 --to-chrompos --no-header"
                 subprocess.call(shlex.split(cmd))
 
-            # create 4x entries with all possible REF_ALT combinations
+            # create 4x entries with all possible REF_ALT combinations, also updating pos to build 38
             line_iterator = basic_iterator(chrompos_file)
             for line in line_iterator:
                 snp = line[1]
                 chrom,pos,ref,alt = snp.split('_')
-                possible_couples = allele_couple_dict[(ref,alt)]
-                
-                for a1,a2 in possible_couples:
+                for a1,a2 in allele_couple_dict[(ref,alt)] :
                     line[2] = pos
                     line[1] = '_'.join([chrom,pos,a1,a2])
                     o.write('\t'.join(line) + '\n')
