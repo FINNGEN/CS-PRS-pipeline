@@ -27,9 +27,9 @@ def merge_files(args):
     pos_dict = load_pos_mapping(args.chrompos_map,args.out)
     rsid_positions = len(pos_dict.keys())
     # starting final merge pass
-    final_variants = 0.
+    final_variants = 0
     with gzip.open(rej_log,'wt') as rej,gzip.open(out_file,'wt') as o:
-        out_header = '\t'.join(['CHR','SNP','A1','A2','BP','OR','P'])
+        out_header = '\t'.join(['CHR','SNP','A1','A2','BP','BETA','P'])
         o.write(out_header + '\n')
         #looping of rsid file
         iterator = basic_iterator(rsid_file,skiprows = 1)
@@ -56,9 +56,9 @@ def merge_files(args):
 
         # count lines
         if not args.test:
-            original_variants  =  float(open(os.path.join(tmp_path,f'{file_root}.variantcount')).read()) -1  
-            print('compared to input sumstat:',original_variants,final_variants,final_variants/original_variants)
-            print('compared to rsid positions in FG:',rsid_positions,final_variants,final_variants/rsid_positions)
+            original_variants  =  int(open(os.path.join(tmp_path,f'{file_root}.variantcount')).read()) -1  
+            print('compared to input sumstat:',original_variants,final_variants,final_variants/float(original_variants))
+            print('compared to rsid positions in FG:',rsid_positions,final_variants,final_variants/float(rsid_positions))
             
 def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
     """
@@ -112,27 +112,20 @@ def parse_file(args):
     rsid_file = os.path.join(tmp_path,f'rsid_{file_root}.gz')
     chrompos_file = os.path.join(tmp_path,f'chrompos_{file_root}.gz')
     rej_log = os.path.join(tmp_path,'rejected_variants',f'rejected_1_{file_root}.gz')
-    # if files already exist, check if number of variants matches.
+    # check if files already exists
     if os.path.isfile(rsid_file) and os.path.isfile(chrompos_file) and not args.force:
         print(str(total_lines) + ' variants already parsed')
-        counts = [mapcount_gzip(elem) for elem in [rsid_file,chrompos_file,rej_log]]
-        if np.sum(counts) - 2 == total_lines:
-            print('SUCCESS: number of variant matches')
-            args.force = False
-        else:
-            print(counts,np.sum(counts))
-            args.force = True
-            print('mismatch')
+        args.force = False
     else:
         args.force = True
         
     if args.force:
         # check if stats have OR or BETA
-        if args.effect_type  == 'OR':
+        if args.effect_type  == 'BETA':
             def or_func(x): return x
-        elif args.effect_type =='BETA':
+        elif args.effect_type =='OR':
             def or_func(x):
-                return str(float(np.exp(np.float128(x))))
+                return str(np.log(float(x)))
 
         # fix headers that have extra spaces
         header_fix = fix_header(args.ss)
@@ -200,7 +193,8 @@ def parse_file(args):
             counts = [mapcount_gzip(elem) for elem in [rsid_file,chrompos_file,rej_log]]
             if np.sum(counts) - 2 == total_lines: print('SUCCESS: number of variant matches')
 
-    lift(chrompos_file,args.chainfile,args.force)
+    if args.force:
+        lift(chrompos_file,args.chainfile,args.force)
 
 
 def lift(chrompos_file,chainfile,force):
@@ -246,7 +240,7 @@ if __name__ == '__main__':
     parser.add_argument('--force',action = 'store_true',help = 'Flag for forcing re-run.')
 
     # COLUMNS OF RELEVANT FIELDS
-    parser.add_argument('--effect_type', type=str, choices=['BETA','OR'])
+    parser.add_argument('--effect_type',  type = lambda s : s.upper(), choices=['BETA','OR'])
     parser.add_argument('--variant', type=str,required=True,help = 'Column entry of variant id')
     parser.add_argument('--ref', type=str,required=True,help='Column entry of ref (effect)')
     parser.add_argument('--alt', type=str,required=True,help = 'Column entry of other allel')

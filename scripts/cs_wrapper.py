@@ -29,7 +29,7 @@ def to_rsid(args):
     if os.path.isfile(out_file) and not args.force:
         print(f"{out_file} already esists")        
     else:
-        cmd = f"python3 {convert} -f {args.sum_stats} -o {munge_path} --map {args.map}  --to-rsid --metadata SNP  --columns SNP A1 A2 OR P "
+        cmd = f"python3 {convert} -f {args.sum_stats} -o {munge_path} --map {args.map}  --to-rsid --metadata SNP  --columns SNP A1 A2 BETA P "
         subprocess.call(shlex.split(cmd))
 
     args.sum_stats = out_file 
@@ -79,7 +79,7 @@ def weights(args):
     
     logfile = os.path.join(log_path,f'{args.ss_root}.weights.log')
     log_template = os.path.join(log_path,f'{args.ss_root}.{{}}.weights.log')
-    cmd = f"""parallel -j {args.parallel} "python2.7 -u {PRScs} --ref_dir {ref_dir} --bim_prefix {bim_prefix} --sst_file {args.sum_stats} --n_gwas {args.N} --out_dir {os.path.join(args.weights_path,args.ss_root)} {args.kwargs} --chrom {{}} >  {log_template} && echo {{}} " :::   {' '.join(chrom_list)} """
+    cmd = f"""parallel -j {args.parallel} "python3 -u {PRScs} --ref_dir {ref_dir} --bim_prefix {bim_prefix} --sst_file {args.sum_stats} --n_gwas {args.N} --out_dir {os.path.join(args.weights_path,args.ss_root)} {args.kwargs} --chrom {{}} >  {log_template} && echo {{}} " :::   {' '.join(chrom_list)} """
     print(cmd)
     tmp_bash(cmd)
     logs = [elem for elem in natural_sort(get_filepaths(log_path))]

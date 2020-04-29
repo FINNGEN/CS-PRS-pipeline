@@ -1,0 +1,14 @@
+{
+    # WORKFLOW LEVEL
+    "prs_cs.test": True,
+    "prs_cs.gwas_data_path": "gs://r5_data/PRS/PRS_data.txt",
+    "prs_cs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r5-test",
+    
+    #RSID MAP
+    "prs_cs.rsid_map.mem": 16,
+    #"prs_cs.rsid_map.rsid_docker": "",
+    "prs_cs.rsid_map.bim_file": "gs://r5_data/plink/R5.bim",
+    "prs_cs.rsid_map.cpu": 8
+
+}
+
