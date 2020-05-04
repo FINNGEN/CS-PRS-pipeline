@@ -72,8 +72,9 @@ def lift(args):
 
     #change working dir to args.out so i don't have to move errors and variants_lifted
     os.chdir(args.out)
-    cmd = f"liftOver {tmp_bed.name} {args.chainfile} variants_lifted errors"
+    cmd = f"{args.liftOver} {tmp_bed.name} {args.chainfile} variants_lifted errors"  
     subprocess.run(shlex.split(cmd))
+    
     with open('errors', 'r') as errs:
         err_count = 0
         for err_count,line in enumerate(errs,1): pass
@@ -86,8 +87,8 @@ def lift(args):
         #joinsortargs=f'--sep {args.sep} {joinsortargs}'
 
     joinsort = f"{os.path.join(args.scripts_path,'joinsort.sh')}"
-    subprocess.run(shlex.split(f"chmod +x {joinsort}"))
-    joincmd = f"{joinsort} {args.file} variants_lifted {joinsortargs}"
+    #subprocess.run(shlex.split(f"chmod +x {joinsort}"))
+    joincmd = f"bash {joinsort} {args.file} variants_lifted {joinsortargs}"
     subprocess.run(shlex.split(joincmd))
    
 
@@ -115,4 +116,5 @@ if __name__=='__main__':
 
     args.scripts_path = '/'.join(os.path.realpath(__file__).split('/')[:-1]) + '/'
     args.file = os.path.abspath(args.file)
+    args.liftOver = args.scripts_path + 'liftOver'
     lift(args)

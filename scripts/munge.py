@@ -138,19 +138,18 @@ def parse_file(args):
             raise Exception(f"Missing columns in header: {[elem for elem in columns if elem not in header_fix]}")
        
         indexes  = [header_fix.index(elem) for elem in columns]
-        # define parsing function based on inputs
-        pos_indexes = [header_fix.index(elem) for elem in [args.chrom,args.pos] if elem]
-        if len(pos_indexes) ==2:
+        # define parsing function based on inputs: add chrom/pos columns if they exists in the original file
+        if all([elem in header_fix for elem in [args.chrom,args.pos]]) and all([elem != "NA" for elem in [args.chrom,args.pos]]):
+            pos_indexes = [header_fix.index(elem) for elem in [args.chrom,args.pos] if elem]
+            print(pos_indexes,args.chrom,args.pos)
             indexes += pos_indexes
             parse_func = partial(regular_parse,or_func = or_func)
         else:
             parse_func = partial(alternate_parse,or_func = or_func)
         
-            args.print(f'indexes: {indexes}')
-
-            # WE ARE NOW READY TO PARSE THE FILE
-            rsid_dict = load_rsid_mapping(args.rsid_map,args.out)
-            
+        args.print(f'indexes: {indexes}')
+        # WE ARE NOW READY TO PARSE THE FILE
+        rsid_dict = load_rsid_mapping(args.rsid_map,args.out)           
         with gzip.open(rsid_file,'wt') as r,gzip.open(chrompos_file,'wt') as c,gzip.open(rej_log,'wt') as rej:
             out_header = '\t'.join(['chr','snp','a1','a2','pos','or','p'])
             c.write(out_header + '\n')
@@ -248,7 +247,6 @@ if __name__ == '__main__':
     parser.add_argument('--pval', type=str,required=True,help='Column entry of pvalue')
     parser.add_argument('--chrom', type=str,help='Column entry of chrom')
     parser.add_argument('--pos', type=str,help='Column entry of position')
-
     
     
     args = parser.parse_args()

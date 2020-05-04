@@ -16,6 +16,7 @@ focal_epilepsy_METAL_4finngen.txt.gz	FOC_EPIL	39348	9671	29677	https://www.natur
 gabriel_asthma_meta-analysis_36studies_format_repository_NEJM.txt.gz	Asthma	26475	10365	16110	https://www.nejm.org/doi/full/10.1056/nejmoa0906312	European	J10_ASTHMA	OR	rs	Chr	position	Allele_2	Allele_1	OR_fix	P_fix	hg19	
 generalised_epilepsy_METAL_4finngen.txt.gz	GEN_EPIL	33446	3769	29677	https://www.nature.com/articles/s41467-018-07524-z	European	GE	BETA	snpid	hg19chrc	bp	a1	a2	beta	p	hg19	
 GIANT_HEIGHT_Wood_et_al_2014_publicrelease_HapMapCeuFreq.txt.gz	Height	253288	NA	NA	https://www.nature.com/articles/ng.3097	European	NA	BETA	MarkerName	NA	NA	Allele1	Allele2	b	p	hg19	
+GWAS_CP_all.txt.gz	Cognitive_performance_meta	257828	NA	NA	https://www.nature.com/articles/s41588-018-0147-3	European	NA	BETA	MarkerName	CHR	POS	A1	A2	Beta	Pval	notes: marker name is an rsID. Effect allele frequency (EAF is calculated from 1000G Europeans)	
 Hb_gwas_summary_fromNealeLab.tsv.gz	Haemoglobin_concentration	350474	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	effect_allele	other_allele	beta	pval	hg19	
 HbA1c_METAL_European.txt.gz	HbA1c	123665	NA	NA	http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1002383	European	NA	BETA	snp	chr	pos	effect_allele	other_allele	beta	pvalue	hg19	
 HDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	HDL-C	57045	NA	NA	https://www.nature.com/articles/ng.3300	European	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19	
@@ -28,6 +29,8 @@ MDD2018_ex23andMe.19fields.gz	MDD	173005	59851	113154	https://www.nature.com/art
 meta_v3_onco_euro_overall_ChrAll_1_release.txt.gz	Prostate_Cancer	140254	79148	61106	https://www.nature.com/articles/s41588-018-0142-8	European	C3_PROSTATE	BETA	SNP	Chr	position	Allele1	Allele2	Effect	Pvalue	hg19	
 METAANALYSIS_DIAGRAM_SE1.txt.gz	T2D	159208	26676	132532	http://diabetes.diabetesjournals.org/content/66/11/2888	European	E4_DM2	BETA	Chr:Position	NA	NA	Allele1	Allele2	Effect	P-value	hg19	
 metastroke.all.chr.bp.gz	Ischemic-stroke	74393	12389	62004	https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(12)70234-X/abstract	European	I9_STR	BETA	MarkerName	chromosome	position	Allele1	Allele2	Effect	P.value	hg19	
+MTAG_CP.to10K.txt.gz	Cognitive_Performance	257828	NA	NA	https://www.nature.com/articles/s41588-018-0147-3	European	NA	BETA	MarkerName	CHR	POS	A1	A2	Beta	Pval	hg19	
+MTAG_EA.to10K.txt.gz	Educational_attainment	1131881	NA	NA	https://www.nature.com/articles/s41588-018-0147-3	European	NA	BETA	MarkerName	CHR	POS	A1	A2	Beta	Pval	hg19	
 pgc.bip.full.2012-04.txt.gz	Bipolar-disorder	16731	7481	9250	https://www.nature.com/articles/ng.943	European	F5_BIPO	OR	snpid	hg18chr	bp	a1	a2	or	pval	hg18	
 pgc.ed.freeze1.summarystatistics.July2017.txt.gz	Anorexia-nervosa	14477	3495	10982	Missing	European	F5_ANOREX	OR	SNP	CHR	BP	A1	A2	OR	P	hg19	
 RA_GWASmeta_European_v2.txt.gz	Rheumatoid-arthritis	58284	14361	43923	https://www.nature.com/articles/nature12873	European	M13_RHEUMA	OR	SNPID	Chr	Position(hg19)	A1	A2	OR(A1)	P-val	hg19	

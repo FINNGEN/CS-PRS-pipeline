@@ -27,6 +27,7 @@ def scores(args):
     for weight in weight_iterator:
         if os.path.isfile(weight):
             root_name = os.path.basename(weight).split('.weights')[0]
+            print(root_name)
             score_file = os.path.join(scores_path,args.prefix + root_name + args.suffix)
             if os.path.isfile(score_file + '.sscore'):
                 print(f'{score_file} already generated')
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     parser.add_argument('--prefix',type = str,help = "string to prepend to output",default = "")
 
     args = parser.parse_args()
-    args.suffix = ".cs." 
+    args.suffix = ".cs" 
 
     make_sure_path_exists(args.out)
     scores(args)

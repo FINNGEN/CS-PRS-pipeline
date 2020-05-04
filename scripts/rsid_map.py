@@ -125,7 +125,7 @@ if __name__ == '__main__':
     parser.add_argument("-o",'--out',type = str, help = "folder in which to save the results", required = True)
     parser.add_argument("--bim",type = file_exists, help = "bim file", required = True)
     parser.add_argument("--rsids",type = file_exists, help = "optional list of rsids", default = False)
-    parser.add_argument("--prefix",type = str, help = "prefix of output files",default ='test')
+    parser.add_argument("--prefix",type = str, help = "prefix of output files for rsid filtering",default ='test')
 
     args = parser.parse_args()
 
