@@ -43,13 +43,63 @@ workflow prs_cs{
             N = gwas[1]
 
         }
+        call scores {
+            input:
+            weights = weights.weights,
+            docker = docker,
+            test = test
+            }
     }
 }
+
+task scores {
+
+    File weights
+    String file_root = basename(weights,'.weights.txt')
+    Boolean test
+    String bed_string
+    
+    File bed_file = if test then sub(bed_string,'.bed','.test.bed') else bed_string
+    File bim_file = sub(bed_file,'.bed','.bim')
+    File fam_file = sub(bed_file,'.bed','.fam')
+
+    String docker
+    String? scores_docker
+    String? final_docker = if defined(scores_docker) then scores_docker else docker
+    
+    Int cpu
+    Int mem
+    Int disk_size = ceil(size(bed_file,'GB')) + 10
+    
+    command <<<
+    python3 /scripts/cs_scores.py \
+    --weight ${weights} \
+    --bed ${bed_file} \
+    --out .
+    >>>
+
+    output {
+        File log = "/cromwell_root/scores/${file_root}.cs.plink.log"
+        File scores = "/cromwell_root/scores/${file_root}.cs.plink.sscore"
+        }
+    
+    runtime {
+        docker: "${final_docker}"
+        cpu: "${cpu}"
+	memory: "${mem} GB"
+        disks: "local-disk ${disk_size} HDD"
+        zones: "europe-west1-b"
+        preemptible: 1
+    }
+}
+
+
 
 task weights {
 
     File munged_gwas
-
+    String root_name = basename(munged_gwas,'.munged.gz')
+    
     String N
     File rsid_map
     File bim_file
@@ -74,6 +124,11 @@ task weights {
     ls -lh 
     >>>
 
+    output {
+        File munged_rsid = "/cromwell_root/munge/${root_name}.munged.rsid"
+        File weights = "/cromwell_root/${root_name}.weights.txt"
+    }
+    
     runtime {
         docker: "${final_docker}"
         cpu: "${cpu}"
@@ -81,7 +136,7 @@ task weights {
         disks: "local-disk 15 HDD"
         zones: "europe-west1-b"
         preemptible: 1
-        }
+    }
 
     
 }
@@ -114,14 +169,14 @@ task munge {
     python3 /scripts/munge.py \
     -o . \
     --ss ${ss} \
-    --effect_type ${effect_type} \
-    --variant ${variant} \
-    --chrom ${chrom} \
-    --pos ${pos} \
-    --ref ${ref} \
-    --alt ${alt} \
-    --effect ${effect} \
-    --pval ${pval} \
+    --effect_type "${effect_type}" \
+    --variant "${variant}" \
+    --chrom "${chrom}" \
+    --pos "${pos}" \
+    --ref "${ref}" \
+    --alt "${alt}" \
+    --effect "${effect}" \
+    --pval "${pval}" \
     --rsid-map ${rsid_map} \
     --chrompos-map ${chrompos_map} \
     --chainfile ${chainfile}

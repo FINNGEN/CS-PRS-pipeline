@@ -234,6 +234,8 @@ Now we have all elements in place:
 - variants are identified with a Finngen ID
 - the position is updated to finngen data
 - the effect allele is still the original one
-- weights are calcualted accordingly based on the effect allel
+- weights are calcualted accordingly based on the effect allele
 
+
+## Scores
 Finally scores are calculate with `plink2 --sscore` which will only compute if the variant ids match, but still computing the score for the correct allele.
