@@ -4,10 +4,7 @@ while read line; do arr=($line) &&   python3 ./munge.py --ss /mnt/disks/r5/PRS/g
 
 
 
-
-
 python3 ./cs_wrapper.py --bim-file /mnt/disks/r5/plink/R5.hm3.rsid.bim --ref-file /mnt/disks/r5/PRS/ldblk_1kg_eur/snpinfo_1kg_hm3 --map /mnt/disks/r5/PRS/variant_mapping/finngen.rsid.map.tsv --out /mnt/disks/r5/PRS/docker_test/ --N 257828 --sum-stats /mnt/disks/r5/PRS/munge/MTAG_CP.to10K.txt.munged.gz --parallel 2
-
 
 
 python3 ./cs_scores.py --weight /mnt/disks/r5/PRS/docker_test/MTAG_CP.to10K.txt.weights.txt --bed /mnt/disks/r5/plink/R5.hm3.bed --out /mnt/disks/r5/PRS/docker_test/

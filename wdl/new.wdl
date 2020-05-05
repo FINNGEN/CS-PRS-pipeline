@@ -33,12 +33,58 @@ workflow prs_cs{
             pval = gwas[9],
             rsid_map = rsid_map.rsid,
             chrompos_map = rsid_map.chrompos,
-            docker = docker
-            
+            docker = docker      
+        }
+        call weights {
+            input:
+            munged_gwas = munge.munged_file,
+            rsid_map = rsid_map.rsid,
+            docker = docker,
+            N = gwas[1]
+
         }
     }
 }
 
+task weights {
+
+    File munged_gwas
+
+    String N
+    File rsid_map
+    File bim_file
+    
+    File file_list
+    Array[File] ref_files = read_lines(file_list)
+
+    String docker
+    String? weights_docker
+    String? final_docker = if defined(weights_docker) then weights_docker else docker
+    Int cpu
+    Int mem
+    
+    command <<<
+
+    python3 /scripts/cs_wrapper.py --bim-file ${bim_file} --ref-file ${ref_files[0]} \
+    --map ${rsid_map} --out . \
+    --N ${N} \
+    --sum-stats ${munged_gwas} \
+    --parallel 2
+
+    ls -lh 
+    >>>
+
+    runtime {
+        docker: "${final_docker}"
+        cpu: "${cpu}"
+	memory: "${mem} GB"
+        disks: "local-disk 15 HDD"
+        zones: "europe-west1-b"
+        preemptible: 1
+        }
+
+    
+}
 
 task munge {
 
@@ -89,8 +135,8 @@ task munge {
 
     runtime {
         docker: "${final_docker}"
-        cpu: "1"
-	memory: "2 GB"
+        cpu: "4"
+	memory: "16 GB"
         disks: "local-disk 10 HDD"
         zones: "europe-west1-b"
         preemptible: 1

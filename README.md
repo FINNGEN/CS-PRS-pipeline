@@ -1,7 +1,98 @@
 # CS-PRS-pipeline
 
+Pipeline to calculates PRS based on a list of sumstats.
+Weights are calculated with PRScs: https://github.com/getian107/PRScs
 
-## Allele matching
+The sumstats used for R5 are the following:
+```
+filename	pheno	publication
+AD_sumstats_Jansenetal.txt.gz	Alzheimer�s	https://www.nature.com/articles/s41588-018-0311-9
+adhd_eur_jun2017.gz	ADHD	https://www.biorxiv.org/content/early/2017/06/03/145581
+alsMetaSummaryStats_march21st2018.tab.gz	ALS	https://www.cell.com/neuron/references/S0896-6273(18)30148-X
+Bipolar_vs_control_PGC_Cell_2018_formatted.txt.gz	bipolar	PGC;Cell;2018;https://doi.org/10.1016/j.cell.2018.05.046
+cad.add.160614.website.txt.gz	CAD	https://www.nature.com/articles/ng.3396
+ckqny.scz2snpres.gz	Schizophrenia	https://www.nature.com/articles/nature13595
+daner_PGC_SCZ52_0513a.resultfiles_PGC_SCZ52_0513.sh2_nofin.gz	schzizophrenia	PGC_schzizophrenia_GWAS_Ripke_et_al._excluding_Finnish
+dpw_excludingFinnishStudies_4finngen.txt.gz	alcohol_consumption	https://www.nature.com/articles/s41398-019-0676-2
+EAGLE_AD_GWAS_results_2015.txt.gz	Atopic_dermatitis	https://www.nature.com/articles/ng.3424
+Educational_Attainment_excl23andme_Lee_2018_NatGen_formatted.txt.gz	educational_attainment	Lee;Nat_Gen;2018;https://doi.org/10.1038/s41588-018-0147-3
+EUR.CD.gwas_info03_filtered.assoc.gz	IBD-CD	https://www.nature.com/articles/ng.3359
+EUR.IBD.gwas_info03_filtered.assoc.gz	IBD	https://www.nature.com/articles/ng.3359
+EUR.UC.gwas_info03_filtered.assoc.gz	IBD-UC	https://www.nature.com/articles/ng.3359
+focal_epilepsy_METAL_4finngen.txt.gz	FOC_EPIL	https://www.nature.com/articles/s41467-018-07524-z
+gabriel_asthma_meta-analysis_36studies_format_repository_NEJM.txt.gz	Asthma	https://www.nejm.org/doi/full/10.1056/nejmoa0906312
+generalised_epilepsy_METAL_4finngen.txt.gz	GEN_EPIL	https://www.nature.com/articles/s41467-018-07524-z
+GIANT_HEIGHT_Wood_et_al_2014_publicrelease_HapMapCeuFreq.txt.gz	Height	https://www.nature.com/articles/ng.3097
+GWAS_CP_all.txt.gz	Cognitive_performance_meta	https://www.nature.com/articles/s41588-018-0147-3
+Hb_gwas_summary_fromNealeLab.tsv.gz	Haemoglobin_concentration	UKBB
+HbA1c_METAL_European.txt.gz	HbA1c	http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1002383
+HDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	HDL-C	https://www.nature.com/articles/ng.3300
+IGAP_stage_1.txt.gz	Alzheimers-disease	https://www.nature.com/articles/ng.2802
+iPSYCH-PGC_ASD_Nov2017.gz	ASD	https://www.biorxiv.org/content/early/2017/11/27/224774
+kunkle_etal_stage1.txt.gz	ALZHEIMER	https://www.niagads.org/datasets/ng00075
+LDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	LDL-C	https://www.nature.com/articles/ng.3300
+Mahajan.NatGenet2018b.T2D.European.txt.gz	T2D	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6287706/
+MDD2018_ex23andMe.19fields.gz	MDD	https://www.nature.com/articles/s41588-018-0090-3
+meta_v3_onco_euro_overall_ChrAll_1_release.txt.gz	Prostate_Cancer	https://www.nature.com/articles/s41588-018-0142-8
+METAANALYSIS_DIAGRAM_SE1.txt.gz	T2D	http://diabetes.diabetesjournals.org/content/66/11/2888
+metastroke.all.chr.bp.gz	Ischemic-stroke	https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(12)70234-X/abstract
+MTAG_CP.to10K.txt.gz	Cognitive_Performance	https://www.nature.com/articles/s41588-018-0147-3
+MTAG_EA.to10K.txt.gz	Educational_attainment	https://www.nature.com/articles/s41588-018-0147-3
+pgc.bip.full.2012-04.txt.gz	Bipolar-disorder	https://www.nature.com/articles/ng.943
+pgc.ed.freeze1.summarystatistics.July2017.txt.gz	Anorexia-nervosa	Missing
+RA_GWASmeta_European_v2.txt.gz	Rheumatoid-arthritis	https://www.nature.com/articles/nature12873
+SavageJansen_2018_intelligence_metaanalysis_formatted.txt.gz	intelligence	Savage;Nat_Gen;2018;https://doi.org/10.1038/s41588-018-0152-6
+Saxena_fullUKBB_Longsleep_summary_stats_formatted.txt.gz	long_sleep	Dashti;Natcomm;2019;�https://doi.org/10.1038/s41467-019-08917-4
+Shrine_30804560_FEV1_meta-analysis.txt.gz	FEV1	https://www.nature.com/articles/s41588-018-0321-7
+Shrine_30804560_FEV1_to_FVC_RATIO_meta-analysis.txt.gz	FEV1/FVC	https://www.nature.com/articles/s41588-018-0321-7
+Shrine_30804560_FVC_meta-analysis.txt.gz	FVC	https://www.nature.com/articles/s41588-018-0321-7
+Shrine_30804560_PEF_meta-analysis.txt.gz	Peak_expiratory_flow	https://www.nature.com/articles/s41588-018-0321-7
+SNP_gwas_mc_merge_nogc.tbl.uniq.gz	BMI	https://www.nature.com/articles/nature14177
+SORTED_PTSD_EA9_ALL_study_specific_PCs1.txt.gz	PTSD	https://www.nature.com/articles/mp201777
+sumstats_neuroticism_ctg_format_formatted.txt.gz	neuroticism	Nagel;NatGen2018;�https://doi.org/10.1038/s41588-018-0151-7
+TC_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	Total-cholesterol	https://www.nature.com/articles/ng.3300
+TG_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	Triglycerides	https://www.nature.com/articles/ng.3300
+UKBB_gwas_Neale_Chronotype_formatted.txt.gz	chronotype	UKBB
+UKBB_gwas_Neale_pulserate_formatted.txt.gz	heart_rate	UKBB
+UKBB_gwas_Neale_SleepDuration_formatted.txt.gz	sleepduration	UKBB
+UKBB_gwas_Neale_SleeplessnessInsomnia_formatted.txt.gz	insomnia	UKBB
+UKBB_HYPO.txt.gz	HYPOTHYROIDISM	UKBB
+UKB-ICBPmeta750k_DBPsummaryResults.txt.gz	blood_pressure	UKBB
+UKB-ICBPmeta750k_PPsummaryResults.edited.txt.gz	blood_pressure	UKBB
+UKB-ICBPmeta750k_SBPsummaryResults.txt.gz	blood_pressure	UKBB
+```
+
+## Rsid map
+
+This step generates a mapping to/from rsid/chrompos based on data available at ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz.
+
+`rsid_map.py` produces:
+
+- finngen.rsid.map.tsv (rsid--> chrompos)
+```
+rs10	7_92754574
+rs1000000	12_126406434
+rs1000000219	13_95689463
+```
+
+- finngen.variants.tsv (chrompos --> ref/alt)
+```
+10_100000235	C	T
+10_100000979	T	C
+10_100001839	CAA	C
+```
+
+The first file is used throught the computation to go to/from rsid notation. The second is used to filter out variants that do not have the right alleles.
+
+Also, if a rsid list is provided (e.g. hm3 rsids), it returns the subset of variants in the original bim file that match to those rsids:
+- hm3.snplist 
+```
+chr10_100000235_C_T
+chr10_100002628_A_C
+chr10_100004827_A_C
+```
+
+## Munging
 PRScs automatically does some allele matching:
 - the reference genome (1kg) only contains non ambigous variants :
 
@@ -19,9 +110,13 @@ TG
 
 Also, in the parsing phase it checks for the ref/alt order and fixes the beta accordingly.
 ```
-ref_snp = set(zip(ref_dict['SNP'], ref_dict['A1'], ref_dict['A2']))
-vld_snp = set(zip(vld_dict['SNP'], vld_dict['A1'], vld_dict['A2'])) | set(zip(vld_dict['SNP'], vld_dict['A2'], vld_dict['A1']))
-sst_snp = set(zip(sst_dict['SNP'], sst_dict['A1'], sst_dict['A2'])) | set(zip(sst_dict['SNP'], sst_dict['A2'], sst_dict['A1']))
+vld_snp = set(zip(vld_dict['SNP'], vld_dict['A1'], vld_dict['A2']))
+ref_snp = set(zip(ref_dict['SNP'], ref_dict['A1'], ref_dict['A2'])) | set(zip(ref_dict['SNP'], ref_dict['A2'], ref_dict['A1'])) | \
+              set(zip(ref_dict['SNP'], [mapping[aa] for aa in ref_dict['A1']], [mapping[aa] for aa in ref_dict['A2']])) | \
+              set(zip(ref_dict['SNP'], [mapping[aa] for aa in ref_dict['A2']], [mapping[aa] for aa in ref_dict['A1']]))
+sst_snp = set(zip(sst_dict['SNP'], sst_dict['A1'], sst_dict['A2'])) | set(zip(sst_dict['SNP'], sst_dict['A2'], sst_dict['A1'])) | \
+              set(zip(sst_dict['SNP'], [mapping[aa] for aa in sst_dict['A1'] if aa in ATGC], [mapping[aa] for aa in sst_dict['A2'] if aa in ATGC])) | \
+              set(zip(sst_dict['SNP'], [mapping[aa] for aa in sst_dict['A2'] if aa in ATGC], [mapping[aa] for aa in sst_dict['A1'] if aa in ATGC]))
 
 comm_snp = ref_snp & vld_snp & sst_snp
 with open(sst_file) as ff:
@@ -35,7 +130,7 @@ with open(sst_file) as ff:
 ```
 The final weights are printed based on the a1/a2 order of the reference panel (i.e. the EUR 1kg panel in this case).
 
-PRScs does *not* check for strand flip.
+PRScs does check for strand flip.
 
 Our solution is therefore the following.
 
@@ -63,7 +158,11 @@ CHR     SNP     A1      A2      BP      OR      P
 19	chr19_288374	C	T	288374	1.0021901113140002	0.299346915861
 ```
 
-In order to run PRScs we then convert the file to rsids using the finngen mapping:
+
+## Weights
+
+Weights are calculated using PRScs.
+In order to run PRScs we then convert the file to rsids:
 ```
 SNP	A1	A2	OR	P
 rs8100066	G	A	0.9957872809136792	0.050031874722
