@@ -153,7 +153,6 @@ if __name__ == '__main__':
     parser.add_argument('--map',type = file_exists,help = 'File that maps to/from rsids',required = True)
                         
     args = parser.parse_args()
-    print(args.parallel)
     to_rsid(args)
     weights(args)
     to_chrompos(args)

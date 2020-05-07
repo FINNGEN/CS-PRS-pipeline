@@ -4,7 +4,7 @@ import argparse,os,gzip,itertools,subprocess,shlex,pickle
 import numpy as np
 import os,gzip
 from collections import defaultdict as dd
-from utils import file_exists,return_open_func,make_sure_path_exists,identify_separator,basic_iterator,get_path_info,return_header
+from utils import file_exists,return_open_func,make_sure_path_exists,identify_separator,basic_iterator,get_path_info,return_header,load_rsid_mapping
 
 
 def check_inputs(args):
@@ -74,7 +74,7 @@ def parse_file(args):
     skip = 0 if args.no_header else 1
     iterator = basic_iterator(args.file,skiprows=skip)
     if args.to_rsid:
-        rsid_dict = load_rsid_mapping(args.out,args.map)
+        rsid_dict = load_rsid_mapping(args.map,inverse = True)#chrompos --> rsid
         out_file = out_file.replace('CONVERT','rsid')
         print(f"saving to {out_file}")
         with write_func(out_file,'wt') as o:
@@ -96,7 +96,7 @@ def parse_file(args):
                 o.write(separator.join([line[i] for i in out_index]) + '\n')
             
     if args.to_chrompos:
-        chrompos_dict = load_chrompos_mapping(args.out,args.map)
+        chrompos_dict = load_rsid_mapping(args.map) # risd -- >chrompos
         out_file = out_file.replace('CONVERT','chrompos')
         print(f"saving to {out_file}")
         with write_func(out_file,'wt') as o:
@@ -109,58 +109,6 @@ def parse_file(args):
                     line[meta_index[0]] = f"chr{chrompos}_{a1}_{a2}"
                 o.write(separator.join([line[i] for i in out_index]) + '\n')
 
-
-def map_iterator(rsid_map):
-      header = return_header(rsid_map)
-      print(header)
-      rsid_col = [header.index(elem) for elem in header if 'rs' in elem][0]
-      columns = [0,1] if not rsid_col else [1,0]
-      print(columns)
-      iterator = basic_iterator(rsid_map,columns = columns)
-      return iterator
-  
-def load_chrompos_mapping(out_path,rsid_map):
-    '''
-    Loads the finngen rsid to chrom_pos mapping
-    '''
-    _,map_root,_ = get_path_info(rsid_map)
-    dict_path  = os.path.join(out_path,map_root + '.chrompos.pickle')
-    if os.path.isfile(dict_path):
-        print('pickling chrompos dict...')
-        with open(dict_path,'rb') as i: chrompos_dict = pickle.load(i)
-    else:
-        print('generating chrompos dict...')
-        chrompos_dict = dd(str)
-        iterator = map_iterator(rsid_map)
-        for entry in iterator:
-            rsid,chrom_pos = entry
-            chrompos_dict[rsid] = chrom_pos
-        with open(dict_path,'wb') as o:
-            pickle.dump(chrompos_dict,o,protocol = pickle.HIGHEST_PROTOCOL)
-            
-    print('done.')
-    return chrompos_dict
-
-def load_rsid_mapping(out_path,rsid_map):
-    '''
-    Loads the chrompos to rsid mapping
-    '''
-    _,map_root,_ = get_path_info(rsid_map)
-    dict_path  = os.path.join(out_path,map_root + '.rsid.pickle')     
-    if os.path.isfile(dict_path):
-        print('pickling rsid dict...')
-        with open(dict_path,'rb') as i: rsid_dict = pickle.load(i)
-    else:
-        print('generating rsid dict...')
-        rsid_dict = dd(str)
-        iterator = map_iterator(rsid_map)
-        for entry in iterator:
-            rsid,chrom_pos = entry
-            rsid_dict[chrom_pos] = rsid
-        with open(dict_path,'wb') as o:
-            pickle.dump(rsid_dict,o,protocol = pickle.HIGHEST_PROTOCOL)
-    print('done.')
-    return rsid_dict
 
 if __name__ == '__main__':
 

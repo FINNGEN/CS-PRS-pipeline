@@ -243,38 +243,45 @@ def progressBar(value, endvalue, bar_length=20):
     sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
     sys.stdout.flush()
 
-def load_pos_mapping(chrompos_map,out_path):
+def load_pos_mapping(chrompos_map):
     '''
     Loads the chrom_pos to ref/alt mapping for finngen
     '''
-    out_pickle = os.path.join(out_path,'chrompos.pickle')
+    out_pickle = chrompos_map + '.pickle'
     if os.path.isfile(out_pickle):
+        print('loading chrompos dict -->', out_pickle)
+
         with open(out_pickle,'rb') as i: pos_dict = pickle.load(i)
     else:
         pos_dict = dd(list)
-        print('generating pickle dict...')
+        print('generating chrompos dict -->', out_pickle)
         iterator = basic_iterator(chrompos_map)
         for entry in iterator:
             chrom_pos,ref,alt = entry
             pos_dict[chrom_pos].append([ref,alt])
         with open(out_pickle,'wb') as o:
             pickle.dump(pos_dict,o,protocol = pickle.HIGHEST_PROTOCOL)
-           
+    print('done.')
     return pos_dict
 
-def load_rsid_mapping(rsid_map,out_path):
+def load_rsid_mapping(rsid_map,inverse = False):
     '''
     Loads the chrompos to rsid mapping
     '''
-    out_pickle  = os.path.join(out_path,'rsid.pickle')     
+    out_pickle = os.path.join(rsid_map) + '.pickle'
+    if inverse:
+        out_pickle += '.chrompos'
     if os.path.isfile(out_pickle):
+        print('loading rsid dict -->', out_pickle)
         with open(out_pickle,'rb') as i: rsid_dict = pickle.load(i)
     else:
-        print('generating rsid dict...')
+        print('generating rsid dict --> ',out_pickle)
         rsid_dict = dd(str)
         header = return_header(rsid_map)
         rsid_col = [header.index(elem) for elem in header if 'rs' in elem][0]
         columns = [0,1] if not rsid_col else [1,0]
+        if inverse: columns = columns[::-1]
+        
         for entry in basic_iterator(rsid_map,columns = columns):
             rsid,chrom_pos = entry
             rsid_dict[rsid] = chrom_pos
@@ -282,6 +289,9 @@ def load_rsid_mapping(rsid_map,out_path):
             pickle.dump(rsid_dict,o,protocol = pickle.HIGHEST_PROTOCOL)
         print('done.')
     return rsid_dict
+
+
+
 
 def natural_sort(l):
     import re

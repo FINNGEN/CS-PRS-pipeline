@@ -3,7 +3,7 @@ workflow prs_cs{
     String gwas_data_path
     String docker
     Boolean test
-
+    String prefix
     call rsid_map {
         input:
         docker = docker
@@ -33,7 +33,8 @@ workflow prs_cs{
             pval = gwas[9],
             rsid_map = rsid_map.rsid,
             chrompos_map = rsid_map.chrompos,
-            docker = docker      
+            docker = docker,
+            prefix = prefix
         }
         call weights {
             input:
@@ -56,13 +57,14 @@ task scores {
 
     File weights
     String file_root = basename(weights,'.weights.txt')
+
     Boolean test
     String bed_string
-    
     File bed_file = if test then sub(bed_string,'.bed','.test.bed') else bed_string
     File bim_file = sub(bed_file,'.bed','.bim')
     File fam_file = sub(bed_file,'.bed','.fam')
-
+    File frq_file = sub(bed_file,'.bed','.afreq')
+    
     String docker
     String? scores_docker
     String? final_docker = if defined(scores_docker) then scores_docker else docker
@@ -79,8 +81,8 @@ task scores {
     >>>
 
     output {
-        File log = "/cromwell_root/scores/${file_root}.cs.plink.log"
-        File scores = "/cromwell_root/scores/${file_root}.cs.plink.sscore"
+        File log = "/cromwell_root/scores/${file_root}.log"
+        File scores = "/cromwell_root/scores/${file_root}.sscore"
         }
     
     runtime {
@@ -92,7 +94,6 @@ task scores {
         preemptible: 1
     }
 }
-
 
 
 task weights {
@@ -114,14 +115,11 @@ task weights {
     Int mem
     
     command <<<
-
-    python3 /scripts/cs_wrapper.py --bim-file ${bim_file} --ref-file ${ref_files[0]} \
+    python3 /scripts/cs_wrapper.py --bim-file ${bim_file} --ref-file ${ref_files[0]}  \
     --map ${rsid_map} --out . \
     --N ${N} \
     --sum-stats ${munged_gwas} \
-    --parallel 2
-
-    ls -lh 
+    --parallel 2 
     >>>
 
     output {
@@ -146,7 +144,8 @@ task munge {
     String gwas_data_path
     String file_name
     File ss = gwas_data_path + file_name
-    String out_root = sub(file_name,'.gz','.munged.gz')
+    String prefix
+    String out_root = prefix + "_" +  sub(file_name,'.gz','.munged.gz')
     
     String effect_type
     String variant
@@ -179,7 +178,8 @@ task munge {
     --pval "${pval}" \
     --rsid-map ${rsid_map} \
     --chrompos-map ${chrompos_map} \
-    --chainfile ${chainfile}
+    --chainfile ${chainfile} \
+    --prefix ${prefix}
             
     >>>
 

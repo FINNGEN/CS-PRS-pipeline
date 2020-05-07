@@ -7,7 +7,7 @@ The sumstats used for R5 are the following:
 ```
 | filename                                                             	| pheno                      	| publication                                                                         	|
 |----------------------------------------------------------------------	|----------------------------	|-------------------------------------------------------------------------------------	|
-| AD_sumstats_Jansenetal.txt.gz                                        	| Alzheimer�s                	| https://www.nature.com/articles/s41588-018-0311-9                                   	|
+| AD_sumstats_Jansenetal.txt.gz                                        	| Alzheimer's                	| https://www.nature.com/articles/s41588-018-0311-9                                   	|
 | adhd_eur_jun2017.gz                                                  	| ADHD                       	| https://www.biorxiv.org/content/early/2017/06/03/145581                             	|
 | alsMetaSummaryStats_march21st2018.tab.gz                             	| ALS                        	| https://www.cell.com/neuron/references/S0896-6273(18)30148-X                        	|
 | Bipolar_vs_control_PGC_Cell_2018_formatted.txt.gz                    	| bipolar                    	| PGC;Cell;2018;https://doi.org/10.1016/j.cell.2018.05.046                            	|

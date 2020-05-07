@@ -33,7 +33,8 @@ RUN  wget http://s3.amazonaws.com/plink2-assets/alpha2/plink2_linux_avx2.zip && 
 RUN wget https://github.com/samtools/htslib/releases/download/1.10/htslib-1.10.tar.bz2 && \
 tar -xvjf htslib-1.10.tar.bz2 && cd htslib-1.10 && ./configure && make && make install && cd .. && rm  htslib-1.*tar*
     
-
 ADD PRScs ../PRScs/
 ADD data ../data/
 ADD scripts ../scripts/
+
+RUN chmod +x /scripts/lift/liftOver

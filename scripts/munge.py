@@ -6,11 +6,11 @@ from pathlib import Path
 from collections import defaultdict as dd
 
 
-
 def merge_files(args):
     """
     Function that takes the rsid and chrompos lifted file and prints out the final variants, checking if the variant exists in our dataset (also checking for strand flip).
     """
+    pretty_print("MERGING")
     tmp_path = os.path.join(args.out,'tmp_parse')
     rej_path = os.path.join(tmp_path,'rejected_variants')
     file_path,file_root,file_extension = get_path_info(args.ss)
@@ -19,12 +19,12 @@ def merge_files(args):
     chrompos_file =  os.path.join(tmp_path,f'chrompos_{file_root}.gz.lifted.gz')
     rej_log = os.path.join(tmp_path,'rejected_variants',f'rejected_2_{file_root}.gz')
     
-    out_file = os.path.join(args.out,f"{file_root}.munged.gz")
+    out_file = os.path.join(args.out,f"{args.prefix}_{file_root}.munged.gz")
     if os.path.isfile(out_file) and not args.force:
         print(f'{out_file} already munged')
         return
 
-    pos_dict = load_pos_mapping(args.chrompos_map,args.out)
+    pos_dict = load_pos_mapping(args.chrompos_map)
     rsid_positions = len(pos_dict.keys())
     # starting final merge pass
     final_variants = 0
@@ -149,7 +149,7 @@ def parse_file(args):
         
         args.print(f'indexes: {indexes}')
         # WE ARE NOW READY TO PARSE THE FILE
-        rsid_dict = load_rsid_mapping(args.rsid_map,args.out)           
+        rsid_dict = load_rsid_mapping(args.rsid_map)           
         with gzip.open(rsid_file,'wt') as r,gzip.open(chrompos_file,'wt') as c,gzip.open(rej_log,'wt') as rej:
             out_header = '\t'.join(['chr','snp','a1','a2','pos','or','p'])
             c.write(out_header + '\n')
@@ -195,12 +195,13 @@ def parse_file(args):
     if args.force:
         lift(chrompos_file,args.chainfile,args.force)
 
-
 def lift(chrompos_file,chainfile,force):
 
+    pretty_print("LIFTOVER")
     file_path,*_ = get_path_info(chrompos_file)
     if not os.path.isfile(f"{chrompos_file}.lifted.gz") or force:
         cmd = f"python3 {os.path.join(args.root_path,'lift','lift.py')} {chrompos_file} --chainfile {chainfile} --info chr pos a1 a2 --out {file_path}"
+        print(cmd)
         subprocess.call(shlex.split(cmd))
     else:
         print('already lifted file')
@@ -247,7 +248,8 @@ if __name__ == '__main__':
     parser.add_argument('--pval', type=str,required=True,help='Column entry of pvalue')
     parser.add_argument('--chrom', type=str,help='Column entry of chrom')
     parser.add_argument('--pos', type=str,help='Column entry of position')
-    
+    parser.add_argument('--prefix',type = str,help = "string to prepend to output",default = "finngen_R")
+
     
     args = parser.parse_args()
     args.ss = os.path.abspath(args.ss)

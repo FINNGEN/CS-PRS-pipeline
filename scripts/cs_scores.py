@@ -5,16 +5,10 @@ from utils import file_exists,make_sure_path_exists,tmp_bash,pretty_print,get_fi
 
 mem_mib = int(mem_mib)
 
-
 def scores(args):
 
     scores_path = os.path.join(args.out,'scores')
     make_sure_path_exists(scores_path)
-
-    # plink or pgen
-    if args.bed: args.suffix += '.plink'
-    elif args.pgen: args.suffix += '.pgen'
-
 
     # get final list of weights to run
     if args.weight:
@@ -28,7 +22,7 @@ def scores(args):
         if os.path.isfile(weight):
             root_name = os.path.basename(weight).split('.weights')[0]
             print(root_name)
-            score_file = os.path.join(scores_path,args.prefix + root_name + args.suffix)
+            score_file = os.path.join(scores_path, root_name + args.suffix)
             if os.path.isfile(score_file + '.sscore'):
                 print(f'{score_file} already generated')
             weight_files.append((weight,score_file))
@@ -66,7 +60,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description ="Calculation of PRS for summary stats.")
 
-    parser.add_argument('--out', type=str, default = ".",help='Output Prefix')
+    parser.add_argument('--out', type=str, default = ".")
    
     # requried
     weight_list_parser = parser.add_mutually_exclusive_group(required = True)
@@ -79,10 +73,9 @@ if __name__ == '__main__':
     scores_input.add_argument('--bed',type = file_exists,help ='Path to plink bed file')
     scores_input.add_argument('--pgen',type = file_exists,help ='Path to pgen file')
         
-    parser.add_argument('--prefix',type = str,help = "string to prepend to output",default = "")
 
     args = parser.parse_args()
-    args.suffix = ".cs" 
+    args.suffix = ""
 
     make_sure_path_exists(args.out)
     scores(args)
