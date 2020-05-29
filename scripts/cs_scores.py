@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse,os,subprocess,shlex
-from utils import file_exists,make_sure_path_exists,tmp_bash,pretty_print,get_filepaths,basic_iterator,mem_mib,cpus
+from utils import file_exists,make_sure_path_exists,tmp_bash,pretty_print,get_filepaths,basic_iterator,mem_mib,cpus,get_path_info
 
 mem_mib = int(mem_mib)
 
@@ -21,15 +21,8 @@ def scores(args):
     for weight in weight_iterator:
         if os.path.isfile(weight):
             root_name = os.path.basename(weight).split('.weights')[0]
-            print(root_name)
             score_file = os.path.join(scores_path, root_name + args.suffix)
-            if os.path.isfile(score_file + '.sscore'):
-                print(f'{score_file} already generated')
-            weight_files.append((weight,score_file))
-                    
-    if not weight_files:
-        print('no weights need to run, check inputs!')
-        return
+            weight_files.append((weight,score_file))  
   
     # fix plink command for bed file
     if args.bed:
@@ -51,28 +44,39 @@ def scores(args):
     for entry in weight_files:
         weight_file,score_file = entry
         pretty_print(weight_file)
-        cmd = plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  header center --out {score_file}" 
-        print(cmd)
-        subprocess.call(shlex.split(cmd))
+        cmd = plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  header center list-variants --out {score_file}"
+        if not os.path.isfile(score_file + '.sscore'):
+            print(cmd)
+            subprocess.call(shlex.split(cmd))
+        else:print(f'{score_file} already generated')
+
+        if args.region:
+            _,region_root,file_extension = get_path_info(args.region)
+            score_file += '.no_' + region_root
+            if not os.path.isfile(score_file + '.sscore'):
                 
+                cmd =  plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  header center list-variants --exclude range {args.region} --out {score_file} " 
+                print(cmd)
+                subprocess.call(shlex.split(cmd))
+            else:print(f'{score_file} already generated')
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description ="Calculation of PRS for summary stats.")
 
     parser.add_argument('--out', type=str, default = ".")
-   
-    # requried
+    parser.add_argument('--region',type = file_exists,help ='Path to list of regions to exclude')
+
+    # required
     weight_list_parser = parser.add_mutually_exclusive_group(required = True)
     weight_list_parser.add_argument('--weight-list',type = file_exists,help ='List of any weight file formatted as FILE_ROOT.chrCHROM.weights.etc')
     weight_list_parser.add_argument('--weight',type =file_exists,help ='path to single weight file')
-
-
+    
     # BED OR PGEN
     scores_input = parser.add_mutually_exclusive_group(required = True)
     scores_input.add_argument('--bed',type = file_exists,help ='Path to plink bed file')
     scores_input.add_argument('--pgen',type = file_exists,help ='Path to pgen file')
-        
+
 
     args = parser.parse_args()
     args.suffix = ""

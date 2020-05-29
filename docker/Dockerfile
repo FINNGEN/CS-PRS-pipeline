@@ -6,7 +6,7 @@ RUN apt-get update
 RUN apt-get upgrade --yes
 
 RUN apt-get install mercurial --yes && apt-get install zlib1g-dev libcurl4-openssl-dev libbz2-dev liblzma-dev --yes
-RUN apt-get install parallel wget make  gcc g++ datamash --yes unzip
+RUN apt-get install parallel wget make  gcc g++ datamash  poppler-utils --yes unzip
 
 
 # PYTHON3 via conda

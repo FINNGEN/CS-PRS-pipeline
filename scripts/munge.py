@@ -18,15 +18,18 @@ def merge_files(args):
     rsid_file = os.path.join(tmp_path,f'rsid_{file_root}.gz')
     chrompos_file =  os.path.join(tmp_path,f'chrompos_{file_root}.gz.lifted.gz')
     rej_log = os.path.join(tmp_path,'rejected_variants',f'rejected_2_{file_root}.gz')
+
+    if args.prefix: args.prefix += "_"
+    out_file = os.path.join(args.out,f"{args.prefix}{file_root}.munged.gz")
     
-    out_file = os.path.join(args.out,f"{args.prefix}_{file_root}.munged.gz")
     if os.path.isfile(out_file) and not args.force:
         print(f'{out_file} already munged')
         return
-
+    else:
+        print(f"generating {out_file}")
+                      
     pos_dict = load_pos_mapping(args.chrompos_map)
-    rsid_positions = len(pos_dict.keys())
-    # starting final merge pass
+    # starting final merge 
     final_variants = 0
     with gzip.open(rej_log,'wt') as rej,gzip.open(out_file,'wt') as o:
         out_header = '\t'.join(['CHR','SNP','A1','A2','BP','BETA','P'])
@@ -56,6 +59,8 @@ def merge_files(args):
 
         # count lines
         if not args.test:
+            rsid_positions = len(pos_dict.keys())
+
             original_variants  =  int(open(os.path.join(tmp_path,f'{file_root}.variantcount')).read()) -1  
             print('compared to input sumstat:',original_variants,final_variants,final_variants/float(original_variants))
             print('compared to rsid positions in FG:',rsid_positions,final_variants,final_variants/float(rsid_positions))
@@ -248,7 +253,7 @@ if __name__ == '__main__':
     parser.add_argument('--pval', type=str,required=True,help='Column entry of pvalue')
     parser.add_argument('--chrom', type=str,help='Column entry of chrom')
     parser.add_argument('--pos', type=str,help='Column entry of position')
-    parser.add_argument('--prefix',type = str,help = "string to prepend to output",default = "finngen_R")
+    parser.add_argument('--prefix',type = str,help = "string to prepend to output",default = "")
 
     
     args = parser.parse_args()

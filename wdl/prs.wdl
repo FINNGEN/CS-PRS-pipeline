@@ -3,7 +3,6 @@ workflow prs_cs{
     String gwas_data_path
     String docker
     Boolean test
-    String prefix
     call rsid_map {
         input:
         docker = docker
@@ -34,8 +33,8 @@ workflow prs_cs{
             rsid_map = rsid_map.rsid,
             chrompos_map = rsid_map.chrompos,
             docker = docker,
-            prefix = prefix
         }
+	
         call weights {
             input:
             munged_gwas = munge.munged_file,
@@ -144,8 +143,7 @@ task munge {
     String gwas_data_path
     String file_name
     File ss = gwas_data_path + file_name
-    String prefix
-    String out_root = prefix + "_" +  sub(file_name,'.gz','.munged.gz')
+    String out_root =  sub(file_name,'.gz','.munged.gz')
     
     String effect_type
     String variant
@@ -179,7 +177,6 @@ task munge {
     --rsid-map ${rsid_map} \
     --chrompos-map ${chrompos_map} \
     --chainfile ${chainfile} \
-    --prefix ${prefix}
             
     >>>
 
@@ -237,7 +234,7 @@ task sumstats {
 
     File gwas_meta
     Boolean test
-    String grep = if test then " | grep MTAG" else ""
+    String grep = if test then " | grep Neale " else ""
 
     String docker
     command <<<
