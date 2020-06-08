@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse,os,subprocess,shlex
-from utils import file_exists,make_sure_path_exists,tmp_bash,pretty_print,get_filepaths,basic_iterator,mem_mib,cpus,get_path_info
+from utils import file_exists,make_sure_path_exists,tmp_bash,pretty_print,get_filepaths,basic_iterator,mem_mib,cpus,get_path_info,mapcount
 
 mem_mib = int(mem_mib)
 
@@ -50,7 +50,7 @@ def scores(args):
             subprocess.call(shlex.split(cmd))
         else:print(f'{score_file} already generated')
 
-        if args.region:
+        if args.region and mapcount(args.region):
             _,region_root,file_extension = get_path_info(args.region)
             score_file += '.no_' + region_root
             if not os.path.isfile(score_file + '.sscore'):

@@ -43,7 +43,8 @@ def merge_files(args):
             pass_bool,out_line = process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_root,rsid)
             final_variants += pass_bool
             out_file = o if pass_bool else rej
-            out_file.write(out_line)  
+            out_file.write(out_line)
+            
         #looping of lifted file
         iterator = basic_iterator(chrompos_file,skiprows = 1)
         loop = itertools.islice(iterator,30) if args.test else iterator

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import argparse,os.path,shlex,subprocess,sys,random
 from collections import defaultdict as dd
 from itertools import product
@@ -42,13 +43,16 @@ def weights(args):
     pretty_print("WEIGHTS")
     log_path = os.path.join(args.out,'logs')
     make_sure_path_exists(log_path)
+
     # manipulate ref dir
     ref_dir,*_ = get_path_info(args.ref_file)
     print(f"ref dir: {ref_dir}")
+
     #manipulate bim file
     bim_dir,bim_root,_ = get_path_info(args.bim_file)
     bim_prefix = os.path.join(bim_dir,bim_root)
     print(f"bim file: {bim_prefix}")
+
     #mainpulate out dir
     args.ss_root= os.path.basename(args.sum_stats).split('.munged')[0]
     print(f"ss_root: {args.ss_root}")
@@ -57,6 +61,7 @@ def weights(args):
     
     args.chrom_requested = sorted(args.chrom) if args.chrom else list(map(str,range(1,23)))
     print(f"requested chrom list :{' '.join(args.chrom_requested)}")
+    
     if not args.force:
         #chromosomes to check to run
         chrom_list = []
@@ -77,7 +82,7 @@ def weights(args):
 
     if args.parallel > 1:random.shuffle(chrom_list)
     
-    logfile = os.path.join(log_path,f'{args.ss_root}.weights.log')
+    logfile = os.path.join(args.out,f'{args.ss_root}.weights.log')
     log_template = os.path.join(log_path,f'{args.ss_root}.{{}}.weights.log')
     cmd = f"""parallel -j {args.parallel} "python3 -u {PRScs} --ref_dir {ref_dir} --bim_prefix {bim_prefix} --sst_file {args.sum_stats} --n_gwas {args.N} --out_dir {os.path.join(args.weights_path,args.ss_root)} {args.kwargs} --chrom {{}} >  {log_template} && echo {{}} " :::   {' '.join(chrom_list)} """
     print(cmd)

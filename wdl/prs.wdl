@@ -3,6 +3,7 @@ workflow prs_cs{
     String gwas_data_path
     String docker
     Boolean test
+    
     call rsid_map {
         input:
         docker = docker
@@ -22,14 +23,14 @@ workflow prs_cs{
             input :
             gwas_data_path = gwas_data_path,
             file_name = gwas[0],
-            effect_type = gwas[2],
-            variant = gwas[3],
-            chrom = gwas[4],
-            pos = gwas[5],
-            ref = gwas[6],
-            alt = gwas[7],
-            effect = gwas[8],
-            pval = gwas[9],
+            effect_type = gwas[3],
+            variant = gwas[4],
+            chrom = gwas[5],
+            pos = gwas[6],
+            ref = gwas[7],
+            alt = gwas[8],
+            effect = gwas[9],
+            pval = gwas[10],
             rsid_map = rsid_map.rsid,
             chrompos_map = rsid_map.chrompos,
             docker = docker,
@@ -47,22 +48,27 @@ workflow prs_cs{
             input:
             weights = weights.weights,
             docker = docker,
+            pheno = gwas[2],
             test = test
-            }
+        }
     }
 }
+
 
 task scores {
 
     File weights
     String file_root = basename(weights,'.weights.txt')
-
+    
     Boolean test
     String bed_string
     File bed_file = if test then sub(bed_string,'.bed','.test.bed') else bed_string
     File bim_file = sub(bed_file,'.bed','.bim')
     File fam_file = sub(bed_file,'.bed','.fam')
     File frq_file = sub(bed_file,'.bed','.afreq')
+
+    File regions
+    String pheno
     
     String docker
     String? scores_docker
@@ -73,15 +79,20 @@ task scores {
     Int disk_size = ceil(size(bed_file,'GB')) + 10
     
     command <<<
+
+    cat ${regions} | grep ${pheno}  |  cut -f 2 | sed 's/;\t*/\n/g' | sed 's/_/\t/g' > regions.txt
+    cat regions.txt
+    
     python3 /scripts/cs_scores.py \
     --weight ${weights} \
     --bed ${bed_file} \
+    --region regions.txt \
     --out .
     >>>
 
     output {
-        File log = "/cromwell_root/scores/${file_root}.log"
-        File scores = "/cromwell_root/scores/${file_root}.sscore"
+        Array[File] logs = glob("/cromwell_root/scores/${file_root}*log")
+        Array[File] scores = glob("/cromwell_root/scores/${file_root}*sscore")
         }
     
     runtime {
@@ -118,12 +129,14 @@ task weights {
     --map ${rsid_map} --out . \
     --N ${N} \
     --sum-stats ${munged_gwas} \
-    --parallel 2 
+    --parallel 1
     >>>
 
     output {
         File munged_rsid = "/cromwell_root/munge/${root_name}.munged.rsid"
         File weights = "/cromwell_root/${root_name}.weights.txt"
+        File log = "/cromwell_root/${root_name}.weights.log"
+        
     }
     
     runtime {
@@ -234,12 +247,12 @@ task sumstats {
 
     File gwas_meta
     Boolean test
-    String grep = if test then " | grep Neale " else ""
+    String grep = if test then " | grep MTA " else ""
 
     String docker
     command <<<
 
-    cat ${gwas_meta} | sed -E 1d ${grep}| cut -f 1,3,9,10,11,12,13,14,15,16  > sumstats.txt
+    cat ${gwas_meta} | sed -E 1d ${grep}| cut -f 1,3,8,9,10,11,12,13,14,15,16  > sumstats.txt
     >>>
 
     output {
