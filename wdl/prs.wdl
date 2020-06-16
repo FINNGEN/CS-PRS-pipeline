@@ -3,6 +3,7 @@ workflow prs_cs{
     String gwas_data_path
     String docker
     Boolean test
+    Map[String,File] build_chains
     
     call rsid_map {
         input:
@@ -18,9 +19,13 @@ workflow prs_cs{
         }
     
     Array[Array[String]] gwas_traits = read_tsv(sumstats.sstats)
+    
     scatter( gwas in gwas_traits) {
+        String build = gwas[11]
         call munge {
             input :
+            chainfile = build_chains[build],
+            docker = docker,
             gwas_data_path = gwas_data_path,
             file_name = gwas[0],
             effect_type = gwas[3],
@@ -33,15 +38,14 @@ workflow prs_cs{
             pval = gwas[10],
             rsid_map = rsid_map.rsid,
             chrompos_map = rsid_map.chrompos,
-            docker = docker,
         }
-	
         call weights {
             input:
             munged_gwas = munge.munged_file,
             rsid_map = rsid_map.rsid,
             docker = docker,
-            N = gwas[1]
+            N = gwas[1],
+            test = test,
 
         }
         call scores {
@@ -50,9 +54,10 @@ workflow prs_cs{
             docker = docker,
             pheno = gwas[2],
             test = test
-        }
-    }
+        }	
+    }    
 }
+
 
 
 task scores {
@@ -114,7 +119,8 @@ task weights {
     String N
     File rsid_map
     File bim_file
-    
+    Boolean test
+        
     File file_list
     Array[File] ref_files = read_lines(file_list)
 
@@ -129,6 +135,7 @@ task weights {
     --map ${rsid_map} --out . \
     --N ${N} \
     --sum-stats ${munged_gwas} \
+    ${true="--test" false="" test} \
     --parallel 1
     >>>
 
@@ -169,7 +176,8 @@ task munge {
 
     File rsid_map
     File chrompos_map
-    File chainfile
+
+    File chainfile 
 
     String docker
     String? munge_docker
@@ -247,12 +255,12 @@ task sumstats {
 
     File gwas_meta
     Boolean test
-    String grep = if test then " | grep MTA " else ""
+    String grep = if test then " | grep AD.txt " else ""
 
     String docker
     command <<<
 
-    cat ${gwas_meta} | sed -E 1d ${grep}| cut -f 1,3,8,9,10,11,12,13,14,15,16  > sumstats.txt
+    cat ${gwas_meta} | sed -E 1d ${grep}| cut -f 1,3,8,9,10,11,12,13,14,15,16,17  > sumstats.txt
     >>>
 
     output {

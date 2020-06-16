@@ -55,7 +55,7 @@ def scores(args):
             score_file += '.no_' + region_root
             if not os.path.isfile(score_file + '.sscore'):
                 
-                cmd =  plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  header center list-variants --exclude range {args.region} --out {score_file} " 
+                cmd =  plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  center list-variants --exclude range {args.region} --out {score_file} " 
                 print(cmd)
                 subprocess.call(shlex.split(cmd))
             else:print(f'{score_file} already generated')

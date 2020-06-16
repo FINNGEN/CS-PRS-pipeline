@@ -1,9 +1,14 @@
 {
     # WORKFLOW LEVEL
-    "prs_cs.test": False,
-    "prs_cs.gwas_data_path": "gs://r5_data/PRS/gwas/raw/",
+    "prs_cs.test": True,
     "prs_cs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r5-test.2",
-    "prs_cs.gwas_meta": "gs://r5_data/PRS/PRS_data.txt",
+    "prs_cs.gwas_data_path": "gs://r5_data/PRS/test/",    
+    "prs_cs.gwas_meta": "gs://r5_data/PRS/test/PRS_data.txt",
+    "prs_cs.build_chains": {'hg19':'gs://r5_data/PRS/chains/hg19ToHg38.over.chain.gz','hg18':'gs://r5_data/PRS/chains/hg18ToHg38.over.chain.gz','hg37':'gs://r5_data/PRS/chains/hg19ToHg38.over.chain.gz','hg38':'gs://r5_data/PRS/chains/empty_file.txt'},
+
+    #"prs_cs.gwas_data_path": "gs://r5_data/PRS/gwas/raw/",    
+    #"prs_cs.gwas_meta": "gs://r5_data/PRS/PRS_data.txt",
+
 
     #RSID MAP
     "prs_cs.rsid_map.bim_file": "gs://r5_data/plink/R5.bim",
@@ -27,8 +32,8 @@
    
     # DOCKERS (optional)
     #"prs_cs.rsid_map.rsid_docker": "",
-    "prs_cs.munge.munge_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r5.regions",
-    "prs_cs.weights.weights_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r5.weights.log",
-    "prs_cs.scores.scores_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r5.regions"
+    "prs_cs.munge.munge_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r5.build",
+    "prs_cs.weights.weights_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r5.build",
+    "prs_cs.scores.scores_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r5.build"
 }
 

@@ -1,6 +1,6 @@
 import argparse,os,pickle,gzip,itertools,subprocess,shlex
 import numpy as np
-from utils import file_exists,make_sure_path_exists,basic_iterator,get_path_info,fix_header,isfloat,mapcount_gzip,progressBar,tmp_bash,mapcount,pretty_print,load_rsid_mapping,load_pos_mapping,map_alleles
+from utils import file_exists,make_sure_path_exists,basic_iterator,get_path_info,fix_header,isfloat,mapcount_gzip,progressBar,tmp_bash,mapcount,pretty_print,load_rsid_mapping,load_pos_mapping,map_alleles,return_header
 from functools import partial
 from pathlib import Path
 from collections import defaultdict as dd
@@ -45,8 +45,12 @@ def merge_files(args):
             out_file = o if pass_bool else rej
             out_file.write(out_line)
             
-        #looping of lifted file
-        iterator = basic_iterator(chrompos_file,skiprows = 1)
+        #looping of chrompos file (possibly lifted)
+        if args.lift: column_names = ['beta','p','lift_chr','lift_pos','REF','ALT']
+        else: column_names = ['beta','p','chr','pos','a1','a2']
+        header = return_header(chrompos_file)
+        columns = [header.index(elem) for elem in column_names]
+        iterator = basic_iterator(chrompos_file,skiprows = 1,columns = columns)
         loop = itertools.islice(iterator,30) if args.test else iterator
         for entry in loop:
             args.print(entry)
@@ -70,8 +74,10 @@ def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
     """
     Function that parses the lines of the chrompos and rsid files. It makes sure that the variant in each line is (potentially) the same as Finngen's by trying all possible combinations of strand flip and direction.
     """
+
+    chrompos = f"{chrom}_{pos}"
+    finngen_variant = pos_dict[chrompos]
     
-    finngen_variant = pos_dict[f"{chrom}_{pos}"]
     # the position exists in finngen data
     if finngen_variant:
         # standard out line in case of missing position
@@ -79,7 +85,7 @@ def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
         variant_check = map_alleles(a1,a2)
         for finngen_ref,finngen_alt in finngen_variant:
             if map_alleles(finngen_ref,finngen_alt) == variant_check:
-                finngen_snp = f"chr{chrom}_{pos}"
+                finngen_snp = f"chr{chrompos}"
                 out_line = '\t'.join([chrom,finngen_snp,a1,a2,pos,OR,pval]) + '\n'
                 return True,out_line
        
@@ -150,14 +156,16 @@ def parse_file(args):
             print(pos_indexes,args.chrom,args.pos)
             indexes += pos_indexes
             parse_func = partial(regular_parse,or_func = or_func)
+            args.print('regular parse')
         else:
             parse_func = partial(alternate_parse,or_func = or_func)
-        
+            args.print('alternate parse')
+            
         args.print(f'indexes: {indexes}')
         # WE ARE NOW READY TO PARSE THE FILE
         rsid_dict = load_rsid_mapping(args.rsid_map)           
         with gzip.open(rsid_file,'wt') as r,gzip.open(chrompos_file,'wt') as c,gzip.open(rej_log,'wt') as rej:
-            out_header = '\t'.join(['chr','snp','a1','a2','pos','or','p'])
+            out_header = '\t'.join(['chr','snp','a1','a2','pos','beta','p'])
             c.write(out_header + '\n')
             r.write(out_header + '\n')
 
@@ -201,17 +209,7 @@ def parse_file(args):
     if args.force:
         lift(chrompos_file,args.chainfile,args.force)
 
-def lift(chrompos_file,chainfile,force):
 
-    pretty_print("LIFTOVER")
-    file_path,*_ = get_path_info(chrompos_file)
-    if not os.path.isfile(f"{chrompos_file}.lifted.gz") or force:
-        cmd = f"python3 {os.path.join(args.root_path,'lift','lift.py')} {chrompos_file} --chainfile {chainfile} --info chr pos a1 a2 --out {file_path}"
-        print(cmd)
-        subprocess.call(shlex.split(cmd))
-    else:
-        print('already lifted file')
-        
 def regular_parse(info,or_func):
     """
     Standard parsing function when chrom & pos are provided. It just converts OR to BETA if needed.
@@ -230,6 +228,24 @@ def alternate_parse(info,or_func):
     OR = or_func(effect)
     return chrom,f"{chrom}_{pos}",a1.upper(),a2.upper(),pos,OR,pval
 
+
+def lift(chrompos_file,chainfile,force):
+
+    pretty_print("LIFTOVER")
+    file_path,*_ = get_path_info(chrompos_file)
+    lifted_file = f"{chrompos_file}.lifted.gz"
+    # check if file already exists
+    if not os.path.isfile(lifted_file) or force:
+        cmd = f"python3 {os.path.join(args.root_path,'lift','lift.py')} {chrompos_file} --chainfile {chainfile} --info chr pos a1 a2 --out {file_path}" if args.lift else f"cp {chrompos_file} {lifted_file}"
+    else:
+        print('already lifted file')
+
+    print(cmd)
+    subprocess.call(shlex.split(cmd))
+
+
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description ="Munge a GWAS summary stat.")
@@ -240,7 +256,7 @@ if __name__ == '__main__':
     parser.add_argument("--ss", help = "Path to gwas summary stat.", required = True,type = file_exists)
     parser.add_argument("--rsid-map", help = "Path to rsid to chrompos tsv mapping.", required = True,type = file_exists)
     parser.add_argument("--chrompos-map", help = "Path to gwas summary stat.", required = True,type = file_exists)
-    parser.add_argument("--chainfile", help = "Path to liftover chainfile.", required = True,type = file_exists)
+    parser.add_argument("--chainfile", help = "Path to liftover chainfile.")
 
     parser.add_argument('--test',action = 'store_true',help = 'Flag for testing purposes.')
     parser.add_argument('--force',action = 'store_true',help = 'Flag for forcing re-run.')
@@ -260,9 +276,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args.ss = os.path.abspath(args.ss)
     
-    make_sure_path_exists(args.out)
-    
-    # test cases
+    make_sure_path_exists(args.out) 
+
+    args.lift = True
+    if not args.chainfile or os.path.getsize(args.chainfile) == 0:
+        print('chainfile missing or empty, no lifting will take place')
+        args.lift = False       
+   
     if args.test:
         def vprint(x):
             print(x)

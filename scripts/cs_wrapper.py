@@ -18,7 +18,6 @@ allele_couple_dict = {}
 for ac in allele_couples:
     allele_couple_dict[ac] = [ac,ac[::-1],[allele_map[a] for a in ac],[allele_map[a] for a in ac[::-1]]]       
 
-@timing_function
 def to_rsid(args):
     """
     Fixes input sum stat to match cs_prs format.
@@ -158,6 +157,7 @@ if __name__ == '__main__':
     parser.add_argument('--map',type = file_exists,help = 'File that maps to/from rsids',required = True)
                         
     args = parser.parse_args()
+    print(args)
     to_rsid(args)
     weights(args)
     to_chrompos(args)
