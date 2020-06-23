@@ -102,16 +102,18 @@ def to_chrompos(args):
     """
     pretty_print("RSID FIX")
     print(args.chrom_requested)
+
     #chromosomes to check to run
-    file_list = []
-    weights = [elem for elem in natural_sort(get_filepaths(args.weights_path))]
+       
     out_file = os.path.join(args.out,args.ss_root + '.weights.txt')
     if os.path.isfile(out_file) and mapcount(out_file) > 0 and not args.force:
         print(f"{out_file} already generated")
         return
     else:
         print(f"Saving to {out_file}")
-        
+
+    file_list = []
+    weights = [elem for elem in natural_sort(get_filepaths(args.weights_path)) if mapcount(elem) > 0]
     for weight in weights:
         # for each chrom to run check if weight already exists and if fixed weights exist
         if any(weight.endswith(f"chr{i}.txt") for i in args.chrom_requested):file_list.append(weight)
