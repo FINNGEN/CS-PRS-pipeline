@@ -2,7 +2,7 @@ import os,mmap,sys,subprocess,csv,gzip,pickle,shlex,time
 from tempfile import NamedTemporaryFile
 from functools import partial
 from collections import defaultdict as dd
-
+import numpy as np
 import multiprocessing,csv 
 cpus = multiprocessing.cpu_count()
 
@@ -148,14 +148,13 @@ def basic_iterator(f,separator = None,skiprows = 0,count = False,columns = 'all'
 
     open_func = return_open_func(f)
     if not separator:separator = identify_separator(f)
-        
     i = open_func(f)
     for x in range(skiprows):next(i)
 
     if count is False:
         for line in i:
             line =line.strip().split(separator)
-            line = return_columns(line,columns)
+            line = return_columns(line,columns)          
             yield line
     else:
         row = 0
@@ -201,14 +200,15 @@ def fix_header(file_path):
             header_fix.append(elem)
     return header_fix
 
-
-
+       
 def isfloat(value):
-  try:
-    float(value)
-    return True
-  except ValueError:
-    return False
+    try:
+        # return True if value is a float and NOT infinite
+        value =float(value)
+        return ~np.isinf(value)
+
+    except ValueError:
+        return False
 
 
 def pretty_print(string,l = 30):

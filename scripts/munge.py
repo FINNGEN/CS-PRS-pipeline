@@ -53,7 +53,6 @@ def merge_files(args):
         iterator = basic_iterator(chrompos_file,skiprows = 1,columns = columns)
         loop = itertools.islice(iterator,30) if args.test else iterator
         for entry in loop:
-            args.print(entry)
             *_,OR,pval,chrom,pos,a1,a2 = entry
             chrom = ''.join([s for s in chrom if s.isdigit()]) # extract integer from chrom field
             variant_id =  f"{chrom}_{pos}_{a1}_{a2}"
