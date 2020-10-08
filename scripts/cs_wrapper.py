@@ -113,12 +113,12 @@ def to_chrompos(args):
         print(f"Saving to {out_file}")
 
     file_list = []
-    weights = [elem for elem in natural_sort(get_filepaths(args.weights_path)) if mapcount(elem) > 0]
+    weights = [elem for elem in natural_sort(get_filepaths(args.weights_path)) if mapcount(elem) > 0 and args.ss_root in elem]
     for weight in weights:
         # for each chrom to run check if weight already exists and if fixed weights exist
         if any(weight.endswith(f"chr{i}.txt") for i in args.chrom_requested):file_list.append(weight)
-
-    
+    print(file_list)
+       
     with open(out_file,'wt') as o:
         for f in file_list:
             # convert from rsid to chrompos based on our data!
