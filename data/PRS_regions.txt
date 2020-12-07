@@ -1,0 +1,2 @@
+pheno	regions
+G6_ALZHEIMER	19_35000000_70000000

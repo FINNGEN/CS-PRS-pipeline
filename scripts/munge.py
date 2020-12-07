@@ -10,7 +10,7 @@ def merge_files(args):
     """
     Function that takes the rsid and chrompos lifted file and prints out the final variants, checking if the variant exists in our dataset (also checking for strand flip).
     """
-    pretty_print("MERGING")
+    pretty_print("MERGING",l=20)
     tmp_path = os.path.join(args.out,'tmp_parse')
     rej_path = os.path.join(tmp_path,'rejected_variants')
     file_path,file_root,file_extension = get_path_info(args.ss)
@@ -113,7 +113,7 @@ def parse_file(args):
     make_sure_path_exists(rej_path) 
 
     file_path,file_root,file_extension = get_path_info(args.ss)
-    pretty_print(f"{file_root}")
+    pretty_print(f"{file_root}",l=50)
 
     lines  = os.path.join(tmp_path,f'{file_root}.variantcount')
     if not os.path.isfile(lines) or not mapcount(lines): tmp_bash(f'zcat {args.ss} | wc -l > {lines}')
@@ -230,7 +230,7 @@ def alternate_parse(info,or_func):
 
 def lift(chrompos_file,chainfile,force):
 
-    pretty_print("LIFTOVER")
+    pretty_print("LIFTOVER",l=20)
     file_path,*_ = get_path_info(chrompos_file)
     lifted_file = f"{chrompos_file}.lifted.gz"
     # check if file already exists

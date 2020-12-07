@@ -255,7 +255,7 @@ task sumstats {
 
     File gwas_meta
     Boolean test
-    String grep = if test then " | grep gz " else ""
+    String grep = if test then " | grep EUR " else ""
 
     String docker
     command <<<
