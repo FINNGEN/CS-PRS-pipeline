@@ -41,8 +41,6 @@ The sumstats used for R7 are the following:
 | generalised_epilepsy_METAL_4finngen.txt.munged.gz                           | GEN_EPIL             | 33446   | 3769    | 29677   | https://www.nature.com/articles/s41467-018-07524-z                                  | European       | GE                |
 | focal_epilepsy_METAL_4finngen.txt.munged.gz                                 | FOC_EPIL             | 39348   | 9671    | 29677   | https://www.nature.com/articles/s41467-018-07524-z                                  | European       | FE                |
 | kunkle_etal_stage1.txt.munged.gz                                            | ALZHEIMER            | 63926   | 21982   | 41944   | https://www.niagads.org/datasets/ng00075                                            | European       | G6_ALZHEIMER      |
-
-                                                                              	|
 ```
 
 ## Rsid map
