@@ -3,64 +3,46 @@
 Pipeline to calculates PRS based on a list of sumstats.
 Weights are calculated with PRScs: https://github.com/getian107/PRScs
 
-The sumstats used for R5 are the following:
+The sumstats used for R7 are the following:
 ```
-| filename                                                             	| pheno                      	| publication                                                                         	|
-|----------------------------------------------------------------------	|----------------------------	|-------------------------------------------------------------------------------------	|
-| AD_sumstats_Jansenetal.txt.gz                                        	| Alzheimer's                	| https://www.nature.com/articles/s41588-018-0311-9                                   	|
-| adhd_eur_jun2017.gz                                                  	| ADHD                       	| https://www.biorxiv.org/content/early/2017/06/03/145581                             	|
-| alsMetaSummaryStats_march21st2018.tab.gz                             	| ALS                        	| https://www.cell.com/neuron/references/S0896-6273(18)30148-X                        	|
-| Bipolar_vs_control_PGC_Cell_2018_formatted.txt.gz                    	| bipolar                    	| PGC;Cell;2018;https://doi.org/10.1016/j.cell.2018.05.046                            	|
-| cad.add.160614.website.txt.gz                                        	| CAD                        	| https://www.nature.com/articles/ng.3396                                             	|
-| ckqny.scz2snpres.gz                                                  	| Schizophrenia              	| https://www.nature.com/articles/nature13595                                         	|
-| daner_PGC_SCZ52_0513a.resultfiles_PGC_SCZ52_0513.sh2_nofin.gz        	| schzizophrenia             	| PGC_schzizophrenia_GWAS_Ripke_et_al._excluding_Finnish                              	|
-| dpw_excludingFinnishStudies_4finngen.txt.gz                          	| alcohol_consumption        	| https://www.nature.com/articles/s41398-019-0676-2                                   	|
-| EAGLE_AD_GWAS_results_2015.txt.gz                                    	| Atopic_dermatitis          	| https://www.nature.com/articles/ng.3424                                             	|
-| Educational_Attainment_excl23andme_Lee_2018_NatGen_formatted.txt.gz  	| educational_attainment     	| Lee;Nat_Gen;2018;https://doi.org/10.1038/s41588-018-0147-3                          	|
-| EUR.CD.gwas_info03_filtered.assoc.gz                                 	| IBD-CD                     	| https://www.nature.com/articles/ng.3359                                             	|
-| EUR.IBD.gwas_info03_filtered.assoc.gz                                	| IBD                        	| https://www.nature.com/articles/ng.3359                                             	|
-| EUR.UC.gwas_info03_filtered.assoc.gz                                 	| IBD-UC                     	| https://www.nature.com/articles/ng.3359                                             	|
-| focal_epilepsy_METAL_4finngen.txt.gz                                 	| FOC_EPIL                   	| https://www.nature.com/articles/s41467-018-07524-z                                  	|
-| gabriel_asthma_meta-analysis_36studies_format_repository_NEJM.txt.gz 	| Asthma                     	| https://www.nejm.org/doi/full/10.1056/nejmoa0906312                                 	|
-| generalised_epilepsy_METAL_4finngen.txt.gz                           	| GEN_EPIL                   	| https://www.nature.com/articles/s41467-018-07524-z                                  	|
-| GIANT_HEIGHT_Wood_et_al_2014_publicrelease_HapMapCeuFreq.txt.gz      	| Height                     	| https://www.nature.com/articles/ng.3097                                             	|
-| GWAS_CP_all.txt.gz                                                   	| Cognitive_performance_meta 	| https://www.nature.com/articles/s41588-018-0147-3                                   	|
-| Hb_gwas_summary_fromNealeLab.tsv.gz                                  	| Haemoglobin_concentration  	| UKBB                                                                                	|
-| HbA1c_METAL_European.txt.gz                                          	| HbA1c                      	| http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1002383       	|
-| HDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz                         	| HDL-C                      	| https://www.nature.com/articles/ng.3300                                             	|
-| IGAP_stage_1.txt.gz                                                  	| Alzheimers-disease         	| https://www.nature.com/articles/ng.2802                                             	|
-| iPSYCH-PGC_ASD_Nov2017.gz                                            	| ASD                        	| https://www.biorxiv.org/content/early/2017/11/27/224774                             	|
-| kunkle_etal_stage1.txt.gz                                            	| ALZHEIMER                  	| https://www.niagads.org/datasets/ng00075                                            	|
-| LDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz                         	| LDL-C                      	| https://www.nature.com/articles/ng.3300                                             	|
-| Mahajan.NatGenet2018b.T2D.European.txt.gz                            	| T2D                        	| https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6287706/                               	|
-| MDD2018_ex23andMe.19fields.gz                                        	| MDD                        	| https://www.nature.com/articles/s41588-018-0090-3                                   	|
-| meta_v3_onco_euro_overall_ChrAll_1_release.txt.gz                    	| Prostate_Cancer            	| https://www.nature.com/articles/s41588-018-0142-8                                   	|
-| METAANALYSIS_DIAGRAM_SE1.txt.gz                                      	| T2D                        	| http://diabetes.diabetesjournals.org/content/66/11/2888                             	|
-| metastroke.all.chr.bp.gz                                             	| Ischemic-stroke            	| https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(12)70234-X/abstract 	|
-| MTAG_CP.to10K.txt.gz                                                 	| Cognitive_Performance      	| https://www.nature.com/articles/s41588-018-0147-3                                   	|
-| MTAG_EA.to10K.txt.gz                                                 	| Educational_attainment     	| https://www.nature.com/articles/s41588-018-0147-3                                   	|
-| pgc.bip.full.2012-04.txt.gz                                          	| Bipolar-disorder           	| https://www.nature.com/articles/ng.943                                              	|
-| pgc.ed.freeze1.summarystatistics.July2017.txt.gz                     	| Anorexia-nervosa           	| Missing                                                                             	|
-| RA_GWASmeta_European_v2.txt.gz                                       	| Rheumatoid-arthritis       	| https://www.nature.com/articles/nature12873                                         	|
-| SavageJansen_2018_intelligence_metaanalysis_formatted.txt.gz         	| intelligence               	| Savage;Nat_Gen;2018;https://doi.org/10.1038/s41588-018-0152-6                       	|
-| Saxena_fullUKBB_Longsleep_summary_stats_formatted.txt.gz             	| long_sleep                 	| Dashti;Natcomm;2019;�https://doi.org/10.1038/s41467-019-08917-4                     	|
-| Shrine_30804560_FEV1_meta-analysis.txt.gz                            	| FEV1                       	| https://www.nature.com/articles/s41588-018-0321-7                                   	|
-| Shrine_30804560_FEV1_to_FVC_RATIO_meta-analysis.txt.gz               	| FEV1/FVC                   	| https://www.nature.com/articles/s41588-018-0321-7                                   	|
-| Shrine_30804560_FVC_meta-analysis.txt.gz                             	| FVC                        	| https://www.nature.com/articles/s41588-018-0321-7                                   	|
-| Shrine_30804560_PEF_meta-analysis.txt.gz                             	| Peak_expiratory_flow       	| https://www.nature.com/articles/s41588-018-0321-7                                   	|
-| SNP_gwas_mc_merge_nogc.tbl.uniq.gz                                   	| BMI                        	| https://www.nature.com/articles/nature14177                                         	|
-| SORTED_PTSD_EA9_ALL_study_specific_PCs1.txt.gz                       	| PTSD                       	| https://www.nature.com/articles/mp201777                                            	|
-| sumstats_neuroticism_ctg_format_formatted.txt.gz                     	| neuroticism                	| Nagel;NatGen2018;�https://doi.org/10.1038/s41588-018-0151-7                         	|
-| TC_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz                          	| Total-cholesterol          	| https://www.nature.com/articles/ng.3300                                             	|
-| TG_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz                          	| Triglycerides              	| https://www.nature.com/articles/ng.3300                                             	|
-| UKBB_gwas_Neale_Chronotype_formatted.txt.gz                          	| chronotype                 	| UKBB                                                                                	|
-| UKBB_gwas_Neale_pulserate_formatted.txt.gz                           	| heart_rate                 	| UKBB                                                                                	|
-| UKBB_gwas_Neale_SleepDuration_formatted.txt.gz                       	| sleepduration              	| UKBB                                                                                	|
-| UKBB_gwas_Neale_SleeplessnessInsomnia_formatted.txt.gz               	| insomnia                   	| UKBB                                                                                	|
-| UKBB_HYPO.txt.gz                                                     	| HYPOTHYROIDISM             	| UKBB                                                                                	|
-| UKB-ICBPmeta750k_DBPsummaryResults.txt.gz                            	| blood_pressure             	| UKBB                                                                                	|
-| UKB-ICBPmeta750k_PPsummaryResults.edited.txt.gz                      	| blood_pressure             	| UKBB                                                                                	|
-| UKB-ICBPmeta750k_SBPsummaryResults.txt.gz                            	| blood_pressure             	| UKBB                                                                                	|
+| filename                                                                    | pheno                | n_total | n_cases | n_ctrls | publication                                                                         | ancestry       | finngen_phenocode |
+|-----------------------------------------------------------------------------|----------------------|---------|---------|---------|-------------------------------------------------------------------------------------|----------------|-------------------|
+| alsMetaSummaryStats_march21st2018.tab.munged.gz                             | ALS                  | 80610   | 20806   | 59804   | https://www.cell.com/neuron/references/S0896-6273(18)30148-X                        | European       | G6_ALS            |
+| IGAP_stage_1.txt.munged.gz                                                  | Alzheimers-disease   | 54162   | 17008   | 37154   | https://www.nature.com/articles/ng.2802                                             | European       | G6_ALZHEIMER      |
+| ckqny.scz2snpres.munged.gz                                                  | Schizophrenia        | 150064  | 36989   | 113075  | https://www.nature.com/articles/nature13595                                         | Trans-ancestry | F5_SCHZPHR        |
+| cad.add.160614.website.txt.munged.gz                                        | CAD                  | 184305  | 60801   | 123504  | https://www.nature.com/articles/ng.3396                                             | Trans-ancestry | I9_CHD            |
+| metastroke.all.chr.bp.munged.gz                                             | Ischemic-stroke      | 74393   | 12389   | 62004   | https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(12)70234-X/abstract | European       | I9_STR            |
+| gabriel_asthma_meta-analysis_36studies_format_repository_NEJM.txt.munged.gz | Asthma               | 26475   | 10365   | 16110   | https://www.nejm.org/doi/full/10.1056/nejmoa0906312                                 | European       | J10_ASTHMA        |
+| RA_GWASmeta_European_v2.txt.munged.gz                                       | Rheumatoid-arthritis | 58284   | 14361   | 43923   | https://www.nature.com/articles/nature12873                                         | European       | M13_RHEUMA        |
+| EUR.IBD.gwas_info03_filtered.assoc.munged.gz                                | IBD                  | 34652   | 12882   | 21770   | https://www.nature.com/articles/ng.3359                                             | European       | K11_IBD           |
+| EUR.CD.gwas_info03_filtered.assoc.munged.gz                                 | IBD-CD               | 20883   | 5956    | 14927   | https://www.nature.com/articles/ng.3359                                             | European       | K11_CROHN         |
+| EUR.UC.gwas_info03_filtered.assoc.munged.gz                                 | IBD-UC               | 27432   | 6968    | 20464   | https://www.nature.com/articles/ng.3359                                             | European       | K11_ULCER         |
+| METAANALYSIS_DIAGRAM_SE1.txt.munged.gz                                      | T2D                  | 159208  | 26676   | 132532  | http://diabetes.diabetesjournals.org/content/66/11/2888                             | European       | E4_DM2            |
+| HbA1c_METAL_European.txt.munged.gz                                          | HbA1c                | 123665  | -       | -       | http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1002383       | European       | NA                |
+| TC_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.munged.gz                          | Total-cholesterol    | 57045   | -       | -       | https://www.nature.com/articles/ng.3300                                             | European       | NA                |
+| HDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.munged.gz                         | HDL-C                | 57045   | -       | -       | https://www.nature.com/articles/ng.3300                                             | European       | NA                |
+| LDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.munged.gz                         | LDL-C                | 57045   | -       | -       | https://www.nature.com/articles/ng.3300                                             | European       | NA                |
+| TG_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.munged.gz                          | Triglycerides        | 57045   | -       | -       | https://www.nature.com/articles/ng.3300                                             | European       | NA                |
+| SNP_gwas_mc_merge_nogc.tbl.uniq.munged.gz                                   | BMI                  | 322154  | -       | -       | https://www.nature.com/articles/nature14177                                         | European       | NA                |
+| GIANT_HEIGHT_Wood_et_al_2014_publicrelease_HapMapCeuFreq.txt.munged.gz      | Height               | 253288  | -       | -       | https://www.nature.com/articles/ng.3097                                             | European       | NA                |
+| adhd_eur_jun2017.munged.gz                                                  | ADHD                 | 53293   | 19099   | 34194   | https://www.biorxiv.org/content/early/2017/06/03/145581                             | European       | F5_ADHD           |
+| iPSYCH-PGC_ASD_Nov2017.munged.gz                                            | ASD                  | 46350   | 18381   | 27969   | https://www.biorxiv.org/content/early/2017/11/27/224774                             | European       | F5_AUTISM         |
+| pgc.bip.full.2012-04.txt.munged.gz                                          | Bipolar-disorder     | 16731   | 7481    | 9250    | https://www.nature.com/articles/ng.943                                              | European       | F5_BIPO           |
+| pgc.ed.freeze1.summarystatistics.July2017.txt.munged.gz                     | Anorexia-nervosa     | 14477   | 3495    | 10982   | Missing                                                                             | European       | F5_ANOREX         |
+| MDD2018_ex23andMe.19fields.munged.gz                                        | MDD                  | 173005  | 59851   | 113154  | https://www.nature.com/articles/s41588-018-0090-3                                   | European       | F5_DEPRESSIO      |
+| SORTED_PTSD_EA9_ALL_study_specific_PCs1.txt.munged.gz                       | PTSD                 | 9537    | 2424    | 7113    | https://www.nature.com/articles/mp201777                                            | European       | F5_PTSD           |
+| AD_sumstats_Jansenetal.txt.munged.gz                                        | Alzheimer’s          | 455258  | 71880   | 383378  | https://www.nature.com/articles/s41588-018-0311-9                                   | European       | G6_ALZHEIMER      |
+| UKB-ICBPmeta750k_DBPsummaryResults.txt.munged.gz                            | blood pressure       | 757601  | -       | -       | UKBB                                                                                | European       | I9_HYPTENSESS     |
+| UKB-ICBPmeta750k_PPsummaryResults.edited.txt.munged.gz                      | blood pressure       | 757601  | -       | -       | UKBB                                                                                | European       | I9_HYPTENSESS     |
+| UKB-ICBPmeta750k_SBPsummaryResults.txt.munged.gz                            | blood pressure       | 757601  | -       | -       | UKBB                                                                                | European       | I9_HYPTENSESS     |
+| UKBB_HYPO.txt.munged.gz                                                     | HYPOTHYROIDISM       | 406300  | 14871   | 391429  | UKBB                                                                                | European       | HYPOTHYROIDISM    |
+| Mahajan.NatGenet2018b.T2D.European.txt.munged.gz                            | T2D                  | 898130  | 74124   | 824006  | https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6287706/                               | European       | E4_DM2            |
+| meta_v3_onco_euro_overall_ChrAll_1_release.txt.munged.gz                    | Prostate Cancer      | 140254  | 79148   | 61106   | https://www.nature.com/articles/s41588-018-0142-8                                   | European       | C3_PROSTATE       |
+| generalised_epilepsy_METAL_4finngen.txt.munged.gz                           | GEN_EPIL             | 33446   | 3769    | 29677   | https://www.nature.com/articles/s41467-018-07524-z                                  | European       | GE                |
+| focal_epilepsy_METAL_4finngen.txt.munged.gz                                 | FOC_EPIL             | 39348   | 9671    | 29677   | https://www.nature.com/articles/s41467-018-07524-z                                  | European       | FE                |
+| kunkle_etal_stage1.txt.munged.gz                                            | ALZHEIMER            | 63926   | 21982   | 41944   | https://www.niagads.org/datasets/ng00075                                            | European       | G6_ALZHEIMER      |
+
+                                                                              	|
 ```
 
 ## Rsid map
