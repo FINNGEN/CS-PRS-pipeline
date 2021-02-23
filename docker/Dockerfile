@@ -37,5 +37,7 @@ tar -xvjf htslib-1.10.tar.bz2 && cd htslib-1.10 && ./configure && make && make i
 ADD PRScs ../PRScs/
 ADD data ../data/
 ADD scripts ../scripts/
+ADD tests ../tests/
 
 RUN chmod +x /scripts/lift/liftOver
+RUN chmod +x /scripts/lift/joinsort.sh
