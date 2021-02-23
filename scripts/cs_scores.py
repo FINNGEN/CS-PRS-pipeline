@@ -15,7 +15,7 @@ def scores(args):
         weight_iterator = [args.weight]
     else:
         # read list of files
-        weight_iterator = basic_iterator(args.weight_list,columns= 0)
+        weight_iterator = basic_iterator(args.weight_list,columns= 0,separator = '\t')
     
     weight_files = []
     for weight in weight_iterator:
@@ -44,7 +44,7 @@ def scores(args):
     for entry in weight_files:
         weight_file,score_file = entry
         pretty_print(weight_file)
-        cmd = plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  header center list-variants --out {score_file}"
+        cmd = plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  header center list-variants ignore-dup-ids --out {score_file}"
         if not os.path.isfile(score_file + '.sscore'):
             print(cmd)
             subprocess.call(shlex.split(cmd))
@@ -55,7 +55,7 @@ def scores(args):
             score_file += '.no_' + region_root
             if not os.path.isfile(score_file + '.sscore'):
                 
-                cmd =  plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  header center list-variants --exclude range {args.region} --out {score_file} " 
+                cmd =  plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  center list-variants --exclude range {args.region} --out {score_file} " 
                 print(cmd)
                 subprocess.call(shlex.split(cmd))
             else:print(f'{score_file} already generated')

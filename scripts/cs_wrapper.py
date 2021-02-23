@@ -18,7 +18,6 @@ allele_couple_dict = {}
 for ac in allele_couples:
     allele_couple_dict[ac] = [ac,ac[::-1],[allele_map[a] for a in ac],[allele_map[a] for a in ac[::-1]]]       
 
-@timing_function
 def to_rsid(args):
     """
     Fixes input sum stat to match cs_prs format.
@@ -103,21 +102,23 @@ def to_chrompos(args):
     """
     pretty_print("RSID FIX")
     print(args.chrom_requested)
+
     #chromosomes to check to run
-    file_list = []
-    weights = [elem for elem in natural_sort(get_filepaths(args.weights_path))]
+       
     out_file = os.path.join(args.out,args.ss_root + '.weights.txt')
     if os.path.isfile(out_file) and mapcount(out_file) > 0 and not args.force:
         print(f"{out_file} already generated")
         return
     else:
         print(f"Saving to {out_file}")
-        
+
+    file_list = []
+    weights = [elem for elem in natural_sort(get_filepaths(args.weights_path)) if mapcount(elem) > 0 and args.ss_root in elem]
     for weight in weights:
         # for each chrom to run check if weight already exists and if fixed weights exist
         if any(weight.endswith(f"chr{i}.txt") for i in args.chrom_requested):file_list.append(weight)
-
-    
+    print(file_list)
+       
     with open(out_file,'wt') as o:
         for f in file_list:
             # convert from rsid to chrompos based on our data!
@@ -158,6 +159,7 @@ if __name__ == '__main__':
     parser.add_argument('--map',type = file_exists,help = 'File that maps to/from rsids',required = True)
                         
     args = parser.parse_args()
+    print(args)
     to_rsid(args)
     weights(args)
     to_chrompos(args)

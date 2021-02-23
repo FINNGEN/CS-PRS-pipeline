@@ -5,8 +5,8 @@ from functools import partial
 from tempfile import NamedTemporaryFile
 
 
-def get_dat_var(line, index):
-    d = line[index].split(":")
+def get_dat_var(line, index,sep):
+    d = line[index].split(sep)
     if len(d)<4:
         print("WARNING: Not properly formatted variant id in line: " + line, file=sys.stderr )
         return None
@@ -22,17 +22,15 @@ def return_open_func(f):
     basename = os.path.basename(f)
     file_root, file_extension = os.path.splitext(basename)
 
-    if 'bgz' in file_extension:
-        #print('gzip.open with rb mode')
-        open_func = partial(gzip.open, mode = 'rb')
+    result = subprocess.run(['file', f], stdout=subprocess.PIPE)
+    gzip_bool = True if 'gzip' in result.stdout.decode("utf-8") else False
 
-    elif 'gz' in file_extension:
-        #print('gzip.open with rt mode')
+    if gzip_bool:
         open_func = partial(gzip.open, mode = 'rt')
 
     else:
-        #print('regular open')
         open_func = open
+        
     return open_func
 
 def lift(args):
@@ -43,13 +41,14 @@ def lift(args):
     with open_func(args.file) as res:
         #skip first line anyways
         header = res.readline().rstrip("\n").split(args.sep)
-        print(args.info,header) 
+        print(args.info)
+        print(header)
         if args.var:
             if not args.numerical:
                 args.var = header.index(args.var)
 
             joinsortargs =f"--var {args.var+1}"
-            get_dat_func = partial(get_dat_var,index=args.var)
+            get_dat_func = partial(get_dat_var,index=args.var,sep = args.var_sep)
 
         elif args.info:
             if not args.numerical:
@@ -72,14 +71,16 @@ def lift(args):
 
     #change working dir to args.out so i don't have to move errors and variants_lifted
     os.chdir(args.out)
-    cmd = f"{args.liftOver} {tmp_bed.name} {args.chainfile} variants_lifted errors"  
+    cmd = f"{args.scripts_path}liftOver  {tmp_bed.name} {args.chainfile} variants_lifted errors"
+    print(cmd)
     subprocess.run(shlex.split(cmd))
-    
     with open('errors', 'r') as errs:
-        err_count = 0
-        for err_count,line in enumerate(errs,1): pass
+        err_count=0
+        for l in errs:
+            err_count+=1
+
         if(err_count>0):
-            print(f'WARNING. {int(err_count/2)} variants could not be correctly lifted. Consult file {args.out+"/" if args.out else ""}errors for details')
+            print(f'WARNING. {int(err_count/2)} variants could not be correctly lifter. Consult file {args.out+"/" if args.out else ""}errors for details')
 
     #if args.sep:
         # easyoptions seem not to be able handle 5 switched ?!?!? not implemented
@@ -87,8 +88,8 @@ def lift(args):
         #joinsortargs=f'--sep {args.sep} {joinsortargs}'
 
     joinsort = f"{os.path.join(args.scripts_path,'joinsort.sh')}"
-    #subprocess.run(shlex.split(f"chmod +x {joinsort}"))
-    joincmd = f"bash {joinsort} {args.file} variants_lifted {joinsortargs}"
+    ##subprocess.run(shlex.split(f"chmod +x {joinsort}"))
+    joincmd = f"{joinsort} {args.file} variants_lifted {joinsortargs}"
     subprocess.run(shlex.split(joincmd))
    
 
@@ -97,14 +98,20 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Add liftover positions to summary file')
     parser.add_argument("file", help=" Whitespace separated file with either single column giving variant ID in chr:pos:ref:alt or those columns separately")
     parser.add_argument("--chainfile", help=" Chain file for liftover",required = True)
-    parser.add_argument("--out", help=" Folder where to save the results",default = os.getcwd())
+    parser.add_argument('-o',"--out", help=" Folder where to save the results",default = os.getcwd())
     parser.add_argument("--sep", help="column separator in file to be lifted. Default tab", default='\t', required=False)
     group = parser.add_mutually_exclusive_group(required = True)
     group.add_argument('--info',nargs =4, metavar = ('chr','pos','ref','alt'), help = 'Name of columns')
-    group.add_argument("--var",help ="Column name if : separated")
+    group.add_argument("--var",nargs = 2,help ="Column name of snpid and separator",metavar = ('snpid','snp_sep'))
 
     args = parser.parse_args()
 
+    args.file = os.path.abspath(args.file)
+    args.chainfile = os.path.abspath(args.chainfile)
+    args.out = os.path.abspath(args.out)
+    
+    if args.var:
+        args.var,args.var_sep = args.var
     # checks if var/info are numerical or strings
     args.numerical = False
     if args.var and args.var.isdigit():
@@ -116,5 +123,4 @@ if __name__=='__main__':
 
     args.scripts_path = '/'.join(os.path.realpath(__file__).split('/')[:-1]) + '/'
     args.file = os.path.abspath(args.file)
-    args.liftOver = args.scripts_path + 'liftOver'
     lift(args)
