@@ -8,25 +8,27 @@
      'hg37':'gs://r6_data/prs/chains/hg19ToHg38.over.chain.gz',
      'hg38':'gs://r6_data/prs/chains/empty_file.txt'},
 
-    "prs_cs.gwas_data_path": "gs://r6_data/prs/gwas/sakari/",    
-    "prs_cs.gwas_meta": "gs://r6_data/prs/PRS_data_sakari.txt",
+    "prs_cs.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",    
+#"prs_cs.gwas_meta": "gs://finngen-production-library-green/prs/PRS_data.txt",
+    "prs_cs.gwas_meta": "gs://r7_data/prs/aki/PRS_aki.txt",
 
     #RSID MAP
-    "prs_cs.rsid_map.bim_file": "gs://r6_data/plink/finngen_R6.bim",
-    "prs_cs.rsid_map.hm3_rsids": "gs://r6_data/prs/hm3.rsids",
+    "prs_cs.rsid_map.bim_file": "gs://finngen-production-library-red/finngen_R7/genotype_plink_2.0/data/finngen_R7.bim",
+    "prs_cs.rsid_map.vcf_gz": "gs://finngen-production-library-green/prs/00-All.vcf.gz",          "prs_cs.rsid_map.hm3_rsids": "gs://finngen-production-library-green/prs/hm3.rsids",      
 
+    
     # MUNGE
     
     # WEIGHTS
-    "prs_cs.weights.file_list": "gs://r6_data/prs/ref_list.txt",
-    "prs_cs.weights.bim_file": "gs://r6_data/prs/plink/finngen_R6.hm3.rsid.bim",
+    
+    "prs_cs.weights.file_list": "gs://finngen-production-library-green/prs/ref_list.txt",
     "prs_cs.weights.mem": 16,
-    "prs_cs.weights.cpu": 16,
+    "prs_cs.weights.cpu": 64,
     
     # SCORES
     "prs_cs.scores.cpu": 16,
     "prs_cs.scores.mem": 10,
-    "prs_cs.scores.bed_string": "gs://r6_data/prs/plink/finngen_R6.hm3.bed",
+    "prs_cs.scores.bed_file": "gs://finngen-production-library-red/finngen_R7/genotype_plink_2.0/data/finngen_R7_hm3.bed",
     "prs_cs.scores.regions": "gs://r6_data/prs/regions.txt",
 
    

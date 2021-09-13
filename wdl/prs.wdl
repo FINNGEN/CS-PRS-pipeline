@@ -3,7 +3,7 @@ workflow prs_cs{
     String gwas_data_path
     String docker
     Boolean test
-    Map[String,File] build_chains
+    Map[String,File] build_chains 
     
     call rsid_map {
         input:
@@ -15,7 +15,6 @@ workflow prs_cs{
         input:
         gwas_meta = gwas_meta,
         docker = docker,
-        test = test
         }
     
     Array[Array[String]] gwas_traits = read_tsv(sumstats.sstats)
@@ -46,14 +45,13 @@ workflow prs_cs{
             docker = docker,
             N = gwas[1],
             test = test,
-
+            bim_file = rsid_map.rsid_bim,
         }
         call scores {
             input:
             weights = weights.weights,
             docker = docker,
             pheno = gwas[2],
-            test = test
         }	
     }    
 }
@@ -65,9 +63,7 @@ task scores {
     File weights
     String file_root = basename(weights,'.weights.txt')
     
-    Boolean test
-    String bed_string
-    File bed_file = if test then sub(bed_string,'.bed','.test.bed') else bed_string
+    File bed_file 
     File bim_file = sub(bed_file,'.bed','.bim')
     File fam_file = sub(bed_file,'.bed','.fam')
     File frq_file = sub(bed_file,'.bed','.afreq')
@@ -119,8 +115,8 @@ task weights {
     String N
     File rsid_map
     File bim_file
-    Boolean test
-        
+    Boolean test 
+    
     File file_list
     Array[File] ref_files = read_lines(file_list)
 
@@ -221,6 +217,7 @@ task munge {
 task rsid_map {
 
     String docker
+    File vcf_gz
     String? rsid_docker
     String? final_docker = if defined(rsid_docker) then rsid_docker else docker
 
@@ -228,11 +225,26 @@ task rsid_map {
     File bim_file
     
     command <<<
+    mkdir ./variant_mapping/
+    mv ${vcf_gz} ./variant_mapping/
+
     python3 /scripts/rsid_map.py \
     -o . \
     --bim ${bim_file} \
     --rsids ${hm3_rsids} \
-    --prefix hm3 
+    --prefix hm3
+
+    python3 /scripts/convert_rsids.py \
+    -o . \
+    --file ${bim_file} \
+    --no-header \
+    --to-rsid \
+    --map ./variant_mapping/finngen.rsid.map.tsv \
+    --metadata 1
+
+    ls /cromwell_root/
+    mv ${sub(basename(bim_file),'.bim','.rsid')} ${sub(basename(bim_file),'.bim','.rsid.bim')}
+    
     >>>
 
     runtime {
@@ -247,6 +259,8 @@ task rsid_map {
         File rsid = "./variant_mapping/finngen.rsid.map.tsv"
         File chrompos = "./variant_mapping/finngen.variants.tsv"
         File hm3_snplist = "./variant_mapping/hm3.snplist"
+        File rsid_bim = "/cromwell_root/" + sub(basename(bim_file),'.bim','.rsid.bim')
+
         }
     }
 
@@ -254,13 +268,11 @@ task rsid_map {
 task sumstats {
 
     File gwas_meta
-    Boolean test
-    String grep = if test then " | grep EUR " else ""
 
     String docker
     command <<<
 
-    cat ${gwas_meta} | sed -E 1d ${grep}| cut -f 1,3,8,9,10,11,12,13,14,15,16,17  > sumstats.txt
+    cat ${gwas_meta} | sed -E 1d | cut -f 1,3,8,9,10,11,12,13,14,15,16,17  > sumstats.txt
     >>>
 
     output {
