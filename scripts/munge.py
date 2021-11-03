@@ -21,15 +21,15 @@ def merge_files(args):
 
     if args.prefix: args.prefix += "_"
     out_file = os.path.join(args.out,f"{args.prefix}{file_root}.munged.gz")
-    
+
     if os.path.isfile(out_file) and not args.force:
         print(f'{out_file} already munged')
         return
     else:
         print(f"generating {out_file}")
-                      
-    pos_dict = load_pos_mapping(args.chrompos_map)
-    # starting final merge 
+
+    ct = load_pos_mapping(args.chrompos_map)
+    # starting final merge
     final_variants = 0
     with gzip.open(rej_log,'wt') as rej,gzip.open(out_file,'wt') as o:
         out_header = '\t'.join(['CHR','SNP','A1','A2','BP','BETA','P'])
@@ -40,11 +40,11 @@ def merge_files(args):
         for entry in loop:
             args.print(entry)
             chrom,rsid,a1,a2,pos,OR,pval = entry
-            pass_bool,out_line = process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_root,rsid)
+            pass_bool,out_line = process_variant(ct,chrom,pos,a1,a2,OR,pval,file_root,rsid)
             final_variants += pass_bool
             out_file = o if pass_bool else rej
             out_file.write(out_line)
-            
+
         #looping of chrompos file (possibly lifted)
         if args.lift: column_names = ['beta','p','lift_chr','lift_pos','REF','ALT']
         else: column_names = ['beta','p','chr','pos','a1','a2']
@@ -56,19 +56,19 @@ def merge_files(args):
             *_,OR,pval,chrom,pos,a1,a2 = entry
             chrom = ''.join([s for s in chrom if s.isdigit()]) # extract integer from chrom field
             variant_id =  f"{chrom}_{pos}_{a1}_{a2}"
-            pass_bool,out_line = process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_root,variant_id)
+            pass_bool,out_line = process_variant(ct,chrom,pos,a1,a2,OR,pval,file_root,variant_id)
             final_variants += pass_bool
             out_file = o if pass_bool else rej
-            out_file.write(out_line)            
+            out_file.write(out_line)
 
         # count lines
         if not args.test:
-            rsid_positions = len(pos_dict.keys())
+            rsid_positions = len(ct.keys())
 
-            original_variants  =  int(open(os.path.join(tmp_path,f'{file_root}.variantcount')).read()) -1  
+            original_variants  =  int(open(os.path.join(tmp_path,f'{file_root}.variantcount')).read()) -1
             print('compared to input sumstat:',original_variants,final_variants,final_variants/float(original_variants))
             print('compared to rsid positions in FG:',rsid_positions,final_variants,final_variants/float(rsid_positions))
-            
+
 def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
     """
     Function that parses the lines of the chrompos and rsid files. It makes sure that the variant in each line is (potentially) the same as Finngen's by trying all possible combinations of strand flip and direction.
@@ -76,7 +76,7 @@ def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
 
     chrompos = f"{chrom}_{pos}"
     finngen_variant = pos_dict[chrompos]
-    
+
     # the position exists in finngen data
     if finngen_variant:
         # standard out line in case of missing position
@@ -87,11 +87,11 @@ def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
                 finngen_snp = f"chr{chrompos}"
                 out_line = '\t'.join([chrom,finngen_snp,a1,a2,pos,OR,pval]) + '\n'
                 return True,out_line
-       
+
     # in case of position missing
     else:
         rej_line = '\t'.join([file_name,'missing_position',variant_id,a1,a2,OR,pval,chrom,pos]) + '\n'
-           
+
     return False,rej_line
 
 
@@ -110,15 +110,15 @@ def parse_file(args):
     tmp_path = os.path.join(args.out,'tmp_parse')
     make_sure_path_exists(tmp_path)
     rej_path = os.path.join(tmp_path,'rejected_variants')
-    make_sure_path_exists(rej_path) 
+    make_sure_path_exists(rej_path)
 
     file_path,file_root,file_extension = get_path_info(args.ss)
     pretty_print(f"{file_root}",l=50)
 
     lines  = os.path.join(tmp_path,f'{file_root}.variantcount')
     if not os.path.isfile(lines) or not mapcount(lines): tmp_bash(f'zcat {args.ss} | wc -l > {lines}')
-    total_lines  =  int(open(lines).read()) -1  
-    
+    total_lines  =  int(open(lines).read()) -1
+
     # define output files (chrompos,rsid,rejected)
     rsid_file = os.path.join(tmp_path,f'rsid_{file_root}.gz')
     chrompos_file = os.path.join(tmp_path,f'chrompos_{file_root}.gz')
@@ -129,7 +129,7 @@ def parse_file(args):
         args.force = False
     else:
         args.force = True
-        
+
     if args.force:
         # check if stats have OR or BETA
         if args.effect_type  == 'BETA':
@@ -140,14 +140,14 @@ def parse_file(args):
 
         # fix headers that have extra spaces
         header_fix = fix_header(args.ss)
-        args.print(f'header: {header_fix}')
-        
+        #args.print(f'header: {header_fix}')
+
         # relevant columns to parse
         columns = [args.variant,args.ref,args.alt,args.effect,args.pval]
         args.print(f'columns to parse: {columns}')
         if not all([elem in header_fix for elem in columns]):
             raise Exception(f"Missing columns in header: {[elem for elem in columns if elem not in header_fix]}")
-       
+
         indexes  = [header_fix.index(elem) for elem in columns]
         # define parsing function based on inputs: add chrom/pos columns if they exists in the original file
         if all([elem in header_fix for elem in [args.chrom,args.pos]]) and all([elem != "NA" for elem in [args.chrom,args.pos]]):
@@ -159,10 +159,10 @@ def parse_file(args):
         else:
             parse_func = partial(alternate_parse,or_func = or_func)
             args.print('alternate parse')
-            
+
         args.print(f'indexes: {indexes}')
         # WE ARE NOW READY TO PARSE THE FILE
-        rsid_dict = load_rsid_mapping(args.rsid_map)           
+        rsid_dict = load_rsid_mapping(args.rsid_map)
         with gzip.open(rsid_file,'wt') as r,gzip.open(chrompos_file,'wt') as c,gzip.open(rej_log,'wt') as rej:
             out_header = '\t'.join(['chr','snp','a1','a2','pos','beta','p'])
             c.write(out_header + '\n')
@@ -174,7 +174,7 @@ def parse_file(args):
             for i,info in enumerate(loop):
                 if not i % 1000:progressBar(i,total_lines)
 
-                variant,a1,a2,effect,pval,*chrompos = info            
+                variant,a1,a2,effect,pval,*chrompos = info
                 args.print(f"Reading columns: {info}")
 
                 # check if effect can be mapped to float (might be missing)
@@ -216,7 +216,7 @@ def regular_parse(info,or_func):
     variant,a1,a2,effect,pval,chrom,pos = info
     OR = or_func(effect)
     return chrom,f"{chrom}_{pos}",a1.upper(),a2.upper(),pos,OR,pval
-    
+
 def alternate_parse(info,or_func):
     """
     Parsing if chrom & pos are missing, extract the first two integers from the variant string
@@ -271,17 +271,17 @@ if __name__ == '__main__':
     parser.add_argument('--pos', type=str,help='Column entry of position')
     parser.add_argument('--prefix',type = str,help = "string to prepend to output",default = "")
 
-    
+
     args = parser.parse_args()
     args.ss = os.path.abspath(args.ss)
-    
-    make_sure_path_exists(args.out) 
+
+    make_sure_path_exists(args.out)
 
     args.lift = True
     if not args.chainfile or os.path.getsize(args.chainfile) == 0:
         print('chainfile missing or empty, no lifting will take place')
-        args.lift = False       
-   
+        args.lift = False
+
     if args.test:
         def vprint(x):
             print(x)

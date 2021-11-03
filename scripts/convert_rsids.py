@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse,os,gzip,itertools,subprocess,shlex,pickle
+import argparse,os,gzip,itertools,subprocess,shlex,pickle,csv
 import numpy as np
 import os,gzip
 from collections import defaultdict as dd
@@ -84,11 +84,23 @@ def parse_file(args):
                 #extract chrom/pos from snp id (i.e. the first element of meta_index)
                 snp = line[meta_index[0]]
                 # return all integers in snp string. i assume the first 2 are chrom/pos
+                #this handles mixed sumstats where rsids are present
+                if 'rs' in snp:
+                    o.write(separator.join([line[i] for i in out_index]) + '\n')
+                    continue
+                # this handles weird missing lines
                 integers = ''.join((ch if ch.isdigit() else ' ') for ch in snp).split()
+                if not integers:
+                    continue
+                    
                 if 'X' in snp: # unless it's chrom X
                     chrom,pos = 'X',integers[0]
                 else:
-                    chrom,pos,*_ = integers
+                    try:
+                        chrom,pos,*_ = integers
+                    except:
+                        print(snp)
+                        print(integers)
                     
                 rsid = rsid_dict['_'.join([chrom,pos])]
                 if rsid: # replace snpid with rsid
