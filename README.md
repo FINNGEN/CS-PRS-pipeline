@@ -4,7 +4,7 @@ Pipeline to calculates PRS based on a list of sumstats.
 Weights are calculated with PRScs: https://github.com/getian107/PRScs
 
 The sumstats used for R8 are the following:
-```
+
 | filename | pheno | publication |
 |---|---|---|
 | AD_sumstats_Jansenetal.txt.gz | G6_ALZHEIMER | https://www.nature.com/articles/s41588-018-0311-9 |
@@ -130,7 +130,7 @@ The sumstats used for R8 are the following:
 | GCST90011770_buildGRCh37.tsv.gz | Glaucoma | https://www.nature.com/articles/s41467-020-20851-4 |
 | Hysi_et_al_Refractive_error_NatGenet_2020_beta_se.txt.gz | Refractive_error_and_myopia | https://www.nature.com/articles/s41588-020-0599-0 |
 | ALS_sumstats_EUR_only.txt.gz | ALS | https://doi.org/10.1101/2021.03.12.21253159 |
-```
+
 
 ## Rsid map
 
