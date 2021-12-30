@@ -44,7 +44,8 @@ def main(args):
 
     print(f"{lines} present in the mapping file")
 
- 
+
+    # now we create a snp specific chrom_pos to ref/alt mapping from the bim file
     # CHROMPOS --> REF --> ALT from input .bim
     args.finngen_variants = os.path.join(out_path,"finngen.variants.tsv")
     if not os.path.isfile(args.finngen_variants):          

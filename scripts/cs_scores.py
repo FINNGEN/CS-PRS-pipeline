@@ -40,13 +40,14 @@ def scores(args):
         print('freq file present')
         plink_cmd += f' --read-freq {freq_file} '
 
+
     # now run for all weight_files
-    for entry in weight_files:
+    for i,entry in enumerate(weight_files):
         weight_file,score_file = entry
-        pretty_print(weight_file)
-        cmd = plink_cmd +  f" --memory {mem_mib} --score {weight_file} 2 4 6  header center list-variants ignore-dup-ids --out {score_file}"
+        print(f"{i+1}/{len(weight_files)} {weight_file}")
+        
+        cmd = plink_cmd +  f" --out {score_file} --score {weight_file} 2 4 6  header center list-variants ignore-dup-ids  --memory {mem_mib} --silent "
         if not os.path.isfile(score_file + '.sscore'):
-            print(cmd)
             subprocess.call(shlex.split(cmd))
         else:print(f'{score_file} already generated')
 

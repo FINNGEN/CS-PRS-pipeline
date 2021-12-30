@@ -1,0 +1,30 @@
+{
+    #GLOBAL
+    "finngen_weights.test": False,
+    "finngen_weights.pheno_list": "gs://r8_data/prs/pheno_list.txt",
+    "finngen_weights.plink_root": "gs://finngen-production-library-red/finngen_R8/genotype_plink_1.0/data/finngen_R8_hm3",
+    "finngen_weights.prefix": "finngen_R5",
+    
+    #MUNGE
+    "finngen_weights.munge_sumstats.file_root": "gs://finngen-production-library-green/finngen_R5/finngen_R5_analysis_data/summary_stats/release/finngen_R5_PHENO.gz",
+
+    #WEIGHTS
+    "finngen_weights.weights.mem": 16,
+    "finngen_weights.weights.cpu": 64,
+    "finngen_weights.weights.ref_list": "gs://finngen-production-library-green/prs/ref_list_fin.txt",
+
+    #CHUNKS
+    "finngen_weights.weights_chunk.chunks": 4,
+
+    #SCORES
+    "finngen_weights.scores.cpu": 16,
+    "finngen_weights.scores.mem": 16,
+
+    #DOCKERS
+    "finngen_weights.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:finngen-weights.6",
+    #"finngen_weights.munge_sumstats.munge_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:finngen-weights.5",
+    #"finngen_weights.weights.weights_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:finngen-weights.5",
+    "finngen_weights.scores.scores_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:finngen-weights.7",
+
+}
+

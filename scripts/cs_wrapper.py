@@ -53,7 +53,7 @@ def weights(args):
     print(f"bim file: {bim_prefix}")
 
     #mainpulate out dir
-    args.ss_root= os.path.basename(args.sum_stats).split('.munged')[0]
+    args.ss_root= args.prefix +  os.path.basename(args.sum_stats).split('.munged')[0]
     print(f"ss_root: {args.ss_root}")
     args.weights_path = os.path.join(args.out,'weights')
     make_sure_path_exists(args.weights_path)
@@ -140,8 +140,38 @@ def to_chrompos(args):
                                            
     return
 
-  
+
+def merge_weights(args):
+    """
+    Writes out weights in chrom_pos_ref_alt so we can use finngen data. 
+    In order to do so, each rsid + ref/alt is "split" into 4 possible options based on whatever combination of min/maj allele in both strands. 
+    """
     
+    print(args.chrom_requested)
+    
+    #chromosomes to check to run
+       
+    out_file = os.path.join(args.out,args.ss_root + '.weights.txt')
+    if os.path.isfile(out_file) and mapcount(out_file) > 0 and not args.force:
+        print(f"{out_file} already generated")
+        return
+    else:
+        print(f"Saving to {out_file}")
+
+    file_list = []
+    weights = [elem for elem in natural_sort(get_filepaths(args.weights_path)) if mapcount(elem) > 0 and args.ss_root in elem]
+    for weight in weights:
+        # for each chrom to run check if weight already exists and if fixed weights exist
+        if any(weight.endswith(f"chr{i}.txt") for i in args.chrom_requested):file_list.append(weight)
+    print(file_list)
+
+    
+    with open(out_file,'wt') as o:
+        for f in file_list:
+            with open(f,'rt') as i:
+                for line in i:
+                    o.write(line)
+            
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(description ="Calculation of PRS for summary stats.")
@@ -153,13 +183,20 @@ if __name__ == '__main__':
     parser.add_argument('--out','-o',help = "Out path",required = True)
     parser.add_argument('--kwargs',type = str,help = "Other args to pass to PRScs",default = "")
     parser.add_argument('--chrom',action = 'store',type = str,nargs = '*')
+    parser.add_argument('--prefix',type = str,default = "")
     parser.add_argument('--force',action = 'store_true')
     parser.add_argument('--test',action = 'store_true')
     parser.add_argument('--parallel',type = int,default =1)
-    parser.add_argument('--map',type = file_exists,help = 'File that maps to/from rsids',required = True)
+    parser.add_argument('--map',type = file_exists,help = 'File that maps to/from rsids')
                         
     args = parser.parse_args()
+    if args.prefix: args.prefix += "_"
     print(args)
-    to_rsid(args)
+    
+    if args.map:
+        to_rsid(args)
     weights(args)
-    to_chrompos(args)
+    if args.map:
+        to_chrompos(args)
+    else:
+        merge_weights(args)
