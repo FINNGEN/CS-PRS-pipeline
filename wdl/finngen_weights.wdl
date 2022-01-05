@@ -191,6 +191,7 @@ task munge_sumstats {
   String? final_docker = if defined(munge_docker) then munge_docker else docker
 
   command <<<
+    set -euxo pipefail
     req_cols=~{columns}
     zcat ~{pheno_file}  | awk -F'\t' -v OFS="\t" -v cols=$req_cols \
       ' BEGIN{ split(cols,printcols,","); }
