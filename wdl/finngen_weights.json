@@ -7,7 +7,10 @@
 
     #MUNGE
     "finngen_weights.munge_sumstats.file_root": "gs://finngen-production-library-green/finngen_R5/finngen_R5_analysis_data/summary_stats/release/finngen_R5_PHENO.gz",
+
+    ### these column configurations need to be in the order that PRCSs expects them i.e chrom pos ref alt beta pvalue.
     "finngen_weights.munge_sumstats.columns":"#chrom,pos,ref,alt,beta,pval",
+
     #WEIGHTS
     "finngen_weights.weights.mem": 16,
     "finngen_weights.weights.cpu": 64,
