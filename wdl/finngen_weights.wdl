@@ -100,26 +100,26 @@ task scores {
   # split outputs in chunks so that i pass the chunk weight to each machine
   task weights_chunk {
     input {
-      Array[String] weights_list
-      Array[String] pheno_list
-      Int chunks
-      String docker
+        Array[String] weights_list
+        Array[String] pheno_list
+        Int chunks
+        String docker
       }
 
       command <<<
-	paste ~{write_lines(weights_list)} ~{write_lines(pheno_list)} > tmp.txt
-	split -n r/~{chunks} -d --additional-suffix=.txt  tmp.txt weight_chunk
+        paste ~{write_lines(weights_list)} ~{write_lines(pheno_list)} > tmp.txt
+        split -n r/~{chunks} -d --additional-suffix=.txt  tmp.txt weight_chunk
       >>>
 
       output {Array[File] chunk_list =  glob("./weight_chunk*")}
       runtime {
-	docker: "${docker}"
-	cpu: 1
-	memory: "4 GB"
-	disks: "local-disk 10 HDD"
-	zones: "europe-west1-b"
-	preemptible: 2
-	noAddress: true
+        docker: "${docker}"
+        cpu: 1
+        memory: "4 GB"
+        disks: "local-disk 10 HDD"
+        zones: "europe-west1-b"
+        preemptible: 2
+        noAddress: true
     }
 
 }
@@ -163,8 +163,8 @@ task weights {
 
       runtime {
         docker: "${final_docker}"
-	cpu: "${cpu}"
-	memory: "${mem} GB"
+        cpu: "${cpu}"
+        memory: "${mem} GB"
         disks: "local-disk ~{disk_size} HDD"
         zones: "europe-west1-b europe-west1-c europe-west1-d"
         preemptible: "${pre}"
@@ -200,8 +200,8 @@ task munge_sumstats {
                  if (!(printcols[k] in h)) { print "ALL necessary columns not in sumstats. Columns needed:",cols> "/dev/stderr"; exit 1}
                }
              }
-        { print "chr"$h[printcols[1]]"_"$h[printcols[2]]"_"$h[printcols[3]]"_"$h[printcols[4]],$h[printcols[4]],$h[printcols[3]],$h[printcols[5]],$h[printcols[6]]}'|\
-    { awk -v OFS="\t" '{ if(NR==1) {$1="SNP"} print $1,$2,$3,$4,$5 }' ;} > ~{prefix}_~{pheno}.munged
+        { print "chr"$h[printcols[1]]"_"$h[printcols[2]]"_"$h[printcols[3]]"_"$h[printcols[4]],$h[printcols[4]],$h[printcols[3]],$h[printcols[5]],$h[printcols[6]]}' \
+    | grep -wf <( cut -f2 ~{bim_file}) | awk -v OFS="\t" 'BEGIN {print "SNP","A1","A2","BETA","PVAL" } { print $0 }' > ~{prefix}_~{pheno}.munged
 
   >>>
 
