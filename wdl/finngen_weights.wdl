@@ -111,7 +111,7 @@ task scores {
         then
           usechunks=1
         else
-          usechunks=${chunk}
+          usechunks=${chunks}
         fi
 
         paste ~{write_lines(weights_list)} ~{write_lines(pheno_list)} > tmp.txt
