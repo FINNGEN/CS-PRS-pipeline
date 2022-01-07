@@ -4,9 +4,12 @@
     "finngen_weights.pheno_list": "gs://r8_data/prs/pheno_list.txt",
     "finngen_weights.plink_root": "gs://finngen-production-library-red/finngen_R8/genotype_plink_1.0/data/finngen_R8_hm3",
     "finngen_weights.prefix": "finngen_R5",
-    
+
     #MUNGE
     "finngen_weights.munge_sumstats.file_root": "gs://finngen-production-library-green/finngen_R5/finngen_R5_analysis_data/summary_stats/release/finngen_R5_PHENO.gz",
+
+    ### these column configurations need to be in the order that PRCSs expects them i.e chrom pos ref alt beta pvalue.
+    "finngen_weights.munge_sumstats.columns":"#chrom,pos,ref,alt,beta,pval",
 
     #WEIGHTS
     "finngen_weights.weights.mem": 16,
@@ -27,4 +30,3 @@
     "finngen_weights.scores.scores_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:finngen-weights.7",
 
 }
-
