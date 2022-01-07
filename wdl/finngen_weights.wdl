@@ -107,8 +107,15 @@ task scores {
       }
 
       command <<<
+        if [ ~{length(weights_list)} -lt ~{chunks} ];
+        then
+          usechunks=1
+        else
+          usechunks=${chunk}
+        fi
+
         paste ~{write_lines(weights_list)} ~{write_lines(pheno_list)} > tmp.txt
-        split -n r/~{chunks} -d --additional-suffix=.txt  tmp.txt weight_chunk
+        split -n r/$usechunks -d --additional-suffix=.txt  tmp.txt weight_chunk
       >>>
 
       output {Array[File] chunk_list =  glob("./weight_chunk*")}
