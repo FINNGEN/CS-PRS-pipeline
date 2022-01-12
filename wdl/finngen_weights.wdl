@@ -95,6 +95,7 @@ task scores {
  }
 
 
+<<<<<<< HEAD
  task weights {
    input {
      Boolean test
@@ -151,6 +152,40 @@ task scores {
      zones: "europe-west1-b europe-west1-c europe-west1-d"
      preemptible: "${pre}"
    }
+=======
+  # split outputs in chunks so that i pass the chunk weight to each machine
+  task weights_chunk {
+    input {
+        Array[String] weights_list
+        Array[String] pheno_list
+        Int chunks
+        String docker
+      }
+
+      command <<<
+        if [ ~{length(weights_list)} -lt ~{chunks} ];
+        then
+          usechunks=1
+        else
+          usechunks=${chunks}
+        fi
+
+        paste ~{write_lines(weights_list)} ~{write_lines(pheno_list)} > tmp.txt
+        split -n r/$usechunks -d --additional-suffix=.txt  tmp.txt weight_chunk
+      >>>
+
+      output {Array[File] chunk_list =  glob("./weight_chunk*")}
+      runtime {
+        docker: "${docker}"
+        cpu: 1
+        memory: "4 GB"
+        disks: "local-disk 10 HDD"
+        zones: "europe-west1-b"
+        preemptible: 2
+        noAddress: true
+    }
+
+>>>>>>> 93a669b3240bce557d7eb84fe25f8591c7fc6b35
 }
  
  #munge sumstats to match prs format
