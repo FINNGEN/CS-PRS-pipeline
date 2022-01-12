@@ -1,7 +1,8 @@
 {
     #GLOBAL
     "finngen_weights.test": False,
-    "finngen_weights.pheno_list": "gs://r8_data/prs/pheno_list.txt",
+    "finngen_weights.weights_only": False,
+    "finngen_weights.pheno_list": "gs://r8_data/prs/hypophenos",
     "finngen_weights.plink_root": "gs://finngen-production-library-red/finngen_R8/genotype_plink_1.0/data/finngen_R8_hm3",
     "finngen_weights.prefix": "finngen_R5",
 
@@ -15,7 +16,9 @@
     "finngen_weights.weights.mem": 16,
     "finngen_weights.weights.cpu": 64,
     "finngen_weights.weights.ref_list": "gs://finngen-production-library-green/prs/ref_list_fin.txt",
+    "finngen_weights.weights.rsid_map": "gs://finngen-production-library-green/finngen_R8/finngen_R8_analysis_data/variant_mapping/finngen_R8_hm3.rsid.map.tsv",
 
+   
     #CHUNKS
     "finngen_weights.weights_chunk.chunks": 4,
 

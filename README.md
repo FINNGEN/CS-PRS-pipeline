@@ -308,3 +308,70 @@ Now we have all elements in place:
 
 ## Scores
 Finally scores are calculate with `plink2 --sscore` which will only compute if the variant ids match, but still computing the score for the correct allele.
+
+
+# FINNGEN WEIGHTS
+
+We've added in the wdl section the wdl `finngen_weights.wdl` that allows to calculate weights based on the FG sumstats. In order to do so we've build a custom LD panel based on the Finnish panel used for imputation.
+
+In [the scripts folder  link](https://github.com/FINNGEN/CS-PRS-pipeline/tree/master/scripts/panel) there are the scripts used to generate it.
+
+Here's a breakdown of how it works in each step and how to edit the wdl for one's needs
+
+## Global parameters
+```
+"finngen_weights.test": False,
+"finngen_weights.weights_only": False,
+"finngen_weights.pheno_list": "gs://path/to/list/of/phenos.txt",
+"finngen_weights.plink_root": "gs://finngen-production-library-red/finngen_R8/genotype_plink_1.0/data/finngen_R8_hm3",
+"finngen_weights.prefix": "finngen_R?",
+
+```
+`Test` mode cuts the input sumstats to only 10k variants and performs the weights calculation in test mode (very few iterations). The output will be useless, but it will run in a very short time (mins vs hours).
+`weights_only` skips the score calculation step.
+`pheno_list` is the path to the list of phenos to analyze (see munging step).
+`plink_root` is the base of the .bim file used as validation by cs-prs. If scores are passed, it also needs to have .bed and .fam files in the same directory
+`prefix'`is the prefix prepended to the output of all files
+
+
+## Munging
+
+The task `munge_sumstats` munges the input data to a CHROM_POS_REF_ALT format needed with FG.
+
+Relevant inputs:
+```
+"finngen_weights.munge_sumstats.file_root": "gs://finngen-production-library-green/finngen_R5/finngen_R5_analysis_data/summary_stats/release/finngen_R5_PHENO.gz",
+"finngen_weights.munge_sumstats.columns":"#chrom,pos,ref,alt,beta,pval",
+```
+The first is the path to the input sumsats. The string `PHENO` is replaced with the phenotypes defined in the global parameter described before.
+
+The columns are the core of the munging step. These column configurations need to be in the order that PRCSs expects them i.e chrom pos ref alt beta pvalue.
+
+## Weights
+
+```
+"finngen_weights.weights.ref_list": "gs://finngen-production-library-green/prs/ref_list_fin.txt",
+"finngen_weights.weights.rsid_map": "gs://finngen-production-library-green/finngen_R8/finngen_R8_analysis_data/variant_mapping/finngen_R8_hm3.rsid.map.tsv",
+ ```
+
+`ref_list` is the list of files containing the custom LD panel built with thes scripts described in the introduction.
+
+`rsid_map` is a filed structures as follows:
+```
+rs11596870 10_100000235
+rs11190363 10_100002628
+rs7902856 10_100004827
+rs7078766 10_100005136
+[...]
+```
+That is used to output weights in rsid format.
+
+
+This task outputs three files:
+- weights in CHR_POS_REF_ALT format
+- weights in rsid format
+- the log output of CS-PRS for checking all the relevant metadata
+
+
+## Scores
+If interested in calculating scores, the only edit one can make is to increase/decrease the number of cpus in the `.json`. The .bed file is determined by the `plink_root` parameter passed in the global parameters.
