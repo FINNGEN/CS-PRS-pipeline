@@ -321,14 +321,14 @@ Here's a breakdown of how it works in each step and how to edit the wdl for one'
 ## Global parameters
 ```
 "finngen_weights.test": False,
-"finngen_weights.weights_only": False,
+"finngen_weights.run_scores": False,
 "finngen_weights.pheno_list": "gs://path/to/list/of/phenos.txt",
 "finngen_weights.plink_root": "gs://finngen-production-library-red/finngen_R8/genotype_plink_1.0/data/finngen_R8_hm3",
 "finngen_weights.prefix": "finngen_R?",
 
 ```
 `Test` mode cuts the input sumstats to only 10k variants and performs the weights calculation in test mode (very few iterations). The output will be useless, but it will run in a very short time (mins vs hours).
-`weights_only` skips the score calculation step.
+`run_scores` determines whether scores are calculated or not.
 `pheno_list` is the path to the list of phenos to analyze (see munging step).
 `plink_root` is the base of the .bim file used as validation by cs-prs. If scores are passed, it also needs to have .bed and .fam files in the same directory
 `prefix'`is the prefix prepended to the output of all files

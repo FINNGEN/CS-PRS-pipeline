@@ -8,7 +8,7 @@ workflow finngen_weights{
     Boolean test
     String prefix
     Array[Array[String]] pheno_data = read_tsv(pheno_list)
-    Boolean weights_only
+    Boolean run_scores
   }
   
   scatter (entry in pheno_data) {
@@ -32,7 +32,7 @@ workflow finngen_weights{
   }
   
 
-  if (!weights_only) {
+  if (!run_scores) {
     call weights_chunk{ input: docker=docker,weights_list = weights.weights,pheno_list = weights.phenos }
     scatter (chunk in weights_chunk.chunk_list) {
       call scores{ input :test = test,docker = docker,weights_chunk = chunk, plink_root = plink_root}

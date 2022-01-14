@@ -9,7 +9,7 @@ workflow finngen_weights{
     String prefix
     Array[Array[String]] pheno_data = read_tsv(pheno_list)
 
-    Boolean weights_only
+    Boolean run_scores
     Boolean rsid_weights
 
   }
@@ -37,7 +37,7 @@ workflow finngen_weights{
   
   Array[File] final_weights = if (rsid_weights) then weights.rsid_weights else weights.weights
   
-  if (!weights_only) {
+  if (run_scores) {
     call scores {
       input :
       docker = docker,

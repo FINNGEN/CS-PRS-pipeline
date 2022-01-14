@@ -1,7 +1,7 @@
 {
     #GLOBAL
     "finngen_weights.test": False,
-    "finngen_weights.weights_only": False,
+    "finngen_weights.run_scores": False,
     "finngen_weights.pheno_list": "gs://r8_data/prs/hypophenos",
     "finngen_weights.plink_root": "gs://finngen-production-library-red/finngen_R8/genotype_plink_1.0/data/finngen_R8_hm3",
     "finngen_weights.prefix": "finngen_R5",
