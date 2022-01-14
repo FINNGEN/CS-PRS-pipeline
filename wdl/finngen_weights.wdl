@@ -42,7 +42,6 @@ workflow finngen_weights{
   
   
 task scores {
-  
   input {
     Boolean test
     String plink_root
@@ -93,9 +92,8 @@ task scores {
      preemptible: 2
    }
  }
-
-
-<<<<<<< HEAD
+ 
+ 
  task weights {
    input {
      Boolean test
@@ -152,28 +150,30 @@ task scores {
      zones: "europe-west1-b europe-west1-c europe-west1-d"
      preemptible: "${pre}"
    }
-=======
-  # split outputs in chunks so that i pass the chunk weight to each machine
-  task weights_chunk {
-    input {
-        Array[String] weights_list
-        Array[String] pheno_list
-        Int chunks
-        String docker
-      }
-
+ }
+ 
+ 
+ # split outputs in chunks so that i pass the chunk weight to each machine
+ task weights_chunk {
+   input {
+     Array[String] weights_list
+     Array[String] pheno_list
+     Int chunks
+     String docker
+   }
+   
       command <<<
         if [ ~{length(weights_list)} -lt ~{chunks} ];
         then
-          usechunks=1
+        usechunks=1
         else
-          usechunks=${chunks}
+        usechunks=${chunks}
         fi
 
         paste ~{write_lines(weights_list)} ~{write_lines(pheno_list)} > tmp.txt
         split -n r/$usechunks -d --additional-suffix=.txt  tmp.txt weight_chunk
       >>>
-
+      
       output {Array[File] chunk_list =  glob("./weight_chunk*")}
       runtime {
         docker: "${docker}"
@@ -183,13 +183,11 @@ task scores {
         zones: "europe-west1-b"
         preemptible: 2
         noAddress: true
-    }
-
->>>>>>> 93a669b3240bce557d7eb84fe25f8591c7fc6b35
+      }
 }
- 
- #munge sumstats to match prs format
- task munge_sumstats {
+    
+#munge sumstats to match prs format
+task munge_sumstats {
   input{
     String prefix
     String columns
@@ -219,10 +217,10 @@ task scores {
   }
   { print "chr"$h[printcols[1]]"_"$h[printcols[2]]"_"$h[printcols[3]]"_"$h[printcols[4]],$h[printcols[4]],$h[printcols[3]],$h[printcols[5]],$h[printcols[6]]}' \
   | grep -wf <( cut -f2 ~{bim_file} ~{true=" | shuf | head -n 10000 " false="" test})  | awk -v OFS="\t" 'BEGIN {print "SNP","A1","A2","BETA","PVAL" } { print $0 }' > ~{prefix}_~{pheno}.munged
-    >>>
+>>>
 
-    output {
-      File munged_sumstat = "${prefix}_${pheno}.munged"
+output {
+  File munged_sumstat = "${prefix}_${pheno}.munged"
     }
     
     runtime {
@@ -234,40 +232,6 @@ task scores {
       preemptible: 2
       
     }
-}
-
-
-
-task weights_chunk {
-   input {
-     Array[String] weights_list
-     Array[String] pheno_list
-     Int chunks
-     String docker
-   }
-
-   command <<<
-     if [ ~{length(weights_list)} -lt ~{chunks} ];
-     then
-     usechunks=1
-     else
-     usechunks=${chunk}
-     fi
-     
-     paste ~{write_lines(weights_list)} ~{write_lines(pheno_list)} > tmp.txt
-     split -n r/$usechunks -d --additional-suffix=.txt  tmp.txt weight_chunk
-   >>>
-   
-   output {Array[File] chunk_list =  glob("./weight_chunk*")}
-   runtime {
-     docker: "${docker}"
-     cpu: 1
-     memory: "4 GB"
-     disks: "local-disk 10 HDD"
-     zones: "europe-west1-b"
-     preemptible: 2
-     noAddress: true
-   }
-   
- }
- 
+  }
+  
+  

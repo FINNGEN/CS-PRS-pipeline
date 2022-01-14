@@ -1,0 +1,27 @@
+{
+    #GLOBAL
+    "finngen_weights.test": True,
+    "finngen_weights.weights_only": False,
+    "finngen_weights.rsid_weights": False,
+
+    "finngen_weights.docker": "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:finngen-weights.7",
+    "finngen_weights.pheno_list": "gs://finngen-production-library-green/finngen_weights/test_phenos.txt",
+    "finngen_weights.bim_file": "gs://finngen-production-library-red/finngen_R8/genotype_plink_1.0/data/finngen_R8_hm3.bim",
+    "finngen_weights.prefix": "sandbox_test",
+
+    #MUNGE
+    "finngen_weights.munge_sumstats.file_root": "gs://finngen-production-library-green/finngen_R5/finngen_R5_analysis_data/summary_stats/release/finngen_R5_PHENO.gz",
+    "finngen_weights.munge_sumstats.columns":"#chrom,pos,ref,alt,beta,pval",
+
+    # WEIGHTS
+    "finngen_weights.weights.mem": 16,
+    "finngen_weights.weights.cpu": 64,
+    "finngen_weights.weights.ref_list": "gs://finngen-production-library-green/prs/ref_list_fin.txt",
+    "finngen_weights.weights.rsid_map": "gs://finngen-production-library-green/finngen_R8/finngen_R8_analysis_data/variant_mapping/finngen_R8_hm3.rsid.map.tsv",
+
+    #SCORES
+    "finngen_weights.scores.plink_root": "gs://finngen-production-library-red/imputation_panel/sisu3/plink/wgs_all",
+    "finngen_weights.scores.cpu": 32,
+    "finngen_weights.scores.mem": 32,
+   
+}
