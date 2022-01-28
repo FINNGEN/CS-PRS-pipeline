@@ -282,6 +282,7 @@ task sumstats {
 
   command <<<
 
+   cat ${gwas_meta} | sed -E 1d | cut -f 1,3,8,9,10,11,12,13,14,15,16,17  ${if defined(last_sumstats) then " | tail -n ${last_sumstats}" else ""} > sumstats.txt
   >>>
 
   output {

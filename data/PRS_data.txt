@@ -81,34 +81,34 @@ MTAG_glaucoma_four_traits_summary_statistics.txt.gz	glaucoma_	327797	NA	119318	h
 phecode-696.4-both_sexes.tsv.gz	Psoriasis	399085	3250	396181	UKBB	European	L12_PSORIASIS	BETA	pos	chr	pos	alt	ref	beta_EUR	pval_EUR	hg19
 phecode-250.1-both_sexes.tsv.gz	T1D	406978	2904	396181	UKBB	European	T1D_WIDE	BETA	pos	chr	pos	alt	ref	beta_EUR	pval_EUR	hg19
 BCX2_EOS_Trans_GWAMA.out.gz	EOS_Trans	583850	NA	NA	https://pubmed.ncbi.nlm.nih.gov/32888493/	Trans-ancestry	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19
-biomarkers-30600-both_sexes-irnt.tsv.gz	Albumin	422605	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30610-both_sexes-irnt.tsv.gz	Alkaline_phosphatase	461525	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30620-both_sexes-irnt.tsv.gz	Alanine_aminotransferase	461326	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30630-both_sexes-irnt.tsv.gz	Apolipoprotein_A	420088	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30640-both_sexes-irnt.tsv.gz	Apolipoprotein_B	459181	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30650-both_sexes-irnt.tsv.gz	Aspartate_aminotransferase	459799	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30660-both_sexes-irnt.tsv.gz	Direct_bilirubin	391906	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30670-both_sexes-irnt.tsv.gz	Urea	461200	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30680-both_sexes-irnt.tsv.gz	Calcium	422461	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30690-both_sexes-irnt.tsv.gz	Cholesterol	461507	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30700-both_sexes-irnt.tsv.gz	Creatinine	461280	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30710-both_sexes-irnt.tsv.gz	C-reactive_protein	460502	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30720-both_sexes-irnt.tsv.gz	Cystatin_C	461481	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30730-both_sexes-irnt.tsv.gz	Gamma_glutamyltransferase	461270	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30740-both_sexes-irnt.tsv.gz	Glucose	422106	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30760-both_sexes-irnt.tsv.gz	HDL_cholesterol	422405	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30770-both_sexes-irnt.tsv.gz	IGF-1	459000	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30780-both_sexes-irnt.tsv.gz	LDL_direct	460650	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30790-both_sexes-irnt.tsv.gz	Lipoprotein_A	369165	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30800-both_sexes-irnt.tsv.gz	Oestradiol	75290	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30810-both_sexes-irnt.tsv.gz	Phosphate	421793	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30820-both_sexes-irnt.tsv.gz	Rheumatoid_factor	40596	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30830-both_sexes-irnt.tsv.gz	SHBG	418540	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30840-both_sexes-irnt.tsv.gz	Total_bilirubin	459567	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30850-both_sexes-irnt.tsv.gz	Testosterone	417996	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30860-both_sexes-irnt.tsv.gz	Total_protein	422149	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30880-both_sexes-irnt.tsv.gz	Urate	460950	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30890-both_sexes-irnt.tsv.gz	Vitamin_D	440651	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30600-both_sexes-irnt.tsv.gz	Albumin	422605	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30610-both_sexes-irnt.tsv.gz	Alkaline_phosphatase	461525	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30620-both_sexes-irnt.tsv.gz	Alanine_aminotransferase	461326	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30630-both_sexes-irnt.tsv.gz	Apolipoprotein_A	420088	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30640-both_sexes-irnt.tsv.gz	Apolipoprotein_B	459181	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30650-both_sexes-irnt.tsv.gz	Aspartate_aminotransferase	459799	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30660-both_sexes-irnt.tsv.gz	Direct_bilirubin	391906	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30670-both_sexes-irnt.tsv.gz	Urea	461200	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30680-both_sexes-irnt.tsv.gz	Calcium	422461	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30690-both_sexes-irnt.tsv.gz	Cholesterol	461507	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30700-both_sexes-irnt.tsv.gz	Creatinine	461280	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30710-both_sexes-irnt.tsv.gz	C-reactive_protein	460502	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30720-both_sexes-irnt.tsv.gz	Cystatin_C	461481	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30730-both_sexes-irnt.tsv.gz	Gamma_glutamyltransferase	461270	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30740-both_sexes-irnt.tsv.gz	Glucose	422106	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30760-both_sexes-irnt.tsv.gz	HDL_cholesterol	422405	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30770-both_sexes-irnt.tsv.gz	IGF-1	459000	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30780-both_sexes-irnt.tsv.gz	LDL_direct	460650	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30790-both_sexes-irnt.tsv.gz	Lipoprotein_A	369165	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30800-both_sexes-irnt.tsv.gz	Oestradiol	75290	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30810-both_sexes-irnt.tsv.gz	Phosphate	421793	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30820-both_sexes-irnt.tsv.gz	Rheumatoid_factor	40596	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30830-both_sexes-irnt.tsv.gz	SHBG	418540	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30840-both_sexes-irnt.tsv.gz	Total_bilirubin	459567	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30850-both_sexes-irnt.tsv.gz	Testosterone	417996	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30860-both_sexes-irnt.tsv.gz	Total_protein	422149	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30880-both_sexes-irnt.tsv.gz	Urate	460950	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30890-both_sexes-irnt.tsv.gz	Vitamin_D	440651	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
 ukb.allasthma.upload.final.assoc_v2.txt.gz	asthma	403124	46802	394283	https://erj.ersjournals.com/content/54/6/1901507-0.long	European	J10_ASTHMA_EXMORE	BETA	SNP	CHR	BP	A1	A2	BETA	P	hg19
 michailidoubreastcancerall.txt.gz	Breast_cancer	228951	122977	105974	https://www.nature.com/articles/nature24284	European	C3_BREAST_EXALLC	BETA	rs	chr	pos	alt	ref	effalt	pval	hg19
 20171017_MW_eGFR_overall_EA_nstud42.dbgap_v2.txt.gz	estimated_glomerular_filtration_rate	567460	567460	567460	https://www.nature.com/articles/s41588-019-0407-x	EUR	N14_CHRONKIDNEYDIS	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	hg19
@@ -122,3 +122,4 @@ anno.CLEANED.MVP.EUR.VTE.results.EQC.tbl.gz	Venous_thromboembolism	650119	26066	
 GCST90011770_buildGRCh37.tsv.gz	Glaucoma	383500	34179	349321	https://www.nature.com/articles/s41467-020-20851-4	Trans-ancestry	H7_GLAUCOMA	BETA	variant_id	chromosome	base_pair_location	effect_allele	other_allele	beta	p_value	hg19
 Hysi_et_al_Refractive_error_NatGenet_2020_beta_se.txt.gz	Refractive_error_and_myopia	542934	NA	NA	https://www.nature.com/articles/s41588-020-0599-0	European	H7_MYOPIA	BETA	MarkerName	NA	NA	Allele2	Allele1	beta	P-value	hg19
 ALS_sumstats_EUR_only.txt.gz	ALS	138086	27205	110881	https://doi.org/10.1101/2021.03.12.21253159	European	G6_ALS	BETA	rsid	chromosome	base_pair_location	effect_allele	other_allele	beta	p_value	hg19
+discovery_metav3.0.meta.gz	Multiple_Sclerosis	41505	14802	26703	https://pubmed.ncbi.nlm.nih.gov/31604244/	European	G6_MS	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
