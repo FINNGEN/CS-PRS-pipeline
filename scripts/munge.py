@@ -187,8 +187,12 @@ def parse_file(args):
                         chrompos = rsid_dict[variant]
                         if chrompos:
                             chrom,pos = chrompos.split('_')
-                            OR = str(or_func(float(effect)))
-                            out_line,out_file = '\t'.join([chrom,variant,a1.upper(),a2.upper(),pos,OR,pval]),r
+                            try:
+                                OR = str(or_func(float(effect)))
+                                out_line,out_file = '\t'.join([chrom,variant,a1.upper(),a2.upper(),pos,OR,pval]),r
+                            except:
+                                out_line,out_file = '\t'.join([file_root,'or_problems'] + info),rej
+
                         else:
                             out_line,out_file = '\t'.join([file_root,'rsid_missing'] + info),rej
 
