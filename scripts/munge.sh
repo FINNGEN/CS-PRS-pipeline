@@ -7,7 +7,9 @@ PRS_DATA=$1
 tmpfile=$(mktemp /tmp/abc-script.XXXXXX)
 cat $PRS_DATA | sed -E 1d | grep -wf <(ls $DATA_PATH"/sumstats/")  > $tmpfile
 
-
+echo "MATCHING FILES"
+cat $tmpfile | cut -f1 
+echo "MUNGING"
 while read line;\
  do arr=($line) && echo ${arr[0]} && \
  python3 ./munge.py --ss $DATA_PATH/sumstats/${arr[0]}  \
@@ -16,5 +18,5 @@ while read line;\
   --rsid-map /mnt/disks/r9/data/variant_mapping/finngen.rsid.map.tsv \
   --chrompos-map /mnt/disks/r9/data/variant_mapping/finngen.variants.tsv \
   --chainfile /mnt/disks/r9/data/lift/hg19ToHg38.over.chain.gz \
-  --prefix finngen_R9 \
+  --prefix finngen_R9  \
   |& tee -a $DATA_PATH/munge.log  ; done < $tmpfile

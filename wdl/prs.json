@@ -20,8 +20,8 @@
 
 
     # MUNGE
-    "prs_cs.munge.disk_factor": 5,
-    "prs_cs.munge.prefix": "finngen_R8",
+    "prs_cs.munge.disk_factor": 6,
+    "prs_cs.munge.prefix": "finngen_R9",
 
     # WEIGHTS
 

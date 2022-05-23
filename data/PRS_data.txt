@@ -124,4 +124,10 @@ Hysi_et_al_Refractive_error_NatGenet_2020_beta_se.txt.gz	Refractive_error_and_my
 ALS_sumstats_EUR_only.txt.gz	ALS	138086	27205	110881	https://doi.org/10.1101/2021.03.12.21253159	European	G6_ALS	BETA	rsid	chromosome	base_pair_location	effect_allele	other_allele	beta	p_value	hg19	
 discovery_metav3.0.meta.gz	Multiple_Sclerosis	41505	14802	26703	https://pubmed.ncbi.nlm.nih.gov/31604244/	European	G6_MS	OR	SNP	CHR	BP	A1	A2	OR	P	hg19	
 HERMES_Jan2019_HeartFailure_summary_data.txt.gz	I9_HEARTFAIL	977323	47309	930014	https://cvd.hugeamp.org/dinspector.html?dataset=GWAS_HERMES_eu	Trans-ethnic	I9_HEARTFAIL	BETA	SNP	CHR	BP	A1	A2	b	p	hg19	
-CKD_overall_ALL_JW_20180223_nstud30.dbgap.txt.gz	N14_CHRONKIDNEYDIS	480698	41395	439303	https://ckdgen.imbi.uni-freiburg.de/	Trans-ethnic	N14_CHRONKIDNEYDIS	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	b37	
+CKD_overall_ALL_JW_20180223_nstud30.dbgap.txt.gz	N14_CHRONKIDNEYDIS	480698	41395	439303	https://ckdgen.imbi.uni-freiburg.de/	Trans-ethnic	N14_CHRONKIDNEYDIS	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	hg37	
+netherlands_total.fastGWA.gz	netherlands_total_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19	
+netherlands_gp.fastGWA.gz	netherlands_gp_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19	
+netherlands_hospital.fastGWA.gz	netherlands_hospial_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19	
+netherlands_pharmacy.fastGWA.gz	netherlands_pharmacy_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19	
+R9SUDDENDEAFNESSANDVESTIBULARNEURITIS.gz	H91.2_H81.2	334331	5716	328615	FG_CUSTOM	FIN	H8_VESTIBNEUR	BETA	#chrom	#chrom	pos	alt	ref	beta	mlogp	hg38	
+SECRETORYOTITISMEDIA.gz	H65.2	385646	1533	384113	FG_CUSTOM	FIN	H8_NONSUPPNAS	BETA	#chrom	#chrom	pos	alt	ref	beta	mlogp	hg38	
