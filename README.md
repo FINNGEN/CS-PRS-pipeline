@@ -3,7 +3,7 @@
 Pipeline to calculates PRS based on a list of sumstats.
 Weights are calculated with PRScs: https://github.com/getian107/PRScs
 
-The sumstats used for R8 are the following:
+The sumstats used for R9 are the following:
 
 | filename | pheno | publication |
 |---|---|---|
@@ -133,6 +133,12 @@ The sumstats used for R8 are the following:
 | discovery_metav3.0.meta.gz | Multiple_Sclerosis | https://pubmed.ncbi.nlm.nih.gov/31604244/ |
 | HERMES_Jan2019_HeartFailure_summary_data.txt.gz | I9_HEARTFAIL | https://cvd.hugeamp.org/dinspector.html?dataset=GWAS_HERMES_eu |
 | CKD_overall_ALL_JW_20180223_nstud30.dbgap.txt.gz | N14_CHRONKIDNEYDIS | https://ckdgen.imbi.uni-freiburg.de/ |
+| netherlands_total.fastGWA.gz | netherlands_total_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
+| netherlands_gp.fastGWA.gz | netherlands_gp_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
+| netherlands_hospital.fastGWA.gz | netherlands_hospial_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
+| netherlands_pharmacy.fastGWA.gz | netherlands_pharmacy_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
+| R9SUDDENDEAFNESSANDVESTIBULARNEURITIS.gz | H91.2_H81.2 | FG_CUSTOM |
+| SECRETORYOTITISMEDIA.gz | H65.2 | FG_CUSTOM |
 
 ## Rsid map
 
