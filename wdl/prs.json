@@ -2,7 +2,7 @@
     # WORKFLOW LEVEL
     "prs_cs.test": False, # weights are ran with very few iterations
     "prs_cs.sumstats.last_sumstats": 2, # optional argument to only run latest N sumsats
-    "prs_cs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r6.test",
+    "prs_cs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r9",
     "prs_cs.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",
     "prs_cs.gwas_meta": "gs://finngen-production-library-green/prs/PRS_data.txt",
 
