@@ -137,8 +137,6 @@ The sumstats used for R9 are the following:
 | netherlands_gp.fastGWA.gz | netherlands_gp_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
 | netherlands_hospital.fastGWA.gz | netherlands_hospial_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
 | netherlands_pharmacy.fastGWA.gz | netherlands_pharmacy_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
-| R9SUDDENDEAFNESSANDVESTIBULARNEURITIS.gz | H91.2_H81.2 | FG_CUSTOM |
-| SECRETORYOTITISMEDIA.gz | H65.2 | FG_CUSTOM |
 
 ## Rsid map
 

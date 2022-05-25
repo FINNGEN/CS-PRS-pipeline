@@ -144,13 +144,13 @@ task weights {
     }
 
     runtime {
-        docker: "${final_docker}"
-        cpu: "${cpu}"
-	      memory: "${mem} GB"
-        disks: "local-disk ${disk_size} HDD"
-        zones: "europe-west1-b"
-        preemptible: 1
-    }
+      docker: "${final_docker}"
+      cpu: "${cpu}"
+      memory: "${mem} GB"
+      disks: "local-disk ${disk_size} HDD"
+      zones: "europe-west1-b"
+      preemptible: 1
+      }
 
 
 }

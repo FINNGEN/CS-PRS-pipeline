@@ -129,5 +129,3 @@ netherlands_total.fastGWA.gz	netherlands_total_cost	16726	NA	NA	https://pubmed.n
 netherlands_gp.fastGWA.gz	netherlands_gp_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19	
 netherlands_hospital.fastGWA.gz	netherlands_hospial_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19	
 netherlands_pharmacy.fastGWA.gz	netherlands_pharmacy_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19	
-R9SUDDENDEAFNESSANDVESTIBULARNEURITIS.gz	H91.2_H81.2	334331	5716	328615	FG_CUSTOM	FIN	H8_VESTIBNEUR	BETA	#chrom	#chrom	pos	alt	ref	beta	pval	hg38	
-SECRETORYOTITISMEDIA.gz	H65.2	385646	1533	384113	FG_CUSTOM	FIN	H8_NONSUPPNAS	BETA	#chrom	#chrom	pos	alt	ref	beta	pval	hg38	
