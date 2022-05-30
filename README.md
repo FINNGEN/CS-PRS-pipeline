@@ -137,7 +137,8 @@ The sumstats used for R9 are the following:
 | netherlands_gp.fastGWA.gz | netherlands_gp_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
 | netherlands_hospital.fastGWA.gz | netherlands_hospial_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
 | netherlands_pharmacy.fastGWA.gz | netherlands_pharmacy_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
-
+| R9SUDDENDEAFNESSANDVESTIBULARNEURITIS.gz | H91.2_H81.2 | FG_CUSTOM |
+| SECRETORYOTITISMEDIA.gz | H65.2 | FG_CUSTOM |
 ## Rsid map
 
 This step generates a mapping to/from rsid/chrompos based on data available at ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz.

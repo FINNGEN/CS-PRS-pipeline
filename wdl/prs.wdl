@@ -56,8 +56,6 @@ workflow prs_cs{
   }
 }
 
-
-
 task scores {
 
     File weights

@@ -113,7 +113,6 @@ ukb.allasthma.upload.final.assoc_v2.txt.gz	asthma	403124	46802	394283	https://er
 michailidoubreastcancerall.txt.gz	Breast_cancer	228951	122977	105974	https://www.nature.com/articles/nature24284	European	C3_BREAST_EXALLC	BETA	rs	chr	pos	alt	ref	effalt	pval	hg19	
 20171017_MW_eGFR_overall_EA_nstud42.dbgap_v2.txt.gz	estimated_glomerular_filtration_rate	567460	567460	567460	https://www.nature.com/articles/s41588-019-0407-x	EUR	N14_CHRONKIDNEYDIS	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	hg19	
 colorectal_cancer.txt.gz	Colorectal_cancer	106006	34627	71379	https://www.nature.com/articles/s41467-019-09775-w	European	C3_COLORECTAL_EXALLC	BETA	rs	chr	pos	alt	ref	effalt	pval	hg19	
-MTAG_glaucoma_four_traits_summary_statistics.txt.gz	Glaucoma_multitrait	351696	351696	351696	https://www.nature.com/articles/s41588-019-0556-y	European	H7_GLAUCOMA	BETA	SNP	CHR	POS	Effect_allele	Non_Effect_allele	BETA	P	hg19	
 urate_chr1_22_LQ_IQ06_mac10_all_741_rsid_v2.txt.gz	Urate	457690	457690	457690	https://www.nature.com/articles/s41588-019-0504-x	Trans-ancestry	M13_GOUT	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	hg19	
 Tachmazidou_30664745_HIPOA.txt.gz	hip_osteoarthritis	393873	15704	378169	https://www.nature.com/articles/s41588-018-0327-1	European	M13_ARTHTROSIS_COX	BETA	variant	chromosome	pos	Allele1	Allele2	Effect	P-value	hg19	
 Tachmazidou_30664745_KNEEOA.txt.gz	knee_osteoarthritis	403124	24955	378169	https://www.nature.com/articles/s41588-018-0327-1	European	M13_ARTHROSIS_KNEE	BETA	variant	chromosome	pos	Allele1	Allele2	Effect	P-value	hg19	
