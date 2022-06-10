@@ -1,5 +1,5 @@
 filename	pheno	n_total	n_cases	n_ctrls	publication	ancestry	finngen_phenocode	effect_type	variant	chrom	pos	effect_allele	other_allele	effect	pval	build
-AD_sumstats_Jansenetal.txt.gz	Alzheimer's_Jansen_2019	455258	71880	383378	https://www.nature.com/articles/s41588-018-0311-9	European	G6_ALZHEIMER	BETA	SNP	CHR	BP	A1	A2	BETA	P	hg19
+AD_sumstats_Jansenetal.txt.gz	Alzheimers_Jansen_2019	455258	71880	383378	https://www.nature.com/articles/s41588-018-0311-9	European	G6_ALZHEIMER	BETA	SNP	CHR	BP	A1	A2	BETA	P	hg19
 adhd_eur_jun2017.gz	ADHD	53293	19099	34194	https://www.biorxiv.org/content/early/2017/06/03/145581	European	F5_ADHD	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
 alsMetaSummaryStats_march21st2018.tab.gz	ALS_Nicolas_2018	80610	20806	59804	https://www.cell.com/neuron/references/S0896-6273(18)30148-X	European	G6_ALS	BETA	SNP	CHR	BP	Allele1	Allele2	Effect	P	hg19
 Bipolar_vs_control_PGC_Cell_2018_formatted.txt.gz	bipolar_disorder	74194	20129	54065	PGC;Cell;2018;https://doi.org/10.1016/j.cell.2018.05.046	European	F5_BIPO	OR	variant	chr	pos	effect_allele	other_allele	OR	pval	hg19
@@ -9,7 +9,7 @@ daner_PGC_SCZ52_0513a.resultfiles_PGC_SCZ52_0513.sh2_nofin.gz	Schizophrenia_PGC_
 dpw_excludingFinnishStudies_4finngen.txt.gz	alcohol_consumption	527282	NA	NA	https://www.nature.com/articles/s41398-019-0676-2	European	NA	BETA	RSID	CHROM	POS	ALT	REF	Beta	PValue	hg19
 EAGLE_AD_GWAS_results_2015.txt.gz	atopic_dermatitis	116863	21399	95464	https://www.nature.com/articles/ng.3424	Trans-ancestry	L12_ATOPIC	BETA	rsID	chromosome	position	reference_allele	other_allele	beta	p.value	hg19
 Educational_Attainment_excl23andme_Lee_2018_NatGen_formatted.txt.gz	educational_attainment	766343	NA	NA	Lee;Nat_Gen;2018;https://doi.org/10.1038/s41588-018-0147-3	European	NA	BETA	variant	chr	pos	effect_allele	other_allele	beta	pval	hg19
-EUR.CD.gwas_info03_filtered.assoc.gz	Crohn's_disease	20883	5956	14927	https://www.nature.com/articles/ng.3359	European	K11_CD_STRICT2	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+EUR.CD.gwas_info03_filtered.assoc.gz	Crohns_disease	20883	5956	14927	https://www.nature.com/articles/ng.3359	European	K11_CD_STRICT2	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
 EUR.IBD.gwas_info03_filtered.assoc.gz	Inflammatory_bowel_disease	34652	12882	21770	https://www.nature.com/articles/ng.3359	European	K11_KELAIBD	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
 EUR.UC.gwas_info03_filtered.assoc.gz	Ulcerative_colitis	27432	6968	20464	https://www.nature.com/articles/ng.3359	European	K11_UC_STRICT2	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
 focal_epilepsy_METAL_4finngen.txt.gz	Focal_epilepsy	39348	9671	29677	https://www.nature.com/articles/s41467-018-07524-z	European	FE	BETA	snpid	hg19chrc	bp	a1	a2	beta	p	hg19
@@ -20,9 +20,9 @@ GWAS_CP_all.txt.gz	Cognitive_performance	257828	NA	NA	https://www.nature.com/art
 Hb_gwas_summary_fromNealeLab.tsv.gz	Haemoglobin_concentration	350474	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	effect_allele	other_allele	beta	pval	hg19
 HbA1c_METAL_European.txt.gz	HbA1c	123665	NA	NA	http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1002383	European	NA	BETA	snp	chr	pos	effect_allele	other_allele	beta	pvalue	hg19
 HDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	HDL-C	57045	NA	NA	https://www.nature.com/articles/ng.3300	European	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19
-IGAP_stage_1.txt.gz	Alzheimer's_Lambert_2013	54162	17008	37154	https://www.nature.com/articles/ng.2802	European	G6_ALZHEIMER	BETA	MarkerName	Chromosome	Position	Effect_allele	Non_Effect_allele	Beta	Pvalue	hg19
+IGAP_stage_1.txt.gz	Alzheimers_Lambert_2013	54162	17008	37154	https://www.nature.com/articles/ng.2802	European	G6_ALZHEIMER	BETA	MarkerName	Chromosome	Position	Effect_allele	Non_Effect_allele	Beta	Pvalue	hg19
 iPSYCH-PGC_ASD_Nov2017.gz	ASD	46350	18381	27969	https://www.biorxiv.org/content/early/2017/11/27/224774	European	KRA_PSY_AUTISM_EXMORE	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
-kunkle_etal_stage1.txt.gz	Alzheimer's_Kunkle_2019	63926	21982	41944	https://www.niagads.org/datasets/ng00075	European	G6_ALZHEIMER	BETA	MarkerName	Chromosome	Position	Effect_allele	Non_Effect_allele	Beta	Pvalue	hg19
+kunkle_etal_stage1.txt.gz	Alzheimers_Kunkle_2019	63926	21982	41944	https://www.niagads.org/datasets/ng00075	European	G6_ALZHEIMER	BETA	MarkerName	Chromosome	Position	Effect_allele	Non_Effect_allele	Beta	Pvalue	hg19
 LDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	LDL-C	57045	NA	NA	https://www.nature.com/articles/ng.3300	European	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19
 Mahajan.NatGenet2018b.T2D.European.txt.gz	T2D_Mahajan_2018	898130	74124	824006	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6287706/	European	T2D	BETA	SNP	Chr	Pos	EA	NEA	Beta	Pvalue	hg19
 MDD2018_ex23andMe.19fields.gz	Major_depressive_disorder	173005	59851	113154	https://www.nature.com/articles/s41588-018-0090-3	European	F5_DEPRESSIO	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
