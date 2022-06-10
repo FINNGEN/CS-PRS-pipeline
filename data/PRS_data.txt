@@ -1,66 +1,66 @@
 filename	pheno	n_total	n_cases	n_ctrls	publication	ancestry	finngen_phenocode	effect_type	variant	chrom	pos	effect_allele	other_allele	effect	pval	build
-AD_sumstats_Jansenetal.txt.gz	G6_ALZHEIMER	455258	71880	383378	https://www.nature.com/articles/s41588-018-0311-9	European	G6_ALZHEIMER	BETA	SNP	CHR	BP	A1	A2	BETA	P	hg19
-adhd_eur_jun2017.gz	F5_ADHD	53293	19099	34194	https://www.biorxiv.org/content/early/2017/06/03/145581	European	F5_ADHD	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
-alsMetaSummaryStats_march21st2018.tab.gz	G6_ALS	80610	20806	59804	https://www.cell.com/neuron/references/S0896-6273(18)30148-X	European	G6_ALS	BETA	SNP	CHR	BP	Allele1	Allele2	Effect	P	hg19
-Bipolar_vs_control_PGC_Cell_2018_formatted.txt.gz	F5_BIPO	74194	20129	54065	PGC;Cell;2018;https://doi.org/10.1016/j.cell.2018.05.046	European	F5_BIPO	OR	variant	chr	pos	effect_allele	other_allele	OR	pval	hg19
-cad.add.160614.website.txt.gz	I9_CHD	184305	60801	123504	https://www.nature.com/articles/ng.3396	Trans-ancestry	I9_CHD	BETA	markername	chr	bp_hg19	effect_allele	noneffect_allele	beta	p_dgc	hg19
-ckqny.scz2snpres.gz	F5_SCHZPHR	150064	36989	113075	https://www.nature.com/articles/nature13595	Trans-ancestry	F5_SCHZPHR	OR	snpid	hg19chrc	bp	a1	a2	or	p	hg19
-daner_PGC_SCZ52_0513a.resultfiles_PGC_SCZ52_0513.sh2_nofin.gz	F5_SCHZPHR	150064	36989	113075	PGC_schzizophrenia_GWAS_Ripke_et_al._excluding_Finnish	European	F5_SCHZPHR	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+AD_sumstats_Jansenetal.txt.gz	Alzheimer's_Jansen_2019	455258	71880	383378	https://www.nature.com/articles/s41588-018-0311-9	European	G6_ALZHEIMER	BETA	SNP	CHR	BP	A1	A2	BETA	P	hg19
+adhd_eur_jun2017.gz	ADHD	53293	19099	34194	https://www.biorxiv.org/content/early/2017/06/03/145581	European	F5_ADHD	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+alsMetaSummaryStats_march21st2018.tab.gz	ALS_Nicolas_2018	80610	20806	59804	https://www.cell.com/neuron/references/S0896-6273(18)30148-X	European	G6_ALS	BETA	SNP	CHR	BP	Allele1	Allele2	Effect	P	hg19
+Bipolar_vs_control_PGC_Cell_2018_formatted.txt.gz	bipolar_disorder	74194	20129	54065	PGC;Cell;2018;https://doi.org/10.1016/j.cell.2018.05.046	European	F5_BIPO	OR	variant	chr	pos	effect_allele	other_allele	OR	pval	hg19
+cad.add.160614.website.txt.gz	coronary_artery_disease	184305	60801	123504	https://www.nature.com/articles/ng.3396	Trans-ancestry	I9_CHD	BETA	markername	chr	bp_hg19	effect_allele	noneffect_allele	beta	p_dgc	hg19
+ckqny.scz2snpres.gz	Schizophrenia_PGC_2014	150064	36989	113075	https://www.nature.com/articles/nature13595	Trans-ancestry	F5_SCHZPHR	OR	snpid	hg19chrc	bp	a1	a2	or	p	hg19
+daner_PGC_SCZ52_0513a.resultfiles_PGC_SCZ52_0513.sh2_nofin.gz	Schizophrenia_PGC_2014_noFinns	150064	36989	113075	PGC_schzizophrenia_GWAS_Ripke_et_al._excluding_Finnish	European	F5_SCHZPHR	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
 dpw_excludingFinnishStudies_4finngen.txt.gz	alcohol_consumption	527282	NA	NA	https://www.nature.com/articles/s41398-019-0676-2	European	NA	BETA	RSID	CHROM	POS	ALT	REF	Beta	PValue	hg19
-EAGLE_AD_GWAS_results_2015.txt.gz	L12_ATOPIC	116863	21399	95464	https://www.nature.com/articles/ng.3424	Trans-ancestry	L12_ATOPIC	BETA	rsID	chromosome	position	reference_allele	other_allele	beta	p.value	hg19
+EAGLE_AD_GWAS_results_2015.txt.gz	atopic_dermatitis	116863	21399	95464	https://www.nature.com/articles/ng.3424	Trans-ancestry	L12_ATOPIC	BETA	rsID	chromosome	position	reference_allele	other_allele	beta	p.value	hg19
 Educational_Attainment_excl23andme_Lee_2018_NatGen_formatted.txt.gz	educational_attainment	766343	NA	NA	Lee;Nat_Gen;2018;https://doi.org/10.1038/s41588-018-0147-3	European	NA	BETA	variant	chr	pos	effect_allele	other_allele	beta	pval	hg19
-EUR.CD.gwas_info03_filtered.assoc.gz	K11_CROHN	20883	5956	14927	https://www.nature.com/articles/ng.3359	European	K11_CD_STRICT2	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
-EUR.IBD.gwas_info03_filtered.assoc.gz	K11_IBD	34652	12882	21770	https://www.nature.com/articles/ng.3359	European	K11_KELAIBD	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
-EUR.UC.gwas_info03_filtered.assoc.gz	K11_ULCER	27432	6968	20464	https://www.nature.com/articles/ng.3359	European	K11_UC_STRICT2	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
-focal_epilepsy_METAL_4finngen.txt.gz	FE	39348	9671	29677	https://www.nature.com/articles/s41467-018-07524-z	European	FE	BETA	snpid	hg19chrc	bp	a1	a2	beta	p	hg19
-gabriel_asthma_meta-analysis_36studies_format_repository_NEJM.txt.gz	J10_ASTHMA	26475	10365	16110	https://www.nejm.org/doi/full/10.1056/nejmoa0906312	European	J10_ASTHMA_EXMORE	OR	rs	Chr	position	Allele_2	Allele_1	OR_fix	P_fix	hg19
-generalised_epilepsy_METAL_4finngen.txt.gz	GE	33446	3769	29677	https://www.nature.com/articles/s41467-018-07524-z	European	GE	BETA	snpid	hg19chrc	bp	a1	a2	beta	p	hg19
-GIANT_HEIGHT_Wood_et_al_2014_publicrelease_HapMapCeuFreq.txt.gz	Height	253288	NA	NA	https://www.nature.com/articles/ng.3097	European	NA	BETA	MarkerName	NA	NA	Allele1	Allele2	b	p	hg19
-GWAS_CP_all.txt.gz	Cognitive_performance_meta	257828	NA	NA	https://www.nature.com/articles/s41588-018-0147-3	European	NA	BETA	MarkerName	CHR	POS	A1	A2	Beta	Pval	hg19
+EUR.CD.gwas_info03_filtered.assoc.gz	Crohn's_disease	20883	5956	14927	https://www.nature.com/articles/ng.3359	European	K11_CD_STRICT2	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+EUR.IBD.gwas_info03_filtered.assoc.gz	Inflammatory_bowel_disease	34652	12882	21770	https://www.nature.com/articles/ng.3359	European	K11_KELAIBD	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+EUR.UC.gwas_info03_filtered.assoc.gz	Ulcerative_colitis	27432	6968	20464	https://www.nature.com/articles/ng.3359	European	K11_UC_STRICT2	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+focal_epilepsy_METAL_4finngen.txt.gz	Focal_epilepsy	39348	9671	29677	https://www.nature.com/articles/s41467-018-07524-z	European	FE	BETA	snpid	hg19chrc	bp	a1	a2	beta	p	hg19
+gabriel_asthma_meta-analysis_36studies_format_repository_NEJM.txt.gz	Asthma_Moffatt_2010	26475	10365	16110	https://www.nejm.org/doi/full/10.1056/nejmoa0906312	European	J10_ASTHMA_EXMORE	OR	rs	Chr	position	Allele_2	Allele_1	OR_fix	P_fix	hg19
+generalised_epilepsy_METAL_4finngen.txt.gz	Generalized_epilepsy	33446	3769	29677	https://www.nature.com/articles/s41467-018-07524-z	European	GE	BETA	snpid	hg19chrc	bp	a1	a2	beta	p	hg19
+GIANT_HEIGHT_Wood_et_al_2014_publicrelease_HapMapCeuFreq.txt.gz	Height_giant_2014	253288	NA	NA	https://www.nature.com/articles/ng.3097	European	HEIGHT_IRN	BETA	MarkerName	NA	NA	Allele1	Allele2	b	p	hg19
+GWAS_CP_all.txt.gz	Cognitive_performance	257828	NA	NA	https://www.nature.com/articles/s41588-018-0147-3	European	NA	BETA	MarkerName	CHR	POS	A1	A2	Beta	Pval	hg19
 Hb_gwas_summary_fromNealeLab.tsv.gz	Haemoglobin_concentration	350474	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	effect_allele	other_allele	beta	pval	hg19
 HbA1c_METAL_European.txt.gz	HbA1c	123665	NA	NA	http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1002383	European	NA	BETA	snp	chr	pos	effect_allele	other_allele	beta	pvalue	hg19
 HDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	HDL-C	57045	NA	NA	https://www.nature.com/articles/ng.3300	European	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19
-IGAP_stage_1.txt.gz	G6_ALZHEIMER	54162	17008	37154	https://www.nature.com/articles/ng.2802	European	G6_ALZHEIMER	BETA	MarkerName	Chromosome	Position	Effect_allele	Non_Effect_allele	Beta	Pvalue	hg19
-iPSYCH-PGC_ASD_Nov2017.gz	F5_AUTISM	46350	18381	27969	https://www.biorxiv.org/content/early/2017/11/27/224774	European	KRA_PSY_AUTISM_EXMORE	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
-kunkle_etal_stage1.txt.gz	G6_ALZHEIMER	63926	21982	41944	https://www.niagads.org/datasets/ng00075	European	G6_ALZHEIMER	BETA	MarkerName	Chromosome	Position	Effect_allele	Non_Effect_allele	Beta	Pvalue	hg19
+IGAP_stage_1.txt.gz	Alzheimer's_Lambert_2013	54162	17008	37154	https://www.nature.com/articles/ng.2802	European	G6_ALZHEIMER	BETA	MarkerName	Chromosome	Position	Effect_allele	Non_Effect_allele	Beta	Pvalue	hg19
+iPSYCH-PGC_ASD_Nov2017.gz	ASD	46350	18381	27969	https://www.biorxiv.org/content/early/2017/11/27/224774	European	KRA_PSY_AUTISM_EXMORE	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+kunkle_etal_stage1.txt.gz	Alzheimer's_Kunkle_2019	63926	21982	41944	https://www.niagads.org/datasets/ng00075	European	G6_ALZHEIMER	BETA	MarkerName	Chromosome	Position	Effect_allele	Non_Effect_allele	Beta	Pvalue	hg19
 LDL_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	LDL-C	57045	NA	NA	https://www.nature.com/articles/ng.3300	European	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19
-Mahajan.NatGenet2018b.T2D.European.txt.gz	T2D	898130	74124	824006	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6287706/	European	T2D	BETA	SNP	Chr	Pos	EA	NEA	Beta	Pvalue	hg19
-MDD2018_ex23andMe.19fields.gz	F5_DEPRESSIO	173005	59851	113154	https://www.nature.com/articles/s41588-018-0090-3	European	F5_DEPRESSIO	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
-meta_v3_onco_euro_overall_ChrAll_1_release.txt.gz	C3_PROSTATE_EXALLC	140254	79148	61106	https://www.nature.com/articles/s41588-018-0142-8	European	C3_PROSTATE_EXALLC	BETA	SNP	Chr	position	Allele1	Allele2	Effect	Pvalue	hg19
-METAANALYSIS_DIAGRAM_SE1.txt.gz	T2D	159208	26676	132532	http://diabetes.diabetesjournals.org/content/66/11/2888	European	T2D	BETA	Chr:Position	NA	NA	Allele1	Allele2	Effect	P-value	hg19
-metastroke.all.chr.bp.gz	I9_STR	74393	12389	62004	https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(12)70234-X/abstract	European	I9_STR	BETA	MarkerName	chromosome	position	Allele1	Allele2	Effect	P.value	hg19
+Mahajan.NatGenet2018b.T2D.European.txt.gz	T2D_Mahajan_2018	898130	74124	824006	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6287706/	European	T2D	BETA	SNP	Chr	Pos	EA	NEA	Beta	Pvalue	hg19
+MDD2018_ex23andMe.19fields.gz	Major_depressive_disorder	173005	59851	113154	https://www.nature.com/articles/s41588-018-0090-3	European	F5_DEPRESSIO	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+meta_v3_onco_euro_overall_ChrAll_1_release.txt.gz	prostate_cancer	140254	79148	61106	https://www.nature.com/articles/s41588-018-0142-8	European	C3_PROSTATE_EXALLC	BETA	SNP	Chr	position	Allele1	Allele2	Effect	Pvalue	hg19
+METAANALYSIS_DIAGRAM_SE1.txt.gz	T2D_Scott_2017	159208	26676	132532	http://diabetes.diabetesjournals.org/content/66/11/2888	European	T2D	BETA	Chr:Position	NA	NA	Allele1	Allele2	Effect	P-value	hg19
+metastroke.all.chr.bp.gz	Ischaemic_stroke	74393	12389	62004	https://www.thelancet.com/journals/laneur/article/PIIS1474-4422(12)70234-X/abstract	European	I9_STR	BETA	MarkerName	chromosome	position	Allele1	Allele2	Effect	P.value	hg19
 MTAG_CP.to10K.txt.gz	Cognitive_Performance	257828	NA	NA	https://www.nature.com/articles/s41588-018-0147-3	European	NA	BETA	MarkerName	CHR	POS	A1	A2	Beta	Pval	hg19
 MTAG_EA.to10K.txt.gz	Educational_attainment	1131881	NA	NA	https://www.nature.com/articles/s41588-018-0147-3	European	NA	BETA	MarkerName	CHR	POS	A1	A2	Beta	Pval	hg19
-pgc.bip.full.2012-04.txt.gz	F5_BIPO	16731	7481	9250	https://www.nature.com/articles/ng.943	European	F5_BIPO	OR	snpid	hg18chr	bp	a1	a2	or	pval	hg18
-pgc.ed.freeze1.summarystatistics.July2017.txt.gz	F5_ANOREX	14477	3495	10982	Missing	European	F5_ANOREX	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
-RA_GWASmeta_European_v2.txt.gz	M13_RHEUMA	58284	14361	43923	https://www.nature.com/articles/nature12873	European	M13_RHEUMA	OR	SNPID	Chr	Position(hg19)	A1	A2	OR(A1)	P-val	hg19
+pgc.bip.full.2012-04.txt.gz	Bipolar_disorder_PGC_2011	16731	7481	9250	https://www.nature.com/articles/ng.943	European	F5_BIPO	OR	snpid	hg18chr	bp	a1	a2	or	pval	hg18
+pgc.ed.freeze1.summarystatistics.July2017.txt.gz	Anorexia	14477	3495	10982	Missing	European	F5_ANOREX	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+RA_GWASmeta_European_v2.txt.gz	rheumatoid_arthritis	58284	14361	43923	https://www.nature.com/articles/nature12873	European	M13_RHEUMA	OR	SNPID	Chr	Position(hg19)	A1	A2	OR(A1)	P-val	hg19
 SavageJansen_2018_intelligence_metaanalysis_formatted.txt.gz	intelligence	269867	NA	NA	Savage;Nat_Gen-2018;https://doi.org/10.1038/s41588-018-0152-6	European	NA	BETA	variant	chr	pos	effect_allele	other_allele	beta	pval	hg19
-Saxena_fullUKBB_Longsleep_summary_stats_formatted.txt.gz	long_sleep	446118	NA	NA	Dashti;Natcomm-2019;https://doi.org/10.1038/s41467-019-08917-4	European	NA	BETA	variant	chr	pos	effect_allele	other_allele	beta	pval	hg19
+Saxena_fullUKBB_Longsleep_summary_stats_formatted.txt.gz	habitual_sleep_duration	446118	NA	NA	Dashti;Natcomm-2019;https://doi.org/10.1038/s41467-019-08917-4	European	NA	BETA	variant	chr	pos	effect_allele	other_allele	beta	pval	hg19
 Shrine_30804560_FEV1_meta-analysis.txt.gz	FEV1	321047	NA	NA	https://www.nature.com/articles/s41588-018-0321-7	European	NA	BETA	#SNP	Chromosome	Position_b37	Coded	Non_coded	beta	P	hg19
 Shrine_30804560_FEV1_to_FVC_RATIO_meta-analysis.txt.gz	FEV1/FVC	321047	NA	NA	https://www.nature.com/articles/s41588-018-0321-7	European	NA	BETA	#SNP	Chromosome	Position_b37	Coded	Non_coded	beta	P	hg19
 Shrine_30804560_FVC_meta-analysis.txt.gz	FVC	321047	NA	NA	https://www.nature.com/articles/s41588-018-0321-7	European	NA	BETA	#SNP	Chromosome	Position_b37	Coded	Non_coded	beta	P	hg19
 Shrine_30804560_PEF_meta-analysis.txt.gz	Peak_expiratory_flow	321047	NA	NA	https://www.nature.com/articles/s41588-018-0321-7	European	NA	BETA	#SNP	Chromosome	Position_b37	Coded	Non_coded	beta	P	hg19
-SNP_gwas_mc_merge_nogc.tbl.uniq.gz	BMI	322154	NA	NA	https://www.nature.com/articles/nature14177	European	NA	BETA	SNP	NA	NA	A1	A2	b	p	hg19
-SORTED_PTSD_EA9_ALL_study_specific_PCs1.txt.gz	F5_PTSD	9537	2424	7113	https://www.nature.com/articles/mp201777	European	F5_PTSD	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P-value	hg19
+SNP_gwas_mc_merge_nogc.tbl.uniq.gz	BMI	322154	NA	NA	https://www.nature.com/articles/nature14177	European	BMI_IRN	BETA	SNP	NA	NA	A1	A2	b	p	hg19
+SORTED_PTSD_EA9_ALL_study_specific_PCs1.txt.gz	Posttraumatic_stress_disorder	9537	2424	7113	https://www.nature.com/articles/mp201777	European	F5_PTSD	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P-value	hg19
 sumstats_neuroticism_ctg_format_formatted.txt.gz	neuroticism	449484	NA	NA	Nagel;NatGen2018-https://doi.org/10.1038/s41588-018-0151-7	European	NA	BETA	variant	chr	pos	effect_allele	other_allele	zscore	pval	hg19
-TC_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	Total-cholesterol	57045	NA	NA	https://www.nature.com/articles/ng.3300	European	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19
+TC_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	Total_cholesterol	57045	NA	NA	https://www.nature.com/articles/ng.3300	European	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19
 TG_Meta_ENGAGE_1000G_non_FINRISK_QCd.txt.gz	Triglycerides	57045	NA	NA	https://www.nature.com/articles/ng.3300	European	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19
-UKBB_gwas_Neale_Chronotype_formatted.txt.gz	chronotype	301143	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	other_allele	effect_allele	beta	pval	hg19
-UKBB_gwas_Neale_pulserate_formatted.txt.gz	heart_rate	317756	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	other_allele	effect_allele	beta	pval	hg19
-UKBB_gwas_Neale_SleepDuration_formatted.txt.gz	sleepduration	335410	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	other_allele	effect_allele	beta	pval	hg19
-UKBB_gwas_Neale_SleeplessnessInsomnia_formatted.txt.gz	insomnia	336965	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	other_allele	effect_allele	beta	pval	hg19
-UKBB_HYPO.txt.gz	HYPOTHYROIDISM	406300	14871	391429	UKBB	European	E4_HYTHY_AI_STRICT	BETA	rsids	#chrom	pos	alt	ref	beta	pval	hg19
-UKB-ICBPmeta750k_DBPsummaryResults.txt.gz	I9_HYPTENSESS	757601	NA	NA	UKBB_ICBP	European	I9_HYPTENSESS	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P	hg19
-UKB-ICBPmeta750k_PPsummaryResults.edited.txt.gz	I9_HYPTENSESS	757601	NA	NA	UKBB_ICBP	European	I9_HYPTENSESS	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P	hg19
-UKB-ICBPmeta750k_SBPsummaryResults.txt.gz	I9_HYPTENSESS	757601	NA	NA	UKBB_ICBP	European	I9_HYPTENSESS	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P	hg19
+UKBB_gwas_Neale_Chronotype_formatted.txt.gz	chronotype_neale	301143	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	other_allele	effect_allele	beta	pval	hg19
+UKBB_gwas_Neale_pulserate_formatted.txt.gz	heart_rate_neale	317756	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	other_allele	effect_allele	beta	pval	hg19
+UKBB_gwas_Neale_SleepDuration_formatted.txt.gz	sleepduration_neale	335410	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	other_allele	effect_allele	beta	pval	hg19
+UKBB_gwas_Neale_SleeplessnessInsomnia_formatted.txt.gz	insomnia_neale	336965	NA	NA	UKBB	European	NA	BETA	variant	chr	pos	other_allele	effect_allele	beta	pval	hg19
+UKBB_HYPO.txt.gz	hypothyroidism	406300	14871	391429	UKBB	European	E4_HYTHY_AI_STRICT	BETA	rsids	#chrom	pos	alt	ref	beta	pval	hg19
+UKB-ICBPmeta750k_DBPsummaryResults.txt.gz	diastolic_blood_pressure	757601	NA	NA	UKBB_ICBP	European	I9_HYPTENSESS	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P	hg19
+UKB-ICBPmeta750k_PPsummaryResults.edited.txt.gz	pulse_pressure	757601	NA	NA	UKBB_ICBP	European	I9_HYPTENSESS	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P	hg19
+UKB-ICBPmeta750k_SBPsummaryResults.txt.gz	systolic_blood_pressure	757601	NA	NA	UKBB_ICBP	European	I9_HYPTENSESS	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P	hg19
 GSCAN_AgeofInitiation.txt.gz	smoking_age_of_initiation	341427	NA	NA	https://www.nature.com/articles/s41588-018-0307-5	European	NA	BETA	RSID	CHROM	POS	ALT	REF	BETA	PVALUE	hg19
 GSCAN_CigarettesPerDay.txt.gz	smoking_cigarettes_per_day	337334	NA	NA	https://www.nature.com/articles/s41588-018-0307-5	European	NA	BETA	RSID	CHROM	POS	ALT	REF	BETA	PVALUE	hg19
 GSCAN_DrinksPerWeek.txt.gz	drinks_per_week	941280	NA	NA	https://www.nature.com/articles/s41588-018-0307-5	European	NA	BETA	RSID	CHROM	POS	ALT	REF	BETA	PVALUE	hg19
 GSCAN_SmokingInitiation.txt.gz	smoking_initiation	1232091	NA	NA	https://www.nature.com/articles/s41588-018-0307-5	European	NA	BETA	RSID	CHROM	POS	ALT	REF	BETA	PVALUE	hg19
 PGC_UKB_depression_genome-wide.txt.gz	depression	500199	170756	329443	https://www.nature.com/articles/s41588-018-0090-3	European	F5_DEPRESSIO	BETA	MarkerName	NA	NA	A1	A2	LogOR	P	hg19
 PGC_UKB_23andMe_depression_10000.txt.gz	depression_23andme	807553	246363	561190	https://www.nature.com/articles/s41588-018-0090-3	European	F5_DEPRESSIO	BETA	MarkerName	NA	NA	A1	A2	LogOR	P	hg19
-PGC3_SCZ_wave3_public_without_frequencies.v1.tsv.gz	schizophrenia	306011	69369	236642	https://www.medrxiv.org/content/10.1101/2020.09.12.20192922v1	European	F5_SCHZPHR	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
-PGC3_SCZ_wave3_public_without_frequencies.clumped.v1.tsv.gz	schizophrenia_clumped	306011	69369	236642	https://www.medrxiv.org/content/10.1101/2020.09.12.20192922v1	European	F5_SCHZPHR	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+PGC3_SCZ_wave3_public_without_frequencies.v1.tsv.gz	schizophrenia_pgc_2022	306011	69369	236642	https://www.nature.com/articles/s41586-022-04434-5	European	F5_SCHZPHR	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+PGC3_SCZ_wave3_public_without_frequencies.clumped.v1.tsv.gz	schizophrenia_pgc_2022_clumped	306011	69369	236642	https://www.nature.com/articles/s41586-022-04434-5	European	F5_SCHZPHR	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
 daner_PGC_BIP32b_mds7a_0416a.gz	bipolar_disorder	51710	20352	31358	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6956732/	European	F5_BIPO	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
 CIMBA_BRCA1_BCAC_TN_meta_summary_level_statistics.txt.gz	breast_cancer	247173	133384	113789	https://www.nature.com/articles/s41588-020-0609-2	European	C3_BREAST_EXALLC	BETA	MarkerName	CHR	position	Allele2	Allele1	Effect	P-value	hg19
 AF_HRC_GWAS_ALLv11.txt.gz	atrial_fibrillation	588190	65446	522744	https://www.nature.com/articles/s41588-018-0133-9	Trans-ancestry	I9_AF	BETA	MarkerName	chr	pos	Allele1	Allele2	Effect	P-value	hg19
@@ -72,54 +72,59 @@ continuous-LDLC-both_sexes-medadj_irnt.tsv.gz	ldl_adj_irnt	248559	NA	NA	https://
 biomarkers-30750-both_sexes-irnt.tsv.gz	hba1c_inrt	194273	NA	NA	https://docs.google.com/spreadsheets/d/1AeeADtT0U1AukliiNyiVzVRdLYPkTbruQSk38DeutU8/edit#gid=511623409	European	NA	BETA	chr	chr	pos	alt	ref	beta_EUR	pval_EUR	hg19
 biomarkers-30870-both_sexes-irnt.tsv.gz	triglycerides_irnt	194702	NA	NA	https://docs.google.com/spreadsheets/d/1AeeADtT0U1AukliiNyiVzVRdLYPkTbruQSk38DeutU8/edit#gid=511623409	European	NA	BETA	chr	chr	pos	alt	ref	beta_EUR	pval_EUR	hg19
 MEGASTROKE.1.AS.TRANS.out.gz	any_stroke	524354	67162	454450	https://www.nature.com/articles/s41588-018-0058-3	Trans-ancestry	I9_STR	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P-value	hg19
-UKBB.asthma-2.assoc.gz	asthma	536345	88486	447859	https://www.nature.com/articles/s41467-020-15649-3	European	J10_ASTHMA_EXMORE	OR	SNP	CHR	POS	A1	A2	OR	P	hg19
-ICP_FG_DC_EG_DBDS_202012.gz	ICP_WIDE_EXMORE	303871	2138	301733	FG	Scandinavian	O15_ICP_WIDE_EXMORE	beta	SNP	#CHR	POS	ALT	REF	all_inv_var_meta_beta	all_inv_var_meta_p	hg38
-Meta-analysis_Wood_et_al+UKBiobank_2018_height.txt.gz	height	700000	NA	NA	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6488973/	European	NA	BETA	SNP	CHR	POS	Tested_Allele	Other_Allele	BETA	P	hg19
-Meta-analysis_Locke_et_al+UKBiobank_2018_bmi.txt.gz	bmi	700000	NA	NA	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6488973/	European	NA	BETA	SNP	CHR	POS	Tested_Allele	Other_Allele	BETA	P	hg19
+UKBB.asthma-2.assoc.gz	asthma_han_2020	536345	88486	447859	https://www.nature.com/articles/s41467-020-15649-3	European	J10_ASTHMA_EXMORE	OR	SNP	CHR	POS	A1	A2	OR	P	hg19
+ICP_FG_DC_EG_DBDS_202012.gz	intrahepatic_cholestatis_of_pregnancy	303871	2138	301733	FG	Scandinavian	O15_ICP_WIDE_EXMORE	beta	SNP	#CHR	POS	ALT	REF	all_inv_var_meta_beta	all_inv_var_meta_p	hg38
+Meta-analysis_Wood_et_al+UKBiobank_2018_height.txt.gz	height_giant_2014_ukb	700000	NA	NA	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6488973/	European	NA	BETA	SNP	CHR	POS	Tested_Allele	Other_Allele	BETA	P	hg19
+Meta-analysis_Locke_et_al+UKBiobank_2018_bmi.txt.gz	height_giant_2014_ukb	700000	NA	NA	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6488973/	European	NA	BETA	SNP	CHR	POS	Tested_Allele	Other_Allele	BETA	P	hg19
 GSEM.GWAS.EXTERNALIZING.SHARE.v20191014.txt.gz	externalizing	1492085	NA	NA	https://www.biorxiv.org/content/10.1101/2020.10.16.342501v1	European	NA	BETA	SNP	CHR	POS	A1	A2	BETA.A1	PVAL	hg19
-MTAG_glaucoma_four_traits_summary_statistics.txt.gz	glaucoma_	327797	NA	119318	https://www.nature.com/articles/s41588-019-0556-y	European	H7_GLAUCOMA	BETA	SNP	CHR	POS	Effect_allele	Non_Effect_allele	BETA	P	hg19
+MTAG_glaucoma_four_traits_summary_statistics.txt.gz	glaucoma_Craig_2020	327797	NA	119318	https://www.nature.com/articles/s41588-019-0556-y	European	H7_GLAUCOMA	BETA	SNP	CHR	POS	Effect_allele	Non_Effect_allele	BETA	P	hg19
 phecode-696.4-both_sexes.tsv.gz	Psoriasis	399085	3250	396181	UKBB	European	L12_PSORIASIS	BETA	pos	chr	pos	alt	ref	beta_EUR	pval_EUR	hg19
 phecode-250.1-both_sexes.tsv.gz	T1D	406978	2904	396181	UKBB	European	T1D_WIDE	BETA	pos	chr	pos	alt	ref	beta_EUR	pval_EUR	hg19
 BCX2_EOS_Trans_GWAMA.out.gz	EOS_Trans	583850	NA	NA	https://pubmed.ncbi.nlm.nih.gov/32888493/	Trans-ancestry	NA	BETA	rs_number	NA	NA	reference_allele	other_allele	beta	p-value	hg19
-biomarkers-30600-both_sexes-irnt.tsv.gz	Albumin	422605	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30610-both_sexes-irnt.tsv.gz	Alkaline_phosphatase	461525	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30620-both_sexes-irnt.tsv.gz	Alanine_aminotransferase	461326	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30630-both_sexes-irnt.tsv.gz	Apolipoprotein_A	420088	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30640-both_sexes-irnt.tsv.gz	Apolipoprotein_B	459181	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30650-both_sexes-irnt.tsv.gz	Aspartate_aminotransferase	459799	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30660-both_sexes-irnt.tsv.gz	Direct_bilirubin	391906	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30670-both_sexes-irnt.tsv.gz	Urea	461200	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30680-both_sexes-irnt.tsv.gz	Calcium	422461	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30690-both_sexes-irnt.tsv.gz	Cholesterol	461507	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30700-both_sexes-irnt.tsv.gz	Creatinine	461280	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30710-both_sexes-irnt.tsv.gz	C-reactive_protein	460502	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30720-both_sexes-irnt.tsv.gz	Cystatin_C	461481	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30730-both_sexes-irnt.tsv.gz	Gamma_glutamyltransferase	461270	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30740-both_sexes-irnt.tsv.gz	Glucose	422106	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30760-both_sexes-irnt.tsv.gz	HDL_cholesterol	422405	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30770-both_sexes-irnt.tsv.gz	IGF-1	459000	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30780-both_sexes-irnt.tsv.gz	LDL_direct	460650	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30790-both_sexes-irnt.tsv.gz	Lipoprotein_A	369165	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30800-both_sexes-irnt.tsv.gz	Oestradiol	75290	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30810-both_sexes-irnt.tsv.gz	Phosphate	421793	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30820-both_sexes-irnt.tsv.gz	Rheumatoid_factor	40596	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30830-both_sexes-irnt.tsv.gz	SHBG	418540	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30840-both_sexes-irnt.tsv.gz	Total_bilirubin	459567	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30850-both_sexes-irnt.tsv.gz	Testosterone	417996	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30860-both_sexes-irnt.tsv.gz	Total_protein	422149	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30880-both_sexes-irnt.tsv.gz	Urate	460950	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-biomarkers-30890-both_sexes-irnt.tsv.gz	Vitamin_D	440651	NA	NA	https://pan.ukbb.broadinstitute.org/	"AFR	AMR	CSA	EAS	EUR	MID"	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
-ukb.allasthma.upload.final.assoc_v2.txt.gz	asthma	403124	46802	394283	https://erj.ersjournals.com/content/54/6/1901507-0.long	European	J10_ASTHMA_EXMORE	BETA	SNP	CHR	BP	A1	A2	BETA	P	hg19
+biomarkers-30600-both_sexes-irnt.tsv.gz	Albumin_panukbb	422605	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30610-both_sexes-irnt.tsv.gz	Alkaline_phosphatase_panukbb	461525	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30620-both_sexes-irnt.tsv.gz	Alanine_aminotransferase_panukbb	461326	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30630-both_sexes-irnt.tsv.gz	Apolipoprotein_A_panukbb	420088	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30640-both_sexes-irnt.tsv.gz	Apolipoprotein_B_panukbb	459181	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30650-both_sexes-irnt.tsv.gz	Aspartate_aminotransferase_panukbb	459799	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30660-both_sexes-irnt.tsv.gz	Direct_bilirubin_panukbb	391906	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30670-both_sexes-irnt.tsv.gz	Urea_panukbb	461200	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30680-both_sexes-irnt.tsv.gz	Calcium_panukbb	422461	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30690-both_sexes-irnt.tsv.gz	Cholesterol_panukbb	461507	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30700-both_sexes-irnt.tsv.gz	Creatinine_panukbb	461280	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30710-both_sexes-irnt.tsv.gz	C-reactive_protein_panukbb	460502	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30720-both_sexes-irnt.tsv.gz	Cystatin_C_panukbb	461481	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30730-both_sexes-irnt.tsv.gz	Gamma_glutamyltransferase_panukbb	461270	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30740-both_sexes-irnt.tsv.gz	Glucose_panukbb	422106	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30760-both_sexes-irnt.tsv.gz	HDL_cholesterol_panukbb	422405	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30770-both_sexes-irnt.tsv.gz	IGF-1_panukbb	459000	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30780-both_sexes-irnt.tsv.gz	LDL_direct_panukbb	460650	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30790-both_sexes-irnt.tsv.gz	Lipoprotein_A_panukbb	369165	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30800-both_sexes-irnt.tsv.gz	Oestradiol_panukbb	75290	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30810-both_sexes-irnt.tsv.gz	Phosphate_panukbb	421793	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30820-both_sexes-irnt.tsv.gz	Rheumatoid_factor_panukbb	40596	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30830-both_sexes-irnt.tsv.gz	SHBG_panukbb	418540	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30840-both_sexes-irnt.tsv.gz	Total_bilirubin_panukbb	459567	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30850-both_sexes-irnt.tsv.gz	Testosterone_panukbb	417996	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30860-both_sexes-irnt.tsv.gz	Total_protein_panukbb	422149	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30880-both_sexes-irnt.tsv.gz	Urate_panukbb	460950	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+biomarkers-30890-both_sexes-irnt.tsv.gz	Vitamin_D_panukbb	440651	NA	NA	https://pan.ukbb.broadinstitute.org/	AFR,AMR,CSA,EAS,EUR,MID	NA	BETA	pos	chr	pos	alt	ref	beta_meta	pval_meta	hg19
+ukb.allasthma.upload.final.assoc_v2.txt.gz	asthma_Zhu_2019	403124	46802	394283	https://erj.ersjournals.com/content/54/6/1901507-0.long	European	J10_ASTHMA_EXMORE	BETA	SNP	CHR	BP	A1	A2	BETA	P	hg19
 michailidoubreastcancerall.txt.gz	Breast_cancer	228951	122977	105974	https://www.nature.com/articles/nature24284	European	C3_BREAST_EXALLC	BETA	rs	chr	pos	alt	ref	effalt	pval	hg19
 20171017_MW_eGFR_overall_EA_nstud42.dbgap_v2.txt.gz	estimated_glomerular_filtration_rate	567460	567460	567460	https://www.nature.com/articles/s41588-019-0407-x	EUR	N14_CHRONKIDNEYDIS	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	hg19
 colorectal_cancer.txt.gz	Colorectal_cancer	106006	34627	71379	https://www.nature.com/articles/s41467-019-09775-w	European	C3_COLORECTAL_EXALLC	BETA	rs	chr	pos	alt	ref	effalt	pval	hg19
-MTAG_glaucoma_four_traits_summary_statistics.txt.gz	Glaucoma_multitrait	351696	351696	351696	https://www.nature.com/articles/s41588-019-0556-y	European	H7_GLAUCOMA	BETA	SNP	CHR	POS	Effect_allele	Non_Effect_allele	BETA	P	hg19
 urate_chr1_22_LQ_IQ06_mac10_all_741_rsid_v2.txt.gz	Urate	457690	457690	457690	https://www.nature.com/articles/s41588-019-0504-x	Trans-ancestry	M13_GOUT	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	hg19
 Tachmazidou_30664745_HIPOA.txt.gz	hip_osteoarthritis	393873	15704	378169	https://www.nature.com/articles/s41588-018-0327-1	European	M13_ARTHTROSIS_COX	BETA	variant	chromosome	pos	Allele1	Allele2	Effect	P-value	hg19
 Tachmazidou_30664745_KNEEOA.txt.gz	knee_osteoarthritis	403124	24955	378169	https://www.nature.com/articles/s41588-018-0327-1	European	M13_ARTHROSIS_KNEE	BETA	variant	chromosome	pos	Allele1	Allele2	Effect	P-value	hg19
 BMD_v3_SumStats.txt.gz	Bone_mineral_density	394929	394929	394929	https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0200785	European	M13_OSTEOPOROSIS	BETA	SNP	CHR	BP	ALLELE1	ALLELE0	BETA	P_BOLT_LMM	hg19
 anno.CLEANED.MVP.EUR.VTE.results.EQC.tbl.gz	Venous_thromboembolism	650119	26066	624053	https://www.nature.com/articles/s41588-019-0519-3	Multi	I9_VTE	BETA	ID	CHROM	POS	EFFECT_ALLELE	OTHER_ALLELE	BETA	PVAL	hg19
-GCST90011770_buildGRCh37.tsv.gz	Glaucoma	383500	34179	349321	https://www.nature.com/articles/s41467-020-20851-4	Trans-ancestry	H7_GLAUCOMA	BETA	variant_id	chromosome	base_pair_location	effect_allele	other_allele	beta	p_value	hg19
+GCST90011770_buildGRCh37.tsv.gz	Glaucoma_Gharahkhani_2021	383500	34179	349321	https://www.nature.com/articles/s41467-020-20851-4	Trans-ancestry	H7_GLAUCOMA	BETA	variant_id	chromosome	base_pair_location	effect_allele	other_allele	beta	p_value	hg19
 Hysi_et_al_Refractive_error_NatGenet_2020_beta_se.txt.gz	Refractive_error_and_myopia	542934	NA	NA	https://www.nature.com/articles/s41588-020-0599-0	European	H7_MYOPIA	BETA	MarkerName	NA	NA	Allele2	Allele1	beta	P-value	hg19
-ALS_sumstats_EUR_only.txt.gz	ALS	138086	27205	110881	https://doi.org/10.1101/2021.03.12.21253159	European	G6_ALS	BETA	rsid	chromosome	base_pair_location	effect_allele	other_allele	beta	p_value	hg19
+ALS_sumstats_EUR_only.txt.gz	ALS_Rheenen_2021	138086	27205	110881	https://www.nature.com/articles/s41588-021-00973-1	European	G6_ALS	BETA	rsid	chromosome	base_pair_location	effect_allele	other_allele	beta	p_value	hg19
 discovery_metav3.0.meta.gz	Multiple_Sclerosis	41505	14802	26703	https://pubmed.ncbi.nlm.nih.gov/31604244/	European	G6_MS	OR	SNP	CHR	BP	A1	A2	OR	P	hg19
+HERMES_Jan2019_HeartFailure_summary_data.txt.gz	heart_failure	977323	47309	930014	https://cvd.hugeamp.org/dinspector.html?dataset=GWAS_HERMES_eu	Trans-ethnic	I9_HEARTFAIL	BETA	SNP	CHR	BP	A1	A2	b	p	hg19
+CKD_overall_ALL_JW_20180223_nstud30.dbgap.txt.gz	chronic_kidney_disease	480698	41395	439303	https://ckdgen.imbi.uni-freiburg.de/	Trans-ethnic	N14_CHRONKIDNEYDIS	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	hg37
+netherlands_total.fastGWA.gz	netherlands_total_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19
+netherlands_gp.fastGWA.gz	netherlands_gp_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19
+netherlands_hospital.fastGWA.gz	netherlands_hospital_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19
+netherlands_pharmacy.fastGWA.gz	netherlands_pharmacy_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19
