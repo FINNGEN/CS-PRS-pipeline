@@ -3,7 +3,7 @@
 Pipeline to calculates PRS based on a list of sumstats.
 Weights are calculated with PRScs: https://github.com/getian107/PRScs
 
-The sumstats used for R8 are the following:
+The sumstats used for R9 are the following:
 
 | filename | pheno | publication |
 |---|---|---|
@@ -130,9 +130,15 @@ The sumstats used for R8 are the following:
 | GCST90011770_buildGRCh37.tsv.gz | Glaucoma | https://www.nature.com/articles/s41467-020-20851-4 |
 | Hysi_et_al_Refractive_error_NatGenet_2020_beta_se.txt.gz | Refractive_error_and_myopia | https://www.nature.com/articles/s41588-020-0599-0 |
 | ALS_sumstats_EUR_only.txt.gz | ALS | https://doi.org/10.1101/2021.03.12.21253159 |
-|discovery_metav3.0.meta.gz | Multiple_Sclerosis | https://pubmed.ncbi.nlm.nih.gov/31604244/ |
-
-
+| discovery_metav3.0.meta.gz | Multiple_Sclerosis | https://pubmed.ncbi.nlm.nih.gov/31604244/ |
+| HERMES_Jan2019_HeartFailure_summary_data.txt.gz | I9_HEARTFAIL | https://cvd.hugeamp.org/dinspector.html?dataset=GWAS_HERMES_eu |
+| CKD_overall_ALL_JW_20180223_nstud30.dbgap.txt.gz | N14_CHRONKIDNEYDIS | https://ckdgen.imbi.uni-freiburg.de/ |
+| netherlands_total.fastGWA.gz | netherlands_total_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
+| netherlands_gp.fastGWA.gz | netherlands_gp_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
+| netherlands_hospital.fastGWA.gz | netherlands_hospial_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
+| netherlands_pharmacy.fastGWA.gz | netherlands_pharmacy_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
+| R9SUDDENDEAFNESSANDVESTIBULARNEURITIS.gz | H91.2_H81.2 | FG_CUSTOM |
+| SECRETORYOTITISMEDIA.gz | H65.2 | FG_CUSTOM |
 ## Rsid map
 
 This step generates a mapping to/from rsid/chrompos based on data available at ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-All.vcf.gz.
