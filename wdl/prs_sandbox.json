@@ -1,0 +1,28 @@
+{
+    ## REMOVE ALL COMMENTS BEFORE SUBMITTING OR COPY THEM BY GROUP
+    # USER SPECIFIC PARAMETERS
+    "sandbox_prs.test": True,
+    "sandbox_prs.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",    
+    "sandbox_prs.gwas_meta": "gs://finngen-production-library-green/prs/prs_test.txt",
+    
+    # RELEASE SPECIFIC PARAMETERS
+    "sandbox_prs.rsid_map.bim_file": "gs://finngen-production-library-red/finngen_R10/genotype_plink_1.0/data/finngen_R10.bim",
+    "sandbox_prs.scores.bed_file": "gs://finngen-production-library-red/finngen_R10/genotype_plink_1.0/data/finngen_R10_hm3.bed",
+
+    #STRUCTURAL FILES THAT CAN OPTIONALLY BE CHANGED
+    "sandbox_prs.scores.regions": "gs://finngen-production-library-green/prs/PRS_regions.txt",
+    "sandbox_prs.rsid_map.hm3_rsids": "gs://finngen-production-library-green/prs/hm3.rsids",    
+    "sandbox_prs.weights.ref_list": "gs://finngen-production-library-green/prs/ref_list.txt",
+
+    # RUN TIME OPTIONS
+    "sandbox_prs.weights.cpu": 16,
+    "sandbox_prs.scores.cpu": 16,
+
+    #NOT TO CHANGE
+    "sandbox_prs.chain_map":"gs://finngen-production-library-green/prs/chains/chain_map.txt",
+    "sandbox_prs.rsid_map.vcf_gz": "gs://finngen-production-library-green/prs/00-All.vcf.gz",
+    "sandbox_prs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r6.test"
+    #"sandbox_prs.docker": "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r6.test"
+    
+}
+
