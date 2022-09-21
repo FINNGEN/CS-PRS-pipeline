@@ -112,7 +112,7 @@ biomarkers-30890-both_sexes-irnt.tsv.gz	Vitamin_D_panukbb	440651	NA	NA	https://p
 ukb.allasthma.upload.final.assoc_v2.txt.gz	asthma_Zhu_2019	403124	46802	394283	https://erj.ersjournals.com/content/54/6/1901507-0.long	European	J10_ASTHMA_EXMORE	BETA	SNP	CHR	BP	A1	A2	BETA	P	hg19
 michailidoubreastcancerall.txt.gz	Breast_cancer	228951	122977	105974	https://www.nature.com/articles/nature24284	European	C3_BREAST_EXALLC	BETA	rs	chr	pos	alt	ref	effalt	pval	hg19
 20171017_MW_eGFR_overall_EA_nstud42.dbgap_v2.txt.gz	estimated_glomerular_filtration_rate	567460	567460	567460	https://www.nature.com/articles/s41588-019-0407-x	EUR	N14_CHRONKIDNEYDIS	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	hg19
-colorectal_cancer.txt.gz	Colorectal_cancer	106006	34627	71379	https://www.nature.com/articles/s41467-019-09775-w	European	C3_COLORECTAL_EXALLC	BETA	rs	chr	pos	alt	ref	effalt	pval	hg19
+CRC_LP1_VQ_CFR1_CFR2_COIN_FIN_ONCO_SCOT_AUSTRIA_SP1_SOCCS3_CROATIA_BIOB_LBC_DACHS_meta_uk10k_1kG_info8_allchr.txt.gz	Colorectal_cancer	106006	34627	71379	https://www.nature.com/articles/s41467-019-09775-w	European	C3_COLORECTAL_EXALLC	BETA	rsid	chr	pos	allele_A	allele_B	beta	P_value	hg19
 urate_chr1_22_LQ_IQ06_mac10_all_741_rsid_v2.txt.gz	Urate	457690	457690	457690	https://www.nature.com/articles/s41588-019-0504-x	Trans-ancestry	M13_GOUT	BETA	RSID	Chr	Pos_b37	Allele1	Allele2	Effect	P-value	hg19
 Tachmazidou_30664745_HIPOA.txt.gz	hip_osteoarthritis	393873	15704	378169	https://www.nature.com/articles/s41588-018-0327-1	European	M13_ARTHTROSIS_COX	BETA	variant	chromosome	pos	Allele1	Allele2	Effect	P-value	hg19
 Tachmazidou_30664745_KNEEOA.txt.gz	knee_osteoarthritis	403124	24955	378169	https://www.nature.com/articles/s41588-018-0327-1	European	M13_ARTHROSIS_KNEE	BETA	variant	chromosome	pos	Allele1	Allele2	Effect	P-value	hg19
@@ -128,3 +128,4 @@ netherlands_total.fastGWA.gz	netherlands_total_cost	16726	NA	NA	https://pubmed.n
 netherlands_gp.fastGWA.gz	netherlands_gp_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19
 netherlands_hospital.fastGWA.gz	netherlands_hospital_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19
 netherlands_pharmacy.fastGWA.gz	netherlands_pharmacy_cost	16726	NA	NA	https://pubmed.ncbi.nlm.nih.gov/34213412/	EUR	NA	BETA	SNP	CHR	POS	A1	A2	beta	p	hg19
+GCST90027158_buildGRCh38.tsv.gz	alzheimer	11326	677663	688989	https://www.nature.com/articles/s41588-022-01024-z,WARNING:FINNGEN_SAMPLES_INCLUDED	EUR,FIN,Trans-ethnic	G6_ALZHEIMER	BETA	variant_id	chromosome	base_pair_location	effect_allele	other_allele	beta	p_value	hg38

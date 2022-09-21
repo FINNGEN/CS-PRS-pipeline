@@ -115,11 +115,14 @@ def parse_file(args):
             if not args.no_header:
                 o.write(separator.join([header[i] for i in out_index]) + '\n')
             for line in iterator:
-                rsid,a1,a2 = [line[i] for i in meta_index]
-                chrompos = chrompos_dict[rsid]
-                if chrompos:
-                    line[meta_index[0]] = f"chr{chrompos}_{a1}_{a2}"
-                o.write(separator.join([line[i] for i in out_index]) + '\n')
+                if len(line) != len(header):
+                    pass
+                else:
+                    rsid,a1,a2 = [line[i] for i in meta_index]
+                    chrompos = chrompos_dict[rsid]
+                    if chrompos:
+                        line[meta_index[0]] = f"chr{chrompos}_{a1}_{a2}"
+                    o.write(separator.join([line[i] for i in out_index]) + '\n')
 
 
 if __name__ == '__main__':

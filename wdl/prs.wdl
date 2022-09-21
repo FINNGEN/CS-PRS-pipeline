@@ -4,7 +4,8 @@ workflow prs_cs{
   String docker
   Boolean test
   Map[String,File] build_chains
-
+  String prefix
+  
   call rsid_map {
     input:
     docker = docker
@@ -24,6 +25,7 @@ workflow prs_cs{
     call munge {
       input :
       chainfile = build_chains[build],
+      prefix=prefix,
       docker = docker,
       gwas_data_path = gwas_data_path,
       file_name = gwas[0],
