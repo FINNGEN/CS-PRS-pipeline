@@ -1,7 +1,7 @@
 {
-    ## REMOVE ALL COMMENTS BEFORE SUBMITTING OR COPY THEM BY GROUP
+    ## REMOVE ALL COMMENTS BEFORE SUBMITTING THROUGH INTERFACE OR COPY THEM BY GROUP
     # USER SPECIFIC PARAMETERS
-    "sandbox_prs.test": True,
+    "sandbox_prs.test": False,
     "sandbox_prs.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",    
     "sandbox_prs.gwas_meta": "gs://finngen-production-library-green/prs/prs_test.txt",
     
@@ -21,8 +21,9 @@
     #NOT TO CHANGE
     "sandbox_prs.chain_map":"gs://finngen-production-library-green/prs/chains/chain_map.txt",
     "sandbox_prs.rsid_map.vcf_gz": "gs://finngen-production-library-green/prs/00-All.vcf.gz",
-    "sandbox_prs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r6.test"
-    #"sandbox_prs.docker": "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r6.test"
+    "sandbox_prs.docker": "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r6.test"
+    # FOR TESTING ON OUR SIDE
+    #"sandbox_prs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r6.test" 
     
 }
 
