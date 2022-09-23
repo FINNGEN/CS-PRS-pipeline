@@ -136,6 +136,7 @@ The sumstats used for R9 are the following:
 | netherlands_gp.fastGWA.gz | netherlands_gp_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
 | netherlands_hospital.fastGWA.gz | netherlands_hospital_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
 | netherlands_pharmacy.fastGWA.gz | netherlands_pharmacy_cost | https://pubmed.ncbi.nlm.nih.gov/34213412/ |
+| GCST90027158_buildGRCh38.tsv.gz | alzheimer | https://www.nature.com/articles/s41588-022-01024-z,WARNING:FINNGEN_SAMPLES_INCLUDED |
 
 ## Rsid map
 

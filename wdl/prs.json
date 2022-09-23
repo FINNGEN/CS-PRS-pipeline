@@ -1,12 +1,11 @@
 {
     #WORKFLOW LEVEL
-    "prs_cs.prefix": "test",
+    "prs_cs.prefix": "finngen_R10",
     "prs_cs.test": False, # weights are ran with very few iterations
-    "prs_cs.sumstats.last_sumstats": 2, # optional argument to only run latest N sumsats
+    #"prs_cs.sumstats.last_sumstats": 2, # optional argument to only run latest N sumsats
     "prs_cs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r9",
     "prs_cs.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",
     "prs_cs.gwas_meta": "gs://finngen-production-library-green/prs/PRS_data.txt",
-    #"prs_cs.gwas_meta": "gs://finngen-production-library-green/prs/test.txt",
 
     "prs_cs.build_chains":
     {'hg18':'gs://finngen-production-library-green/prs/chains/hg18ToHg38.over.chain.gz',
@@ -14,12 +13,10 @@
      'hg37':'gs://finngen-production-library-green/prs/chains/hg19ToHg38.over.chain.gz',
      'hg38':'gs://finngen-production-library-green/prs/chains/empty_file.txt'},
 
-
     #RSID MAP
     "prs_cs.rsid_map.bim_file": "gs://r10-data/plink/finngen_r10.bim",
     "prs_cs.rsid_map.vcf_gz": "gs://finngen-production-library-green/prs/00-All.vcf.gz",
     "prs_cs.rsid_map.hm3_rsids": "gs://finngen-production-library-green/prs/hm3.rsids",
-
 
     # MUNGE
     "prs_cs.munge.disk_factor": 5,
@@ -32,7 +29,6 @@
     # SCORES
     "prs_cs.scores.cpu": 16,
     "prs_cs.scores.mem": 14,
-    #"prs_cs.scores.bed_file": "gs://finngen-production-library-red/finngen_R9/genotype_plink_1.0/data/finngen_R9_hm3.bed",
     "prs_cs.scores.bed_file": "gs://r10-data/plink/finngen_r10_hm3.bed",
     "prs_cs.scores.regions": "gs://finngen-production-library-green/prs/PRS_regions.txt",
 
