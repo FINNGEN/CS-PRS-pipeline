@@ -3,7 +3,7 @@
 Pipeline to calculates PRS based on a list of sumstats.
 Weights are calculated with PRScs: https://github.com/getian107/PRScs
 
-The sumstats used for R9 are the following:
+The sumstats used for R10 are the following:
 
 | filename | pheno | publication |
 |---|---|---|
@@ -334,9 +334,13 @@ Here's a breakdown of how it works in each step and how to edit the wdl for one'
 
 ```
 `Test` mode cuts the input sumstats to only 10k variants and performs the weights calculation in test mode (very few iterations). The output will be useless, but it will run in a very short time (mins vs hours).
+
 `run_scores` determines whether scores are calculated or not.
+
 `pheno_list` is the path to the list of phenos to analyze (see munging step).
+
 `plink_root` is the base of the .bim file used as validation by cs-prs. If scores are passed, it also needs to have .bed and .fam files in the same directory
+
 `prefix'`is the prefix prepended to the output of all files
 
 
