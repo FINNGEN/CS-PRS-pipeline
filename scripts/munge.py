@@ -239,14 +239,17 @@ def lift(chrompos_file,chainfile,force):
     lifted_file = f"{chrompos_file}.lifted.gz"
     # check if file already exists
     if not os.path.isfile(lifted_file) or force:
-        cmd = f"python3 {os.path.join(args.root_path,'lift','lift.py')} {chrompos_file} --chainfile {chainfile} --info chr pos a1 a2 --out {file_path}" if args.lift else f"cp {chrompos_file} {lifted_file}"
+        if args.lift:
+            cmd = f"python3 {os.path.join(args.root_path,'lift','lift.py')} {chrompos_file} --chainfile {chainfile} --info chr pos a1 a2 --out {file_path}"
+        else:
+            cmd =f"cp {chrompos_file} {lifted_file}"
+            print('chainfile missing or empty, no lifting will take place')
+                
     else:
         print('already lifted file')
 
     print(cmd)
     subprocess.call(shlex.split(cmd))
-
-
 
 
 if __name__ == '__main__':
@@ -283,7 +286,6 @@ if __name__ == '__main__':
 
     args.lift = True
     if not args.chainfile or os.path.getsize(args.chainfile) == 0:
-        print('chainfile missing or empty, no lifting will take place')
         args.lift = False
 
     if args.test:
