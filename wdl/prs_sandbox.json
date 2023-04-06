@@ -6,8 +6,8 @@
     "sandbox_prs.gwas_meta": "gs://finngen-production-library-green/prs/prs_test.txt",
     
     # RELEASE SPECIFIC PARAMETERS
-    "sandbox_prs.rsid_map.bim_file": "gs://finngen-production-library-red/finngen_R10/genotype_plink_1.0/data/finngen_R10.bim",
-    "sandbox_prs.scores.bed_file": "gs://finngen-production-library-red/finngen_R10/genotype_plink_1.0/data/finngen_R10_hm3.bed",
+    "sandbox_prs.rsid_map.bim_file": "gs://r11-data/plink/finngen_R11.bim",
+    "sandbox_prs.scores.bed_file": "gs://r11-data/plink/finngen_R11_hm3.bed",
 
     #STRUCTURAL FILES THAT CAN OPTIONALLY BE CHANGED
     "sandbox_prs.scores.regions": "gs://finngen-production-library-green/prs/PRS_regions.txt",

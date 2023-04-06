@@ -132,7 +132,6 @@ GCST90027158_buildGRCh38.tsv.gz	alzheimer	11326	677663	688989	https://www.nature
 ALLFX_GWAS_build37.txt.gz	fracture_risk	264973	37857	227116	https://pubmed.ncbi.nlm.nih.gov/30158200/	EUR	ST19_FRACT_FOREA	BETA	MarkerName	NA	NA	Allele1	Allele2	Effect	P-value	hg37
 Biobank2-British-FracA-As-C-Gwas-SumStats.txt.gz	bone_fracture	426824	NA	NA	https://www.nature.com/articles/s41588-018-0302-x	EUR	ST19_FRACT_FOREA	OR	SNP	CHR	BP	ALLELE1	ALLELE0	OR	P	hg37
 Biobank2-British-Bmd-As-C-Gwas-SumStats.txt.gz	eBMD	426824	NA	NA	https://www.nature.com/articles/s41588-018-0302-x	EUR	M13_OSTEOPOROSIS	BETA	RSID	CHR	BP	EA	NEA	BETA	P	hg37
-UKBB.E4_HYTHY_AI_STRICT_EXTRA.EUR.ALL.26966.370312.SAIGE.20210604.txt.munged.tsv.GRCh38.gnomad_v3_b38_ref_nfe.gz	hypothyroidism	397278	26966	370312	UKBB	European	E4_HYTHY_AI_STRICT	BETA	POS	#CHR	POS	ALT	REF	beta	pval	hg38
 GSCAN_AgeSmk_2022_GWAS_SUMMARY_STATS_EUR_LOO_FIN_23andMe.txt.gz	smoking_age_of_initiation	728826	NA	NA	https://www.nature.com/articles/s41586-022-05477-4	EUR	NA	BETA	RSID	CHR	POS	EFFECT_ALLELE	OTHER_ALLELE	BETA	P	hg38
 GSCAN_CigDay_2022_GWAS_SUMMARY_STATS_EUR_LOO_FIN_23andMe.txt.gz	smoking_cigarettes_per_day	784353	NA	NA	https://www.nature.com/articles/s41586-022-05477-4	EUR	NA	BETA	RSID	CHR	POS	EFFECT_ALLELE	OTHER_ALLELE	BETA	P	hg38
 GSCAN_DrnkWk_2022_GWAS_SUMMARY_STATS_EUR_LOO_FIN_23andMe.txt.gz	drinks_per_week	2965643	NA	NA	https://www.nature.com/articles/s41586-022-05477-4	EUR	NA	BETA	RSID	CHR	POS	EFFECT_ALLELE	OTHER_ALLELE	BETA	P	hg38
