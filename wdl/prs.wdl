@@ -134,13 +134,16 @@ task weights {
     --sum-stats ${munged_gwas} \
     ${true="--test" false="" test} \
     --parallel 1
+
+    touch ${root_name}.weights.log ${root_name}.weights.txt
+    echo "HELLO"
     >>>
 
     output {
-        File munged_rsid = "/cromwell_root/munge/${root_name}.munged.rsid"
-        File weights = "/cromwell_root/${root_name}.weights.txt"
-        File log = "/cromwell_root/${root_name}.weights.log"
-
+      File munged_rsid = "/cromwell_root/munge/${root_name}.munged.rsid"
+      File log = "/cromwell_root/${root_name}.weights.log"
+      File weights = "/cromwell_root/${root_name}.weights.txt"
+      
     }
 
     runtime {
