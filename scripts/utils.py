@@ -1,4 +1,4 @@
-import os,mmap,sys,subprocess,csv,gzip,pickle,shlex,time
+import os,mmap,sys,subprocess,csv,gzip,pickle,shlex,time,logging
 from tempfile import NamedTemporaryFile
 from functools import partial
 from collections import defaultdict as dd
@@ -321,3 +321,15 @@ def merge_files(o_file,file_list):
             with open(f,'rt') as i:
                 for line in i:
                     o.write(line)
+
+
+
+
+log_levels = {
+    'critical': logging.CRITICAL,
+    'error': logging.ERROR,
+    'warn': logging.WARNING,
+    'warning': logging.WARNING,
+    'info': logging.INFO,
+    'debug': logging.DEBUG
+}

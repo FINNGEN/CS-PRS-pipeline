@@ -1,18 +1,18 @@
 {
     ## REMOVE ALL COMMENTS BEFORE SUBMITTING THROUGH INTERFACE OR COPY THEM BY GROUP
     # USER SPECIFIC PARAMETERS
-    "sandbox_prs.test": False,
-    "sandbox_prs.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",    
-    "sandbox_prs.gwas_meta": "gs://finngen-production-library-green/prs/prs_test.txt",
+    "sandbox_prs.test": True,
+    "sandbox_prs.gwas_data_path": "gs://finngen-production-library-green/temporary_file_sharing/prs_hearing_r9/",    
+    "sandbox_prs.gwas_meta": "gs://finngen-production-library-green/temporary_file_sharing/prs_hearing_r9/PRS_hearing.txt",
     
     # RELEASE SPECIFIC PARAMETERS
-    "sandbox_prs.rsid_map.bim_file": "gs://r11-data/plink/finngen_R11.bim",
-    "sandbox_prs.scores.bed_file": "gs://r11-data/plink/finngen_R11_hm3.bed",
+    "sandbox_prs.rsid_map.bim_file": "gs://finngen-production-library-red/finngen_R9/genotype_plink_1.0/data/finngen_R9.bim",
+    "sandbox_prs.scores.bed_file": "gs://finngen-production-library-red/finngen_R9/genotype_plink_1.0/data/finngen_R9_hm3.bed",
 
     #STRUCTURAL FILES THAT CAN OPTIONALLY BE CHANGED
     "sandbox_prs.scores.regions": "gs://finngen-production-library-green/prs/PRS_regions.txt",
     "sandbox_prs.rsid_map.hm3_rsids": "gs://finngen-production-library-green/prs/hm3.rsids",    
-    "sandbox_prs.weights.ref_list": "gs://finngen-production-library-green/prs/ref_list.txt",
+    "sandbox_prs.weights.ref_list": "gs://finngen-production-library-green/prs/ref_list_fin.txt",
 
     # RUN TIME OPTIONS
     "sandbox_prs.weights.cpu": 16,

@@ -95,6 +95,7 @@ def weights(args):
 
     args.force = True
     
+
 def to_chrompos(args):
     """
     Writes out weights in chrom_pos_ref_alt so we can use finngen data. 

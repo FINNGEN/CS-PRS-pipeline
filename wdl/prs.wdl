@@ -1,17 +1,20 @@
-workflow prs_cs{
+version 1.0
 
-  String gwas_data_path
-  String docker
-  Boolean test
-  Map[String,File] build_chains
-  String prefix
-  
+workflow prs_cs{
+  input {
+    String gwas_data_path
+    String docker
+    Boolean test
+    Map[String,File] build_chains
+    String prefix
+    File gwas_meta
+  }
   call rsid_map {
     input:
     docker = docker
   }
-
-  File gwas_meta
+  
+  
   call sumstats {
     input:
     gwas_meta = gwas_meta,
@@ -21,7 +24,7 @@ workflow prs_cs{
   Array[Array[String]] gwas_traits = read_tsv(sumstats.sstats)
 
   scatter( gwas in gwas_traits) {
-    String build = gwas[11]
+    String build = gwas[12]
     call munge {
       input :
       chainfile = build_chains[build],
@@ -29,14 +32,14 @@ workflow prs_cs{
       docker = docker,
       gwas_data_path = gwas_data_path,
       file_name = gwas[0],
-      effect_type = gwas[3],
-      variant = gwas[4],
-      chrom = gwas[5],
-      pos = gwas[6],
-      ref = gwas[7],
-      alt = gwas[8],
-      effect = gwas[9],
-      pval = gwas[10],
+      effect_type = gwas[4],
+      variant = gwas[5],
+      chrom = gwas[6],
+      pos = gwas[7],
+      ref = gwas[8],
+      alt = gwas[9],
+      effect = gwas[10],
+      pval = gwas[11],
       rsid_map = rsid_map.rsid,
       chrompos_map = rsid_map.chrompos,
     }
@@ -53,119 +56,108 @@ workflow prs_cs{
       input:
       weights = weights.weights,
       docker = docker,
-      pheno = gwas[2],
+      pheno = gwas[3],
     }
   }
 }
 
 task scores {
-
+  input{
     File weights
-    String file_root = basename(weights,'.weights.txt')
-
+    
     File bed_file
-    File bim_file = sub(bed_file,'.bed','.bim')
-    File fam_file = sub(bed_file,'.bed','.fam')
-    File frq_file = sub(bed_file,'.bed','.afreq')
-
     File regions
     String pheno
-
     String docker
     String? scores_docker
-    String? final_docker = if defined(scores_docker) then scores_docker else docker
-
     Int cpu
     Int mem
-    Int disk_size = ceil(size(bed_file,'GB')) + 10
+  }
+  String file_root = basename(weights,'.weights.txt')
+  File bim_file = sub(bed_file,'.bed','.bim')
+  File fam_file = sub(bed_file,'.bed','.fam')
+  File frq_file = sub(bed_file,'.bed','.afreq')
+  String? final_docker = if defined(scores_docker) then scores_docker else docker
+  Int disk_size = ceil(size(bed_file,'GB')) + 10
 
-    command <<<
+  command <<<
 
-    cat ${regions} | grep ${pheno}  |  cut -f 2 | sed 's/;\t*/\n/g' | sed 's/_/\t/g' > regions.txt
-    cat regions.txt
-
-    python3 /scripts/cs_scores.py \
-    --weight ${weights} \
-    --bed ${bed_file} \
+  cat ~{regions} | grep ~{pheno}  |  cut -f 2 | sed 's/;\t*/\n/g' | sed 's/_/\t/g' > regions.txt
+  cat regions.txt
+  
+  python3 /scripts/cs_scores.py \
+    --weight ~{weights} \
+    --bed ~{bed_file} \
     --region regions.txt \
     --out .
-    >>>
-
-    output {
-        Array[File] logs = glob("/cromwell_root/scores/${file_root}*log")
-        Array[File] scores = glob("/cromwell_root/scores/${file_root}*sscore")
-        }
-
-    runtime {
-        docker: "${final_docker}"
-        cpu: "${cpu}"
-	memory: "${mem} GB"
-        disks: "local-disk ${disk_size} HDD"
+  >>>
+  
+  output {
+    Array[File] logs = glob("/cromwell_root/scores/~{file_root}*log")
+    Array[File] scores = glob("/cromwell_root/scores/~{file_root}*sscore")
+  }
+  
+  runtime {
+    docker: "~{final_docker}"
+    cpu: "~{cpu}"
+    memory: "~{mem} GB"
+    disks: "local-disk ~{disk_size} HDD"
         zones: "europe-west1-b"
-        preemptible: 1
-    }
+    preemptible: 1
+  }
 }
 
 
 task weights {
-
+  input {
+  
     File munged_gwas
-    String root_name = basename(munged_gwas,'.munged.gz')
-
     String N
     File rsid_map
     File bim_file
     Boolean test
-
+ 
     File file_list
-    Array[File] ref_files = read_lines(file_list)
-
     String docker
     String? weights_docker
-    String? final_docker = if defined(weights_docker) then weights_docker else docker
     Int cpu
     Int mem
-    Int disk_size = ceil(size(munged_gwas,'GB'))*2+10
+  }
+  String? final_docker = if defined(weights_docker) then weights_docker else docker
+  String root_name = basename(munged_gwas,'.munged.gz')
+  Array[File] ref_files = read_lines(file_list)
+  Int disk_size = ceil(size(munged_gwas,'GB'))*2+10
 
-    command <<<
-    python3 /scripts/cs_wrapper.py --bim-file ${bim_file} --ref-file ${ref_files[0]}  \
-    --map ${rsid_map} --out . \
-    --N ${N} \
-    --sum-stats ${munged_gwas} \
-    ${true="--test" false="" test} \
-    --parallel 1
+  command <<<
+  
+  python3 /scripts/cs_wrapper.py --bim-file ~{bim_file} --ref-file ~{ref_files[0]}  --out .  --N ~{N} --sum-stats ~{munged_gwas}  ~{true="--test" false="" test}   --parallel 1  --map ~{rsid_map}
+  touch ~{root_name}.weights.log ~{root_name}.weights.txt
+  echo "HELLO"
+  >>>
 
-    touch ${root_name}.weights.log ${root_name}.weights.txt
-    echo "HELLO"
-    >>>
+  output {
+    File munged_rsid = "/cromwell_root/munge/~{root_name}.munged.rsid"
+    File log = "/cromwell_root/~{root_name}.weights.log"
+    File weights = "/cromwell_root/~{root_name}.weights.txt"
+    
+  }
 
-    output {
-      File munged_rsid = "/cromwell_root/munge/${root_name}.munged.rsid"
-      File log = "/cromwell_root/${root_name}.weights.log"
-      File weights = "/cromwell_root/${root_name}.weights.txt"
-      
-    }
-
-    runtime {
-      docker: "${final_docker}"
-      cpu: "${cpu}"
-      memory: "${mem} GB"
-      disks: "local-disk ${disk_size} HDD"
-      zones: "europe-west1-b"
-      preemptible: 1
-      }
-
-
+  runtime {
+    docker: "~{final_docker}"
+    cpu: "~{cpu}"
+    memory: "~{mem} GB"
+    disks: "local-disk ~{disk_size} HDD"
+    zones: "europe-west1-b"
+    preemptible: 1
+  }
 }
 
 task munge {
-
+  input {
     String gwas_data_path
     String file_name
-    File ss = gwas_data_path + file_name
     String prefix
-    String out_root =  prefix + "_" + sub(file_name,'.gz','.munged.gz')
-
+    
     String effect_type
     String variant
     String chrom
@@ -182,43 +174,29 @@ task munge {
 
     String docker
     String? munge_docker
-    String? final_docker = if defined(munge_docker) then munge_docker else docker
-
-
     Int disk_factor
-    Int disk_size = ceil(size(chainfile,'GB')) + ceil(size(rsid_map,'GB')) + ceil(size(chrompos_map,'GB')) + ceil(size(ss,'GB'))*disk_factor+10
+   }
+   File ss = gwas_data_path + file_name
+   String out_root =  prefix + "_" + sub(file_name,'.gz','.munged.gz')
+   String? final_docker = if defined(munge_docker) then munge_docker else docker
+   Int disk_size = ceil(size(chainfile,'GB')) + ceil(size(rsid_map,'GB')) + ceil(size(chrompos_map,'GB')) + ceil(size(ss,'GB'))*disk_factor+10
+   
+   command <<<
+   echo ~{disk_size} ~{disk_factor}
+   
+   python3 /scripts/munge.py   -o .    --ss ~{ss}    --effect_type "~{effect_type}"    --variant "~{variant}"   --chrom "~{chrom}"  --pos "~{pos}"   --ref "~{ref}"   --alt "~{alt}"   --effect "~{effect}"   --pval "~{pval}"    --prefix "~{prefix}"  --rsid-map ~{rsid_map}   --chrompos-map ~{chrompos_map}  --chainfile ~{chainfile} 
 
-    command <<<
-    echo ${disk_size} ${disk_factor}
-
-    python3 /scripts/munge.py \
-    -o . \
-    --ss ${ss} \
-    --effect_type "${effect_type}" \
-    --variant "${variant}" \
-    --chrom "${chrom}" \
-    --pos "${pos}" \
-    --ref "${ref}" \
-    --alt "${alt}" \
-    --effect "${effect}" \
-    --pval "${pval}" \
-    --prefix "${prefix}" \
-    --rsid-map ${rsid_map} \
-    --chrompos-map ${chrompos_map} \
-    --chainfile ${chainfile} \
-
-    >>>
-
-    output {
-        File munged_file = "/cromwell_root/${out_root}"
-        Array[File] rejected_variants = glob("/cromwell_root/tmp_parse/rejected_variants/*")
-    }
-
-    runtime {
-        docker: "${final_docker}"
+   >>>
+   output {
+     File munged_file = "/cromwell_root/~{out_root}"
+     Array[File] rejected_variants = glob("/cromwell_root/tmp_parse/rejected_variants/*")
+   }
+   
+   runtime {
+     docker: "~{final_docker}"
         cpu: "4"
-	      memory: "${disk_size} GB"
-        disks: "local-disk ${disk_size} HDD"
+	      memory: "~{disk_size} GB"
+        disks: "local-disk ~{disk_size} HDD"
         zones: "europe-west1-b"
         preemptible: 1
     }
@@ -227,78 +205,68 @@ task munge {
 }
 
 task rsid_map {
-
+  input {
     String docker
     File vcf_gz
     String? rsid_docker
-    String? final_docker = if defined(rsid_docker) then rsid_docker else docker
+   
 
     File hm3_rsids
     File bim_file
+  }
+   String? final_docker = if defined(rsid_docker) then rsid_docker else docker
+  command <<<
+  mkdir ./variant_mapping/
+  mv ~{vcf_gz} ./variant_mapping/
+  
+  python3 /scripts/rsid_map.py   -o . --bim ~{bim_file}  --rsids ~{hm3_rsids}  --prefix hm3  
+  python3 /scripts/convert_rsids.py  -o .   --file ~{bim_file}   --no-header  --to-rsid  --map ./variant_mapping/finngen.rsid.map.tsv   --metadata 1
+  
+  ls /cromwell_root/
+  mv ~{sub(basename(bim_file),'.bim','.rsid')} ~{sub(basename(bim_file),'.bim','.rsid.bim')}
+  
+  >>>
 
-    command <<<
-    mkdir ./variant_mapping/
-    mv ${vcf_gz} ./variant_mapping/
-
-    python3 /scripts/rsid_map.py \
-    -o . \
-    --bim ${bim_file} \
-    --rsids ${hm3_rsids} \
-    --prefix hm3
-
-    python3 /scripts/convert_rsids.py \
-    -o . \
-    --file ${bim_file} \
-    --no-header \
-    --to-rsid \
-    --map ./variant_mapping/finngen.rsid.map.tsv \
-    --metadata 1
-
-    ls /cromwell_root/
-    mv ${sub(basename(bim_file),'.bim','.rsid')} ${sub(basename(bim_file),'.bim','.rsid.bim')}
-
-    >>>
-
-    runtime {
-        docker: "${final_docker}"
-        cpu: 4
-	      memory: "16 GB"
-        disks: "local-disk 100 HDD"
-        zones: "europe-west1-b"
-        preemptible: 1
-        }
-    output {
-        File rsid = "./variant_mapping/finngen.rsid.map.tsv"
-        File chrompos = "./variant_mapping/finngen.variants.tsv"
-        File hm3_snplist = "./variant_mapping/hm3.snplist"
-        File rsid_bim = "/cromwell_root/" + sub(basename(bim_file),'.bim','.rsid.bim')
-
-        }
-    }
+  runtime {
+    docker: "~{final_docker}"
+    cpu: 4
+    memory: "16 GB"
+    disks: "local-disk 100 HDD"
+    zones: "europe-west1-b"
+    preemptible: 1
+  }
+  output {
+    File rsid = "./variant_mapping/finngen.rsid.map.tsv"
+    File chrompos = "./variant_mapping/finngen.variants.tsv"
+    File hm3_snplist = "./variant_mapping/hm3.snplist"
+    File rsid_bim = "/cromwell_root/" + sub(basename(bim_file),'.bim','.rsid.bim')
+    
+  }
+}
 
 
 task sumstats {
-
-  File gwas_meta
-  Int? last_sumstats
-  String docker
-
+  input {
+    File gwas_meta
+    Int? last_sumstats
+    String docker
+  }
   command <<<
-
-   cat ${gwas_meta} | sed -E 1d | cut -f 1,3,8,9,10,11,12,13,14,15,16,17  ${if defined(last_sumstats) then " | tail -n ${last_sumstats}" else ""} > sumstats.txt
+  
+  cat ~{gwas_meta} | sed -E 1d | cut -f 1,3,7,8,9,10,11,12,13,14,15,16,17  ~{if defined(last_sumstats) then " | tail -n ~{last_sumstats}" else ""} > sumstats.txt
   >>>
 
   output {
     File sstats = "./sumstats.txt"
   }
-
+  
   runtime {
-    docker: "${docker}"
+    docker: "~{docker}"
     cpu: "1"
     memory: "1 GB"
     disks: "local-disk 2 HDD"
     zones: "europe-west1-b"
     preemptible: 1
   }
-
+  
 }

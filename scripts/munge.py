@@ -1,6 +1,6 @@
-import argparse,os,pickle,gzip,itertools,subprocess,shlex
+import argparse,os,pickle,gzip,itertools,subprocess,shlex,logging
 import numpy as np
-from utils import file_exists,make_sure_path_exists,basic_iterator,get_path_info,fix_header,isfloat,mapcount_gzip,progressBar,tmp_bash,mapcount,pretty_print,load_rsid_mapping,load_pos_mapping,map_alleles,return_header
+from utils import file_exists,make_sure_path_exists,basic_iterator,get_path_info,fix_header,isfloat,mapcount_gzip,progressBar,tmp_bash,mapcount,pretty_print,load_rsid_mapping,load_pos_mapping,map_alleles,return_header,log_levels
 from functools import partial
 from pathlib import Path
 from collections import defaultdict as dd
@@ -24,7 +24,7 @@ def merge_files(args):
 
     if os.path.isfile(out_file) and not args.force:
         print(f'{out_file} already munged')
-        return
+        return out_file
     else:
         print(f"generating {out_file}")
 
@@ -38,7 +38,7 @@ def merge_files(args):
         iterator = basic_iterator(rsid_file,skiprows = 1)
         loop = itertools.islice(iterator,30) if args.test else iterator
         for entry in loop:
-            args.print(entry)
+            logging.debug(entry)
             chrom,rsid,a1,a2,pos,OR,pval = entry
             pass_bool,out_line = process_variant(ct,chrom,pos,a1,a2,OR,pval,file_root,rsid)
             final_variants += pass_bool
@@ -68,6 +68,8 @@ def merge_files(args):
             original_variants  =  int(open(os.path.join(tmp_path,f'{file_root}.variantcount')).read()) -1
             print('compared to input sumstat:',original_variants,final_variants,final_variants/float(original_variants))
             print('compared to rsid positions in FG:',rsid_positions,final_variants,final_variants/float(rsid_positions))
+
+    return out_file
 
 def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
     """
@@ -140,11 +142,11 @@ def parse_file(args):
 
         # fix headers that have extra spaces
         header_fix = fix_header(args.ss)
-        #args.print(f'header: {header_fix}')
+        #logging.debug(f'header: {header_fix}')
 
         # relevant columns to parse
         columns = [args.variant,args.ref,args.alt,args.effect,args.pval]
-        args.print(f'columns to parse: {columns}')
+        logging.debug(f'columns to parse: {columns}')
         if not all([elem in header_fix for elem in columns]):
             raise Exception(f"Missing columns in header: {[elem for elem in columns if elem not in header_fix]}")
 
@@ -155,12 +157,12 @@ def parse_file(args):
             print(pos_indexes,args.chrom,args.pos)
             indexes += pos_indexes
             parse_func = partial(regular_parse,or_func = or_func)
-            args.print('regular parse')
+            logging.debug('regular parse')
         else:
             parse_func = partial(alternate_parse,or_func = or_func)
-            args.print('alternate parse')
+            logging.debug('alternate parse')
 
-        args.print(f'indexes: {indexes}')
+        logging.debug(f'indexes: {indexes}')
         # WE ARE NOW READY TO PARSE THE FILE
         rsid_dict = load_rsid_mapping(args.rsid_map)
         with gzip.open(rsid_file,'wt') as r,gzip.open(chrompos_file,'wt') as c,gzip.open(rej_log,'wt') as rej:
@@ -175,11 +177,11 @@ def parse_file(args):
                 if not i % 1000:progressBar(i,total_lines)
 
                 variant,a1,a2,effect,pval,*chrompos = info
-                args.print(f"Reading columns: {info}")
+                logging.debug(f"Reading columns: {info}")
 
                 # check if effect can be mapped to float (might be missing)
                 if not isfloat(effect):
-                    args.print(effect)
+                    logging.debug(effect)
                     out_line,out_file = '\t'.join([file_root,'effect_missing'] + info),rej
 
                 else:
@@ -202,7 +204,7 @@ def parse_file(args):
                         except:
                             out_line,out_file = '\t'.join([file_root,'format'] + info),rej
 
-                args.print(f"output:{out_line}")
+                logging.debug(f"output:{out_line}")
                 out_file.write(out_line +'\n')
         print('done.')
         if not args.test:
@@ -252,6 +254,16 @@ def lift(chrompos_file,chainfile,force):
     subprocess.call(shlex.split(cmd))
 
 
+def all_versions(out_file):
+    """
+    Create chrom_pos_ref_alt file as well as rsid version
+    """
+
+    cpra_file = out_file.replace('.gz','.cpra.gz')
+    logging.info(cpra_file)
+    cpra_cmd = f"""zcat {out_file}| head -n1 | gzip > {cpra_file} && zcat {out_file} | awk -F "\t"  '{{OFS=FS}} (NR>1) {{$2=$2"_"$4"_"$3; print }}' | gzip >> {cpra_file}"""
+    logging.debug(cpra_cmd)
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description ="Munge a GWAS summary stat.")
@@ -266,6 +278,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--test',action = 'store_true',help = 'Flag for testing purposes.')
     parser.add_argument('--force',action = 'store_true',help = 'Flag for forcing re-run.')
+    parser.add_argument( "-log",  "--log",  default="warning", choices = log_levels, help=(  "Provide logging level. " "Example --log debug', default='warning'"))
 
     # COLUMNS OF RELEVANT FIELDS
     parser.add_argument('--effect_type',  type = lambda s : s.upper(), choices=['BETA','OR'])
@@ -283,19 +296,16 @@ if __name__ == '__main__':
     args.ss = os.path.abspath(args.ss)
 
     make_sure_path_exists(args.out)
-
+    # logging level
+    level = log_levels[args.log]
+    logging.basicConfig(level=level,format="%(levelname)s: %(message)s")
     args.lift = True
     if not args.chainfile or os.path.getsize(args.chainfile) == 0:
         args.lift = False
 
-    if args.test:
-        def vprint(x):
-            print(x)
-    else:
-        vprint = lambda *a: None  # do-nothing function
-
-    args.print = vprint
-    args.print(args)
+    logging.info(args)
     args.root_path  = Path(os.path.realpath(__file__)).parent.absolute()
     parse_file(args)
-    merge_files(args)
+    out_file = merge_files(args)
+    print(out_file)
+    all_versions(out_file)
