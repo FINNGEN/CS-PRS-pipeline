@@ -42,8 +42,8 @@ def merge_files(args):
             chrom,rsid,a1,a2,pos,OR,pval = entry
             pass_bool,out_line = process_variant(ct,chrom,pos,a1,a2,OR,pval,file_root,rsid)
             final_variants += pass_bool
-            out_file = o if pass_bool else rej
-            out_file.write(out_line)
+            dest_file = o if pass_bool else rej
+            dest_file.write(out_line)
 
         #looping of chrompos file (possibly lifted)
         if args.lift: column_names = ['beta','p','lift_chr','lift_pos','REF','ALT']
@@ -58,8 +58,8 @@ def merge_files(args):
             variant_id =  f"{chrom}_{pos}_{a1}_{a2}"
             pass_bool,out_line = process_variant(ct,chrom,pos,a1,a2,OR,pval,file_root,variant_id)
             final_variants += pass_bool
-            out_file = o if pass_bool else rej
-            out_file.write(out_line)
+            dest_file = o if pass_bool else rej
+            dest_file.write(out_line)
 
         # count lines
         if not args.test:
@@ -254,15 +254,17 @@ def lift(chrompos_file,chainfile,force):
     subprocess.call(shlex.split(cmd))
 
 
-def all_versions(out_file):
+def all_versions(out_file,force):
     """
     Create chrom_pos_ref_alt file as well as rsid version
     """
 
     cpra_file = out_file.replace('.gz','.cpra.gz')
     logging.info(cpra_file)
-    cpra_cmd = f"""zcat {out_file}| head -n1 | gzip > {cpra_file} && zcat {out_file} | awk -F "\t"  '{{OFS=FS}} (NR>1) {{$2=$2"_"$4"_"$3; print }}' | gzip >> {cpra_file}"""
-    logging.debug(cpra_cmd)
+    if not os.path.isfile(cpra_file) or force:
+        cpra_cmd = f"""zcat {out_file}| head -n1 | gzip > {cpra_file} && zcat {out_file} | awk -F "\t"  '{{OFS=FS}} (NR>1) {{$2=$2"_"$4"_"$3; print }}' | gzip >> {cpra_file}"""
+        tmp_bash(cpra_cmd)
+        logging.debug(cpra_cmd)
 
 if __name__ == '__main__':
 
@@ -307,5 +309,5 @@ if __name__ == '__main__':
     args.root_path  = Path(os.path.realpath(__file__)).parent.absolute()
     parse_file(args)
     out_file = merge_files(args)
-    print(out_file)
-    all_versions(out_file)
+    print(f"out file:{out_file}")
+    all_versions(out_file,args.force)

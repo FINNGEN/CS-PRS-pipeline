@@ -25,6 +25,7 @@ workflow prs_cs{
 
   scatter( gwas in gwas_traits) {
     String build = gwas[12]
+    String pop = gwas[3]
     call munge {
       input :
       chainfile = build_chains[build],
@@ -43,11 +44,14 @@ workflow prs_cs{
       rsid_map = rsid_map.rsid,
       chrompos_map = rsid_map.chrompos,
     }
+
+    File munged_file = if pop == "EUR" then munge.munged_file else munge.cpra_file
     call weights {
       input:
       munged_gwas = munge.munged_file,
       rsid_map = rsid_map.rsid,
       docker = docker,
+      pop=pop,
       N = gwas[1],
       test = test,
       bim_file = rsid_map.rsid_bim,
@@ -110,27 +114,29 @@ task scores {
 
 task weights {
   input {
-  
     File munged_gwas
     String N
     File rsid_map
     File bim_file
     Boolean test
- 
-    File file_list
+    String pop 
+    Map[String,File] panel_map
     String docker
     String? weights_docker
     Int cpu
     Int mem
   }
+  File file_list = panel_map[pop]
   String? final_docker = if defined(weights_docker) then weights_docker else docker
   String root_name = basename(munged_gwas,'.munged.gz')
-  Array[File] ref_files = read_lines(file_list)
   Int disk_size = ceil(size(munged_gwas,'GB'))*2+10
 
+  # if population is EUR we use RSID else chr_pos_ref_alt
+  Array[File] ref_files = read_lines(file_list)
+  String rsid_arg = if pop == "EUR" then " --rsid-map " + rsid_map else ""
   command <<<
   
-  python3 /scripts/cs_wrapper.py --bim-file ~{bim_file} --ref-file ~{ref_files[0]}  --out .  --N ~{N} --sum-stats ~{munged_gwas}  ~{true="--test" false="" test}   --parallel 1  --map ~{rsid_map}
+  python3 /scripts/cs_wrapper.py --bim-file ~{bim_file} --ref-file ~{ref_files[0]}  --out .  --N ~{N} --sum-stats ~{munged_gwas}  ~{true="--test" false="" test}   --parallel 1  ~{rsid_arg}
   touch ~{root_name}.weights.log ~{root_name}.weights.txt
   echo "HELLO"
   >>>
@@ -169,7 +175,6 @@ task munge {
 
     File rsid_map
     File chrompos_map
-
     File chainfile
 
     String docker
@@ -178,6 +183,7 @@ task munge {
    }
    File ss = gwas_data_path + file_name
    String out_root =  prefix + "_" + sub(file_name,'.gz','.munged.gz')
+   String out_cpra = prefix + "_" + sub(file_name,'.gz','.cpra.munged.gz')
    String? final_docker = if defined(munge_docker) then munge_docker else docker
    Int disk_size = ceil(size(chainfile,'GB')) + ceil(size(rsid_map,'GB')) + ceil(size(chrompos_map,'GB')) + ceil(size(ss,'GB'))*disk_factor+10
    
@@ -189,6 +195,7 @@ task munge {
    >>>
    output {
      File munged_file = "/cromwell_root/~{out_root}"
+     File cpra_file   = "/cromwell_root/~{out_cpra}"
      Array[File] rejected_variants = glob("/cromwell_root/tmp_parse/rejected_variants/*")
    }
    
