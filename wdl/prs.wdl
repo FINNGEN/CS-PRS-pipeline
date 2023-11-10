@@ -25,7 +25,7 @@ workflow prs_cs{
 
   scatter( gwas in gwas_traits) {
     String build = gwas[12]
-    String pop = gwas[3]
+    String pop = gwas[2]
     call munge {
       input :
       chainfile = build_chains[build],
@@ -45,16 +45,18 @@ workflow prs_cs{
       chrompos_map = rsid_map.chrompos,
     }
 
+    # choose rsid or chrom_pos_ref_alt (cpra)
     File munged_file = if pop == "EUR" then munge.munged_file else munge.cpra_file
+    File bim_file = if pop == "EUR" then rsid_map.rsid_bim else rsid_map.cpra_bim
     call weights {
       input:
-      munged_gwas = munge.munged_file,
+      munged_gwas = munged_file,
       rsid_map = rsid_map.rsid,
       docker = docker,
       pop=pop,
       N = gwas[1],
       test = test,
-      bim_file = rsid_map.rsid_bim,
+      bim_file = bim_file,
     }
     call scores {
       input:
@@ -126,16 +128,16 @@ task weights {
     Int cpu
     Int mem
   }
-  File file_list = panel_map[pop]
+
   String? final_docker = if defined(weights_docker) then weights_docker else docker
   String root_name = basename(munged_gwas,'.munged.gz')
   Int disk_size = ceil(size(munged_gwas,'GB'))*2+10
 
   # if population is EUR we use RSID else chr_pos_ref_alt
-  Array[File] ref_files = read_lines(file_list)
+  Array[File] ref_files = read_lines(panel_map[pop])
   String rsid_arg = if pop == "EUR" then " --rsid-map " + rsid_map else ""
   command <<<
-  
+  zcat -f ~{munged_gwas} | head
   python3 /scripts/cs_wrapper.py --bim-file ~{bim_file} --ref-file ~{ref_files[0]}  --out .  --N ~{N} --sum-stats ~{munged_gwas}  ~{true="--test" false="" test}   --parallel 1  ~{rsid_arg}
   touch ~{root_name}.weights.log ~{root_name}.weights.txt
   echo "HELLO"
@@ -183,15 +185,16 @@ task munge {
    }
    File ss = gwas_data_path + file_name
    String out_root =  prefix + "_" + sub(file_name,'.gz','.munged.gz')
-   String out_cpra = prefix + "_" + sub(file_name,'.gz','.cpra.munged.gz')
+   String out_cpra = prefix + "_" + sub(file_name,'.gz','.munged.cpra')
    String? final_docker = if defined(munge_docker) then munge_docker else docker
    Int disk_size = ceil(size(chainfile,'GB')) + ceil(size(rsid_map,'GB')) + ceil(size(chrompos_map,'GB')) + ceil(size(ss,'GB'))*disk_factor+10
    
    command <<<
-   echo ~{disk_size} ~{disk_factor}
-   
+   echo ~{disk_size} ~{disk_factor} ~{prefix}
+
    python3 /scripts/munge.py   -o .    --ss ~{ss}    --effect_type "~{effect_type}"    --variant "~{variant}"   --chrom "~{chrom}"  --pos "~{pos}"   --ref "~{ref}"   --alt "~{alt}"   --effect "~{effect}"   --pval "~{pval}"    --prefix "~{prefix}"  --rsid-map ~{rsid_map}   --chrompos-map ~{chrompos_map}  --chainfile ~{chainfile} 
 
+   ls *gz
    >>>
    output {
      File munged_file = "/cromwell_root/~{out_root}"
@@ -201,11 +204,11 @@ task munge {
    
    runtime {
      docker: "~{final_docker}"
-        cpu: "4"
-	      memory: "~{disk_size} GB"
-        disks: "local-disk ~{disk_size} HDD"
-        zones: "europe-west1-b"
-        preemptible: 1
+     cpu: "4"
+     memory: "~{disk_size} GB"
+     disks: "local-disk ~{disk_size} HDD"
+     zones: "europe-west1-b"
+     preemptible: 1
     }
 
 
@@ -216,13 +219,12 @@ task rsid_map {
     String docker
     File vcf_gz
     String? rsid_docker
-   
-
     File hm3_rsids
     File bim_file
   }
    String? final_docker = if defined(rsid_docker) then rsid_docker else docker
   command <<<
+  echo ~{final_docker}
   mkdir ./variant_mapping/
   mv ~{vcf_gz} ./variant_mapping/
   
@@ -247,7 +249,7 @@ task rsid_map {
     File chrompos = "./variant_mapping/finngen.variants.tsv"
     File hm3_snplist = "./variant_mapping/hm3.snplist"
     File rsid_bim = "/cromwell_root/" + sub(basename(bim_file),'.bim','.rsid.bim')
-    
+    File cpra_bim = bim_file
   }
 }
 

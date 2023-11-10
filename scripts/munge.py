@@ -259,10 +259,10 @@ def all_versions(out_file,force):
     Create chrom_pos_ref_alt file as well as rsid version
     """
 
-    cpra_file = out_file.replace('.gz','.cpra.gz')
+    cpra_file = out_file.replace('.gz','.cpra')
     logging.info(cpra_file)
     if not os.path.isfile(cpra_file) or force:
-        cpra_cmd = f"""zcat {out_file}| head -n1 | gzip > {cpra_file} && zcat {out_file} | awk -F "\t"  '{{OFS=FS}} (NR>1) {{$2=$2"_"$4"_"$3; print }}' | gzip >> {cpra_file}"""
+        cpra_cmd = f"""zcat {out_file}| head -n1  > {cpra_file} && zcat {out_file} | awk -F "\t"  '{{OFS=FS}} (NR>1) {{$2=$2"_"$4"_"$3; print }}' | cut -f 2,3,4,6,7  >> {cpra_file}"""
         tmp_bash(cpra_cmd)
         logging.debug(cpra_cmd)
 
