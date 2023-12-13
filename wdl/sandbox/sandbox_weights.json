@@ -1,0 +1,20 @@
+{
+    "sandbox_prs_weights.prefix": "test",
+    "sandbox_prs_weights.ss_meta": "gs://r12-data/prs/sb/sb_meta.txt",
+    "sandbox_prs_weights.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r12.3",
+    "sandbox_prs_weights.rsid_map": "gs://finngen-production-library-green/prs/rsid_mapping/finngen.rsid.map.tsv",
+
+    
+    "sandbox_prs_weights.munge.build_chains": {'hg18':'gs://finngen-production-library-green/prs/chains/hg18ToHg38.over.chain.gz',
+     'hg19':'gs://finngen-production-library-green/prs/chains/hg19ToHg38.over.chain.gz',
+     'hg37':'gs://finngen-production-library-green/prs/chains/hg19ToHg38.over.chain.gz',
+     'hg38':'gs://finngen-production-library-green/prs/chains/empty_file.txt'},
+    "sandbox_prs_weights.munge.ss_data_path": "gs://finngen-production-library-green/prs/sumstats/",
+    "sandbox_prs_weights.munge.chrompos_map": "gs://finngen-production-library-green/prs/rsid_mapping/finngen.variants.tsv",
+
+    "sandbox_prs_weights.weights.bim_file": "gs://finngen-production-library-green/prs/rsid_mapping/finngen.rsid.bim",
+    "sandbox_prs_weights.weights.file_list":  "gs://finngen-production-library-green/prs/ref_list.txt",
+
+    
+}
+
