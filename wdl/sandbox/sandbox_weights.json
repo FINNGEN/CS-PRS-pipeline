@@ -1,7 +1,7 @@
 {
-    "sandbox_prs_weights.prefix": "test",
-    "sandbox_prs_weights.ss_meta": "gs://r12-data/prs/sb/sb_meta.txt",
-    "sandbox_prs_weights.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r12.3",
+    "sandbox_prs_weights.prefix": "fg",
+    "sandbox_prs_weights.ss_meta": "gs://r12-data/prs/sb/meta_test.txt",
+    "sandbox_prs_weights.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r12.sb.1",
     "sandbox_prs_weights.rsid_map": "gs://finngen-production-library-green/prs/rsid_mapping/finngen.rsid.map.tsv",
 
     

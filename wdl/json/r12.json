@@ -1,0 +1,41 @@
+{
+    #WORKFLOW LEVEL
+    "prs_cs.prefix": "finngen_R12",
+    "prs_cs.test": False, # weights are ran with very few iterations
+    #"prs_cs.sumstats.last_sumstats": 6, # optional argument to only run latest N sumsats
+    "prs_cs.docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r12.3",
+    "prs_cs.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",
+    "prs_cs.gwas_meta": "gs://finngen-production-library-green/prs/PRS_data.txt",
+
+    "prs_cs.build_chains":
+    {'hg18':'gs://finngen-production-library-green/prs/chains/hg18ToHg38.over.chain.gz',
+     'hg19':'gs://finngen-production-library-green/prs/chains/hg19ToHg38.over.chain.gz',
+     'hg37':'gs://finngen-production-library-green/prs/chains/hg19ToHg38.over.chain.gz',
+     'hg38':'gs://finngen-production-library-green/prs/chains/empty_file.txt'},
+
+    #RSID MAP
+    "prs_cs.rsid_map.bim_file": "gs://finngen-production-library-red/finngen_R12/genotype_plink_2.0/data/finngen_R12.bim",
+    "prs_cs.rsid_map.vcf_gz": "gs://finngen-production-library-green/prs/00-All.vcf.gz",
+    "prs_cs.rsid_map.hm3_rsids": "gs://finngen-production-library-green/prs/hm3.rsids",
+    "prs_cs.rsid_map.rsid_docker": "eu.gcr.io/finngen-refinery-dev/cs-prs:r12.3",
+
+    # MUNGE
+    "prs_cs.munge.disk_factor": 5,
+
+    # WEIGHTS
+    "prs_cs.weights.file_list": "gs://finngen-production-library-green/prs/ref_list.txt",
+    "prs_cs.weights.mem": 16,
+    "prs_cs.weights.cpu": 32,
+
+    # SCORES
+    "prs_cs.scores.cpu": 16,
+    "prs_cs.scores.mem": 14,
+    "prs_cs.scores.bed_file": "gs://finngen-production-library-red/finngen_R12/genotype_plink_2.0/data/finngen_R12_hm3.bed",
+    "prs_cs.scores.regions": "gs://finngen-production-library-green/prs/PRS_regions.txt",
+
+     # DOCKERS (optional)
+    
+    #"prs_cs.munge.munge_docker": "",
+    #"prs_cs.weights.weights_docker": "",
+    #"prs_cs.scores.scores_docker": "",
+}

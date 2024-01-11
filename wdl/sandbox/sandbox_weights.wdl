@@ -58,17 +58,19 @@ task weights {
   String root_name = basename(munged_ss,'.munged.gz')
   Array[File] ref_files = read_lines(file_list)
   Int disk_size = ceil(size(munged_ss,'GB'))*2+10
-
+  String rsid_weights = root_name + ".weights.rsid.txt"
+  
   command <<<
   python3 /scripts/cs_wrapper.py --bim-file ~{bim_file} --ref-file ~{ref_files[0]}  --map ~{rsid_map} --out . --N ~{N} --sum-stats ~{munged_ss}     --parallel 1
   touch ~{root_name}.weights.log ~{root_name}.weights.txt
-  ls *
+
   >>>
   
   output {
     File munged_rsid = "/cromwell_root/munge/~{root_name}.munged.rsid"
     File log = "/cromwell_root/~{root_name}.weights.log"
     File weights = "/cromwell_root/~{root_name}.weights.txt"
+    File weights_rsid =  "/cromwell_root/~{root_name}.weights.rsid.txt"
   }
 
   runtime {
@@ -107,17 +109,15 @@ task munge {
   File chainfile = build_chains[build]
   File ss = ss_data_path + file_name
   String out_root =  prefix + "_" + sub(file_name,'.gz','.munged.gz')
-  String out_cpra = prefix + "_" + sub(file_name,'.gz','.munged.cpra')
-  
   Int disk_size = ceil(size(chainfile,'GB')) + ceil(size(rsid_map,'GB')) + ceil(size(chrompos_map,'GB')) + ceil(size(ss,'GB'))*4+10
+  
   command <<<
-  python3 /scripts/munge.py  -o .  --ss ~{ss} --effect_type "~{effect_type}"  --variant "~{variant}"  --chrom "~{chrom}"  --pos "~{pos}"  --ref "~{ref}"   --alt "~{alt}"  --effect "~{effect}"  --pval "~{pval}"  --prefix "~{prefix}"  --rsid-map ~{rsid_map}  --chrompos-map ~{chrompos_map}  --chainfile ~{chainfile} 
+  python3 /scripts/munge.py  -o .  --ss ~{ss} --effect_type "~{effect_type}"  --variant "~{variant}"  --chrom "~{chrom}"  --pos "~{pos}"  --ref "~{ref}"   --alt "~{alt}"  --effect "~{effect}"  --pval "~{pval}"  --prefix "~{prefix}"  --rsid-map ~{rsid_map}  --chrompos-map ~{chrompos_map}  --chainfile ~{chainfile}
+  ls *
   >>>
 
   output {
     File munged_file = "/cromwell_root/~{out_root}"
-    File cpra_file   = "/cromwell_root/~{out_cpra}"
-
     Array[File] rejected_variants = glob("/cromwell_root/tmp_parse/rejected_variants/*")
   }
     

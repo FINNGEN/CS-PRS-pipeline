@@ -151,7 +151,7 @@ def merge_weights(args):
     
     #chromosomes to check to run
        
-    out_file = os.path.join(args.out,args.ss_root + '.weights.txt')
+    out_file = os.path.join(args.out,args.ss_root + '.weights.rsid.txt')
     if os.path.isfile(out_file) and mapcount(out_file) > 0 and not args.force:
         print(f"{out_file} already generated")
         return
@@ -198,5 +198,4 @@ if __name__ == '__main__':
     weights(args)
     if args.map:
         to_chrompos(args)
-    else:
-        merge_weights(args)
+    merge_weights(args)
