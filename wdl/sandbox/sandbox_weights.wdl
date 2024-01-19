@@ -41,6 +41,12 @@ workflow sandbox_prs_weights{
       N = data[1],
     }
   }
+
+  output {
+    Array[File] rsid_weights = weights.weights_rsid
+    Array[File] chrompos_weights = weights.weights
+    Array[File] logs = weights.log
+  }
 }
 
 
