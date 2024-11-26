@@ -156,6 +156,8 @@ def basic_iterator(f,separator = None,skiprows = 0,count = False,columns = 'all'
             line =line.strip().split(separator)
             line = return_columns(line,columns)          
             yield line
+
+        
     else:
         row = 0
         for line in i:

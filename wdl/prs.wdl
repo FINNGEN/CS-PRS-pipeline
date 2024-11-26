@@ -86,8 +86,8 @@ task scores {
   >>>
 
   output {
-    Array[File] logs = glob("/cromwell_root/scores/~{file_root}*log")
-    Array[File] scores = glob("/cromwell_root/scores/~{file_root}*sscore")
+    Array[File] logs = glob("scores/~{file_root}*log")
+    Array[File] scores = glob("scores/~{file_root}*sscore")
   }
   
   runtime {
@@ -128,9 +128,9 @@ task weights {
   >>>
   
   output {
-    File munged_rsid = "/cromwell_root/munge/~{root_name}.munged.rsid"
-    File log = "/cromwell_root/~{root_name}.weights.log"
-    File weights = "/cromwell_root/~{root_name}.weights.txt"
+    File munged_rsid = "munge/~{root_name}.munged.rsid"
+    File log = "~{root_name}.weights.log"
+    File weights = "~{root_name}.weights.txt"
   }
 
   runtime {
@@ -184,10 +184,10 @@ task munge {
   >>>
 
   output {
-    File munged_file = "/cromwell_root/~{out_root}"
-    File cpra_file   = "/cromwell_root/~{out_cpra}"
+    File munged_file = "~{out_root}"
+    File cpra_file   = "~{out_cpra}"
 
-    Array[File] rejected_variants = glob("/cromwell_root/tmp_parse/rejected_variants/*")
+    Array[File] rejected_variants = glob("tmp_parse/rejected_variants/*")
   }
     
   runtime {
@@ -211,12 +211,12 @@ task rsid_map {
   
   command <<<
   mkdir ./variant_mapping/
-  mv ~{vcf_gz} ./variant_mapping/
-    
+  mv ~{vcf_gz} ./variant_mapping/~{basename(vcf_gz)}
+  
   python3 /scripts/rsid_map.py  -o . --bim ~{bim_file}  --rsids ~{hm3_rsids}  --prefix hm3
   python3 /scripts/convert_rsids.py -o . --file ~{bim_file} --no-header --to-rsid --map ./variant_mapping/finngen.rsid.map.tsv  --metadata 1
 
-  ls /cromwell_root/
+  ls 
   mv ~{sub(basename(bim_file),'.bim','.rsid')} ~{sub(basename(bim_file),'.bim','.rsid.bim')}
   >>>
 
@@ -232,7 +232,7 @@ task rsid_map {
     File rsid = "./variant_mapping/finngen.rsid.map.tsv"
     File chrompos = "./variant_mapping/finngen.variants.tsv"
     File hm3_snplist = "./variant_mapping/hm3.snplist"
-    File rsid_bim = "/cromwell_root/" + sub(basename(bim_file),'.bim','.rsid.bim')
+    File rsid_bim =  sub(basename(bim_file),'.bim','.rsid.bim')
   }
 }
 

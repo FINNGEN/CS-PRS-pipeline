@@ -29,7 +29,7 @@ workflow sandbox_prs_weights{
       build = data[11],
       rsid_map = rsid_map
     }
-
+    
     call weights {
       input :
       munged_ss = munge.munged_file,
