@@ -11,7 +11,9 @@ workflow sandbox_prs_weights{
   String docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r12.sb.1" 
   File rsid_map = "gs://finngen-production-library-green/prs/rsid_mapping/finngen.rsid.map.tsv"
 
-  Array[Array[String]] ss_data = read_tsv(ss_meta)
+  call validate_inputs {input:docker =docker,ss_meta=ss_meta,prefix=prefix}
+  
+  Array[Array[String]] ss_data = read_tsv(validate_inputs.sstats)
    scatter( data  in ss_data) {
     call munge {
       input :
@@ -131,3 +133,28 @@ task munge {
   }
 }
 
+
+
+task validate_inputs {
+
+  input {
+    String docker
+    File ss_meta
+    String prefix
+  }
+
+  command <<<
+  cat ~{ss_meta} | sed -E 1d | cut -f 1,3,8,9,10,11,12,13,14,15,16,17 > sumstats.txt
+  >>>
+  runtime {
+    docker: "~{docker}"
+    cpu: 1
+    disks:  "local-disk 10 HDD"
+    memory: "2 GB"
+    zones: "europe-west1-b europe-west1-c europe-west1-d"
+    preemptible : 1
+  }
+  output {
+    File sstats = "./sumstats.txt"
+  }
+}
