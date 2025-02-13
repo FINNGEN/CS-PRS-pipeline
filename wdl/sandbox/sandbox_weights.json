@@ -1,6 +1,6 @@
 {
-    "sandbox_prs_weights.prefix": "fg",
-    "sandbox_prs_weights.ss_meta": "gs://finngen-production-library-green/wdl/meta_test.txt",
+    "sandbox_prs_weights.prefix": "sb_test",
+    "sandbox_prs_weights.ss_meta": "gs://finngen-production-library-green/prs/prs_test.txt",
     "sandbox_prs_weights.munge.ss_data_path": "gs://finngen-production-library-green/prs/sumstats/",
     "sandbox_prs_weights.weights.bim_file": "gs://finngen-production-library-green/prs/rsid_mapping/finngen.rsid.bim"
 }

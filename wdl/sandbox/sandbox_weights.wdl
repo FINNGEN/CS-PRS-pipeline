@@ -1,16 +1,18 @@
 version 1.0
 
 workflow sandbox_prs_weights{
+  # This pipeline calculates weights only for sumstats and using 1kg panel
   input {
     File ss_meta
     String prefix
   }
 
-  String docker = "eu.gcr.io/finngen-refinery-dev/cs-prs:r12.sb.1"
+  #String docker = "eu.gcr.io/finngen-refinery-dev/cs-prs:r12.sb.1"
+  String docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r12.sb.1" 
   File rsid_map = "gs://finngen-production-library-green/prs/rsid_mapping/finngen.rsid.map.tsv"
 
   call validate_inputs {input:docker =docker,ss_meta=ss_meta,prefix=prefix}
-
+  
   Array[Array[String]] ss_data = read_tsv(validate_inputs.sstats)
    scatter( data  in ss_data) {
     call munge {
@@ -47,43 +49,6 @@ workflow sandbox_prs_weights{
 }
 
 
-task validate_inputs {
-
-  input {
-    String docker
-    File ss_meta
-    String prefix
-  }
-
-  command <<<
-
-  cat ~{ss_meta} | sed -E 1d | cut -f 1,3,8,9,10,11,12,13,14,15,16,17 > sumstats.txt
-
-  grep -vP '^[a-zA-Z0-9_.-]*$' <( cat sumstats.txt | tr "\t" "\n") >> tmp.txt
-  grep -vP '^[a-zA-Z0-9_.-]*$' <( echo  ~{prefix}) >> tmp.txt
-
-  set -o pipefail
-  if grep -q . tmp.txt; then
-      echo "Irregular pattern found " >&2
-      cat tmp.txt >&2
-      exit 1
-  else
-      :
-  fi
-  >>>
-  runtime {
-    docker: "~{docker}"
-    cpu: 1
-    disks:  "local-disk 10 HDD"
-    memory: "2 GB"
-    zones: "europe-west1-b europe-west1-c europe-west1-d"
-    preemptible : 1
-  }
-  output {
-    File sstats = "./sumstats.txt"
-  }
-}
-
 task weights {
   input {
     String docker
@@ -106,10 +71,10 @@ task weights {
   >>>
   
   output {
-    File munged_rsid = "/cromwell_root/munge/~{root_name}.munged.rsid"
-    File log = "/cromwell_root/~{root_name}.weights.log"
-    File weights = "/cromwell_root/~{root_name}.weights.txt"
-    File weights_rsid =  "/cromwell_root/~{root_name}.weights.rsid.txt"
+    File munged_rsid = "munge/~{root_name}.munged.rsid"
+    File log = "~{root_name}.weights.log"
+    File weights = "~{root_name}.weights.txt"
+    File weights_rsid =  "~{root_name}.weights.rsid.txt"
   }
 
   runtime {
@@ -154,8 +119,8 @@ task munge {
   >>>
 
   output {
-    File munged_file = "/cromwell_root/~{out_root}"
-    Array[File] rejected_variants = glob("/cromwell_root/tmp_parse/rejected_variants/*")
+    File munged_file = "~{out_root}"
+    Array[File] rejected_variants = glob("tmp_parse/rejected_variants/*")
   }
     
   runtime {
@@ -168,3 +133,28 @@ task munge {
   }
 }
 
+
+
+task validate_inputs {
+
+  input {
+    String docker
+    File ss_meta
+    String prefix
+  }
+
+  command <<<
+  cat ~{ss_meta} | sed -E 1d | cut -f 1,3,8,9,10,11,12,13,14,15,16,17 > sumstats.txt
+  >>>
+  runtime {
+    docker: "~{docker}"
+    cpu: 1
+    disks:  "local-disk 10 HDD"
+    memory: "2 GB"
+    zones: "europe-west1-b europe-west1-c europe-west1-d"
+    preemptible : 1
+  }
+  output {
+    File sstats = "./sumstats.txt"
+  }
+}

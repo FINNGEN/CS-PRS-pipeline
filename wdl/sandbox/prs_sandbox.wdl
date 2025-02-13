@@ -1,11 +1,17 @@
 workflow sandbox_prs{
 
-  
-  String gwas_data_path
-  String docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r12.sb.1"     
-  Boolean test
-  File chain_map
-  File gwas_meta
+  input{
+    String gwas_data_path
+    #String docker = "eu.gcr.io/finngen-refinery-dev/cs-prs:r12.sb.1"
+    String docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r12.sb.1" 
+    Boolean test
+    File chain_map
+    Map[String,File] build_chains = read_map(chain_map)
+    File gwas_meta
+  }
+  call rsid_map {input:docker = docker}
+
+
 
   call rsid_map {input:docker = docker}
   call sumstats {input:gwas_meta = gwas_meta,docker = docker}

@@ -2,18 +2,16 @@ version 1.0
 
 workflow finngen_weights{
   input {
-    String docker
     File bim_file
     File pheno_list
     Boolean test
     String prefix
     Array[Array[String]] pheno_data = read_tsv(pheno_list)
-
-    Boolean run_scores
     Boolean rsid_weights
-
   }
-  
+
+  String docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:finngen-weights.7"
+  #String docker = "eu.gcr.io/finngen-refinery-dev/cs-prs:finngen-weights.7"
   scatter (entry in pheno_data) {
     call munge_sumstats {
       input:
@@ -23,7 +21,7 @@ workflow finngen_weights{
       bim_file = bim_file,
       docker = docker,
     }
-    
+     
     call weights {
       input:
       test = test,
@@ -35,74 +33,30 @@ workflow finngen_weights{
       }   
   }
   
-  Array[File] final_weights = if (rsid_weights) then weights.rsid_weights else weights.weights
-  
-  if (run_scores) {
-    call scores {
-      input :
-      docker = docker,
-      weights = final_weights,
-    }
-  }
-}
-  
-task scores {
-  input {
-    String plink_root
-    Array[File] weights
-    String docker
-    Int cpu
-    Int mem
-  }
-    
-  File bed_file = plink_root + ".bed"
-  File bim_file = plink_root + ".bim"
-  File fam_file = plink_root + ".fam" 
-  
-  command <<<
-    python3 /scripts/cs_scores.py \
-    --weight-list ~{write_lines(weights)} \
-    --bed ~{bed_file} \
-    --out .
-    
-  >>>
-  
   output {
-     Array[File] logs = glob("./scores/*log")
-    Array[File] scores = glob("./scores/*sscore")
+    Array[File] final_weights = if (rsid_weights) then weights.rsid_weights else weights.weights
   }
-  
-  runtime {
-    docker: "~{docker}"
-    cpu: "~{cpu}"
-     memory: "~{mem} GB"
-    disks: "local-disk ~{ceil(size(bed_file,'GB')) + 10} HDD"
-    zones: "europe-west1-b europe-west1-c europe-west1-d"
-    preemptible: 2
-  }
-}
 
+}
+  
 
 
 task weights {
   input {
     Boolean test
     File bim_file
-    File ref_list
     File munged_gwas
     String N
     String pheno
-    
     String docker
-    Int cpu
-    Int mem
-    File rsid_map
   }
-  
+
+  File rsid_map ="gs://finngen-production-library-green/finngen_R8/finngen_R8_analysis_data/variant_mapping/finngen_R8_hm3.rsid.map.tsv"
+  File ref_list = "gs://finngen-production-library-green/prs/ref_list_fin.txt"
   Array[File] ref_files = read_lines(ref_list)
   Int disk_size = ceil(size(munged_gwas,'GB'))*2+10
   String root_name = basename(munged_gwas,'.munged')
-  String weights_root = "/cromwell_root/${root_name}.weights"
+  String weights_root = "~{root_name}.weights"
   Int pre =  if test then 2 else 0
   
   command <<<
@@ -124,19 +78,19 @@ task weights {
    >>>
    
    output {
-     File weights = "${weights_root}.txt"
-     File rsid_weights = "${weights_root}.rsid"
-     File log = "${weights_root}.log"
+     File weights = "~{weights_root}.txt"
+     File rsid_weights = "~{weights_root}.rsid"
+     File log = "~{weights_root}.log"
      String phenos = pheno
    }
    
    runtime {
-     docker: "${docker}"
-     cpu: "${cpu}"
-     memory: "${mem} GB"
+     docker: "~{docker}"
+     cpu: 16
+     memory: "16 GB"
      disks: "local-disk ~{disk_size} HDD"
      zones: "europe-west1-b europe-west1-c europe-west1-d"
-     preemptible: "${pre}"
+     preemptible: "~{pre}"
    }
  } 
  
@@ -171,15 +125,15 @@ task weights {
  >>>
  
  output {
-   File munged_sumstat = "${prefix}_${pheno}.munged"
+   File munged_sumstat = "~{prefix}_~{pheno}.munged"
  }
  
  runtime {
-   docker: "${docker}"
+   docker: "~{docker}"
    cpu : "4"
    zones: "europe-west1-b europe-west1-c europe-west1-d"
    mem : "4 GB"
-   disks : "local-disk ${disk_size} HDD"
+   disks : "local-disk ~{disk_size} HDD"
    preemptible: 2
  }
 }
