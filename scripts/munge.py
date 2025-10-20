@@ -6,6 +6,18 @@ from pathlib import Path
 from collections import defaultdict as dd
 
 
+def detect_statistic_type(column_name):
+    """
+    Automatically detect if the column is a p-value or standard error.
+    Default to SE unless the column name contains 'P' or 'pval' (case-insensitive).
+    """
+    column_lower = column_name.lower()
+    if 'pval' in column_lower or column_lower == 'p':
+        return 'PVAL'
+    else:
+        return 'SE'
+
+
 def merge_files(args):
     """
     Function that takes the rsid and chrompos lifted file and prints out the final variants, checking if the variant exists in our dataset (also checking for strand flip).
@@ -31,32 +43,35 @@ def merge_files(args):
     ct = load_pos_mapping(args.chrompos_map)
     # starting final merge
     final_variants = 0
+    
     with gzip.open(rej_log,'wt') as rej,gzip.open(out_file,'wt') as o:
-        out_header = '\t'.join(['CHR','SNP','A1','A2','BP','BETA','P'])
+        # Determine output header based on statistic type
+        stat_col = 'P' if args.statistic_type == 'PVAL' else 'SE'
+        out_header = '\t'.join(['CHR','SNP','A1','A2','BP','BETA',stat_col])
         o.write(out_header + '\n')
         #looping of rsid file
         iterator = basic_iterator(rsid_file,skiprows = 1)
         loop = itertools.islice(iterator,30) if args.test else iterator
         for entry in loop:
             args.print(entry)
-            chrom,rsid,a1,a2,pos,OR,pval = entry
-            pass_bool,out_line = process_variant(ct,chrom,pos,a1,a2,OR,pval,file_root,rsid)
+            chrom,rsid,a1,a2,pos,OR,stat_val = entry
+            pass_bool,out_line = process_variant(ct,chrom,pos,a1,a2,OR,stat_val,file_root,rsid)
             final_variants += pass_bool
             out_file = o if pass_bool else rej
             out_file.write(out_line)
 
         #looping of chrompos file (possibly lifted)
-        if args.lift: column_names = ['beta','p','lift_chr','lift_pos','REF','ALT']
-        else: column_names = ['beta','p','chr','pos','a1','a2']
+        if args.lift: column_names = ['beta','stat','lift_chr','lift_pos','REF','ALT']
+        else: column_names = ['beta','stat','chr','pos','a1','a2']
         header = return_header(chrompos_file)
         columns = [header.index(elem) for elem in column_names]
         iterator = basic_iterator(chrompos_file,skiprows = 1,columns = columns)
         loop = itertools.islice(iterator,30) if args.test else iterator
         for entry in loop:
-            *_,OR,pval,chrom,pos,a1,a2 = entry
+            *_,OR,stat_val,chrom,pos,a1,a2 = entry
             chrom = ''.join([s for s in chrom if s.isdigit()]) # extract integer from chrom field
             variant_id =  f"{chrom}_{pos}_{a1}_{a2}"
-            pass_bool,out_line = process_variant(ct,chrom,pos,a1,a2,OR,pval,file_root,variant_id)
+            pass_bool,out_line = process_variant(ct,chrom,pos,a1,a2,OR,stat_val,file_root,variant_id)
             final_variants += pass_bool
             out_file = o if pass_bool else rej
             out_file.write(out_line)
@@ -69,7 +84,7 @@ def merge_files(args):
             print('compared to input sumstat:',original_variants,final_variants,final_variants/float(original_variants))
             print('compared to rsid positions in FG:',rsid_positions,final_variants,final_variants/float(rsid_positions))
 
-def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
+def process_variant(pos_dict,chrom,pos,a1,a2,OR,stat_val,file_name,variant_id):
     """
     Function that parses the lines of the chrompos and rsid files. It makes sure that the variant in each line is (potentially) the same as Finngen's by trying all possible combinations of strand flip and direction.
     """
@@ -80,17 +95,17 @@ def process_variant(pos_dict,chrom,pos,a1,a2,OR,pval,file_name,variant_id):
     # the position exists in finngen data
     if finngen_variant:
         # standard out line in case of missing position
-        rej_line = '\t'.join([file_name,'wrong_alleles',variant_id,a1,a2,OR,pval,chrom,pos])+'\n'
+        rej_line = '\t'.join([file_name,'wrong_alleles',variant_id,a1,a2,OR,stat_val,chrom,pos])+'\n'
         variant_check = map_alleles(a1,a2)
         for finngen_ref,finngen_alt in finngen_variant:
             if map_alleles(finngen_ref,finngen_alt) == variant_check:
                 finngen_snp = f"chr{chrompos}"
-                out_line = '\t'.join([chrom,finngen_snp,a1,a2,pos,OR,pval]) + '\n'
+                out_line = '\t'.join([chrom,finngen_snp,a1,a2,pos,OR,stat_val]) + '\n'
                 return True,out_line
 
     # in case of position missing
     else:
-        rej_line = '\t'.join([file_name,'missing_position',variant_id,a1,a2,OR,pval,chrom,pos]) + '\n'
+        rej_line = '\t'.join([file_name,'missing_position',variant_id,a1,a2,OR,stat_val,chrom,pos]) + '\n'
 
     return False,rej_line
 
@@ -123,6 +138,8 @@ def parse_file(args):
     rsid_file = os.path.join(tmp_path,f'rsid_{file_root}.gz')
     chrompos_file = os.path.join(tmp_path,f'chrompos_{file_root}.gz')
     rej_log = os.path.join(tmp_path,'rejected_variants',f'rejected_1_{file_root}.gz')
+    args.statistic_type = detect_statistic_type(args.input_statistic)
+    
     # check if files already exists
     if os.path.isfile(rsid_file) and os.path.isfile(chrompos_file) and not args.force:
         print(str(total_lines) + ' variants already parsed')
@@ -143,10 +160,14 @@ def parse_file(args):
         #args.print(f'header: {header_fix}')
 
         # relevant columns to parse
-        columns = [args.variant,args.ref,args.alt,args.effect,args.pval]
+        columns = [args.variant,args.ref,args.alt,args.effect,args.input_statistic]
         args.print(f'columns to parse: {columns}')
         if not all([elem in header_fix for elem in columns]):
             raise Exception(f"Missing columns in header: {[elem for elem in columns if elem not in header_fix]}")
+
+        # Detect statistic type from column name
+        
+        print(f"Detected statistic type: {args.statistic_type} for column '{args.input_statistic}'")
 
         indexes  = [header_fix.index(elem) for elem in columns]
         # define parsing function based on inputs: add chrom/pos columns if they exists in the original file
@@ -164,7 +185,7 @@ def parse_file(args):
         # WE ARE NOW READY TO PARSE THE FILE
         rsid_dict = load_rsid_mapping(args.rsid_map)
         with gzip.open(rsid_file,'wt') as r,gzip.open(chrompos_file,'wt') as c,gzip.open(rej_log,'wt') as rej:
-            out_header = '\t'.join(['chr','snp','a1','a2','pos','beta','p'])
+            out_header = '\t'.join(['chr','snp','a1','a2','pos','beta','stat'])
             c.write(out_header + '\n')
             r.write(out_header + '\n')
 
@@ -174,7 +195,7 @@ def parse_file(args):
             for i,info in enumerate(loop):
                 if not i % 1000:progressBar(i,total_lines)
 
-                variant,a1,a2,effect,pval,*chrompos = info
+                variant,a1,a2,effect,stat_val,*chrompos = info
                 args.print(f"Reading columns: {info}")
 
                 # check if effect can be mapped to float (might be missing)
@@ -189,7 +210,7 @@ def parse_file(args):
                             chrom,pos = chrompos.split('_')
                             try:
                                 OR = str(or_func(float(effect)))
-                                out_line,out_file = '\t'.join([chrom,variant,a1.upper(),a2.upper(),pos,OR,pval]),r
+                                out_line,out_file = '\t'.join([chrom,variant,a1.upper(),a2.upper(),pos,OR,stat_val]),r
                             except:
                                 out_line,out_file = '\t'.join([file_root,'or_problems'] + info),rej
 
@@ -217,19 +238,19 @@ def regular_parse(info,or_func):
     """
     Standard parsing function when chrom & pos are provided. It just converts OR to BETA if needed.
     """
-    variant,a1,a2,effect,pval,chrom,pos = info
+    variant,a1,a2,effect,stat_val,chrom,pos = info
     OR = or_func(effect)
-    return chrom,f"{chrom}_{pos}",a1.upper(),a2.upper(),pos,OR,pval
+    return chrom,f"{chrom}_{pos}",a1.upper(),a2.upper(),pos,OR,stat_val
 
 def alternate_parse(info,or_func):
     """
     Parsing if chrom & pos are missing, extract the first two integers from the variant string
     """
 
-    variant,a1,a2,effect,pval,*_  = info
+    variant,a1,a2,effect,stat_val,*_  = info
     chrom,pos,*_ = ''.join((ch if ch.isdigit() else ' ') for ch in variant).split()
     OR = or_func(effect)
-    return chrom,f"{chrom}_{pos}",a1.upper(),a2.upper(),pos,OR,pval
+    return chrom,f"{chrom}_{pos}",a1.upper(),a2.upper(),pos,OR,stat_val
 
 
 def lift(chrompos_file,chainfile,force):
@@ -273,7 +294,7 @@ if __name__ == '__main__':
     parser.add_argument('--ref', type=str,required=True,help='Column entry of ref (effect)')
     parser.add_argument('--alt', type=str,required=True,help = 'Column entry of other allel')
     parser.add_argument('--effect', type=str,required=True,help='Column entry of effect column (beta/OR)')
-    parser.add_argument('--pval', type=str,required=True,help='Column entry of pvalue')
+    parser.add_argument('--input-statistic', type=str,required=True,help='Column entry of statistic (p-value or SE). Auto-detects type based on column name.')
     parser.add_argument('--chrom', type=str,help='Column entry of chrom')
     parser.add_argument('--pos', type=str,help='Column entry of position')
     parser.add_argument('--prefix',type = str,help = "string to prepend to output",default = "")

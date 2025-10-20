@@ -36,7 +36,7 @@ workflow prs_cs{
       ref = gwas[7],
       alt = gwas[8],
       effect = gwas[9],
-      pval = gwas[10],
+      stat = gwas[10],
       rsid_map = rsid_map.rsid,
       chrompos_map = rsid_map.chrompos,
     }
@@ -157,7 +157,7 @@ task munge {
     String ref
     String alt
     String effect
-    String pval
+    String stat
 
     File rsid_map
     File chrompos_map
@@ -179,7 +179,7 @@ task munge {
   command <<<
   echo ~{disk_size} ~{disk_factor}
   
-  python3 /scripts/munge.py  -o .  --ss ~{ss} --effect_type "~{effect_type}"  --variant "~{variant}"  --chrom "~{chrom}"  --pos "~{pos}"  --ref "~{ref}"   --alt "~{alt}"  --effect "~{effect}"  --pval "~{pval}"  --prefix "~{prefix}"  --rsid-map ~{rsid_map}  --chrompos-map ~{chrompos_map}  --chainfile ~{chainfile} 
+  python3 /scripts/munge.py  -o .  --ss ~{ss} --effect_type "~{effect_type}"  --variant "~{variant}"  --chrom "~{chrom}"  --pos "~{pos}"  --ref "~{ref}"   --alt "~{alt}"  --effect "~{effect}"  --input-statistic "~{stat}"  --prefix "~{prefix}"  --rsid-map ~{rsid_map}  --chrompos-map ~{chrompos_map}  --chainfile ~{chainfile} 
   
   >>>
 
