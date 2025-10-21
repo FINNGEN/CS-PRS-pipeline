@@ -1,6 +1,6 @@
 {
     #WORKFLOW LEVEL
-    "prs_cs.prefix": "finngen_test",
+    "prs_cs.prefix": "finngen_se",
     "prs_cs.test": True, # weights are ran with very few iterations
     #"prs_cs.sumstats.last_sumstats": 6, # optional argument to only run latest N sumsats
     "prs_cs.docker": "europe-west1-docker.pkg.dev/finngen-refinery-dev/fg-refinery-registry/ldsc:r13.se",
@@ -34,8 +34,7 @@
     "prs_cs.scores.regions": "gs://finngen-production-library-green/prs/PRS_regions.txt",
 
     # DOCKERS (optional)
-    
-    #"prs_cs.munge.munge_docker": "",
+    "prs_cs.munge.munge_docker": "europe-west1-docker.pkg.dev/finngen-refinery-dev/fg-refinery-registry/ldsc:r13.se.1",
     #"prs_cs.weights.weights_docker": "",
     #"prs_cs.scores.scores_docker": "",
 }

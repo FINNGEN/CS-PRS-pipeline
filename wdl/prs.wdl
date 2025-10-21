@@ -172,7 +172,6 @@ task munge {
   }
   File ss = gwas_data_path + file_name
   String out_root =  prefix + "_" + sub(file_name,'.gz','.munged.gz')
-  String out_cpra = prefix + "_" + sub(file_name,'.gz','.munged.cpra')
   
   Int disk_size = ceil(size(chainfile,'GB')) + ceil(size(rsid_map,'GB')) + ceil(size(chrompos_map,'GB')) + ceil(size(ss,'GB'))*disk_factor+10
   String? final_docker = if defined(munge_docker) then munge_docker else docker
@@ -185,8 +184,6 @@ task munge {
 
   output {
     File munged_file = "~{out_root}"
-    File cpra_file   = "~{out_cpra}"
-
     Array[File] rejected_variants = glob("tmp_parse/rejected_variants/*")
   }
     

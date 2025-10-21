@@ -3,7 +3,7 @@
 import argparse,os.path,shlex,subprocess,sys,random
 from collections import defaultdict as dd
 from itertools import product
-from utils import file_exists,make_sure_path_exists,tmp_bash,get_path_info,timing_function,natural_sort,get_filepaths,basic_iterator,pretty_print,mapcount,merge_files
+from utils import file_exists,make_sure_path_exists,tmp_bash,get_path_info,timing_function,natural_sort,get_filepaths,basic_iterator,pretty_print,mapcount,merge_files,return_header
 
 root_path = '/'.join(os.path.realpath(__file__).split('/')[:-2]) + '/'
 data_path = os.path.join(root_path,'data')
@@ -29,7 +29,8 @@ def to_rsid(args):
     if os.path.isfile(out_file) and not args.force:
         print(f"{out_file} already esists")        
     else:
-        cmd = f"python3 {convert} -f {args.sum_stats} -o {munge_path} --map {args.map}  --to-rsid --metadata SNP  --columns SNP A1 A2 BETA P "
+        header=return_header(args.sum_stats)
+        cmd = f"python3 {convert} -f {args.sum_stats} -o {munge_path} --map {args.map}  --to-rsid --metadata SNP  --columns SNP A1 A2 BETA {'P' if 'P' in header else 'SE'}"
         subprocess.call(shlex.split(cmd))
 
     args.sum_stats = out_file 
