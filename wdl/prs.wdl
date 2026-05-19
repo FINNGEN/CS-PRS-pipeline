@@ -212,6 +212,9 @@ task rsid_map {
   command <<<
   mkdir ./variant_mapping/
   mv ~{vcf_gz} ./variant_mapping/~{basename(vcf_gz)}
+
+  # If PAR1/PAR2 in bim, convert to 23
+  sed -i 's/^PAR[12]/23/' ~{bim_file}
   
   python3 /scripts/rsid_map.py  -o . --bim ~{bim_file}  --rsids ~{hm3_rsids}  --prefix hm3
   python3 /scripts/convert_rsids.py -o . --file ~{bim_file} --no-header --to-rsid --map ./variant_mapping/finngen.rsid.map.tsv  --metadata 1
