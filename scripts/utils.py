@@ -266,16 +266,35 @@ def load_pos_mapping(chrompos_map):
     print('done.')
     return pos_dict
 
+def _load_rsid_pickle(path,inverse):
+    '''
+    Loads a rsid<->chrompos pickle and makes sure it faces the requested direction,
+    regardless of which direction was actually cached on disk: direction is detected
+    from a sample key (rsids start with 'rs', chrompos keys don't) and the dict is
+    inverted in memory if it doesn't match what was asked for.
+    '''
+    print('loading rsid dict -->', path)
+    with open(path,'rb') as i: rsid_dict = pickle.load(i)
+    is_forward = next(iter(rsid_dict)).lower().startswith('rs') # forward = rsid --> chrompos
+    if is_forward == inverse:
+        print('pickle direction did not match what was requested, inverting in memory')
+        rsid_dict = dd(str,{value:key for key,value in rsid_dict.items()})
+    return rsid_dict
+
 def load_rsid_mapping(rsid_map,inverse = False):
     '''
-    Loads the chrompos to rsid mapping
+    Loads the chrompos to rsid mapping. If rsid_map is already a pickle (built by a
+    previous call to this function, in either direction), it is loaded directly,
+    skipping the tsv scan.
     '''
+    if '.pickle' in os.path.basename(rsid_map):
+        return _load_rsid_pickle(rsid_map,inverse)
+
     out_pickle = os.path.join(rsid_map) + '.pickle'
     if inverse:
         out_pickle += '.chrompos'
     if os.path.isfile(out_pickle):
-        print('loading rsid dict -->', out_pickle)
-        with open(out_pickle,'rb') as i: rsid_dict = pickle.load(i)
+        rsid_dict = _load_rsid_pickle(out_pickle,inverse)
     else:
         print('generating rsid dict --> ',out_pickle)
         rsid_dict = dd(str)
