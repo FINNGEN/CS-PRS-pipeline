@@ -2,3 +2,4 @@
 **/*#*
 **/*pycache*
 tests/
+.prscs_venv/

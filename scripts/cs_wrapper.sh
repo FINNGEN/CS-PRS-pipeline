@@ -25,6 +25,10 @@ Usage: $(basename "$0") --ref-file FILE --bim-file FILE --sum-stats FILE --N INT
   --prefix      String to prepend to output filenames
   --force       Re-run chromosomes even if their weight file already exists
   --test        Run PRScs with --n_iter=100 for a quick smoke test
+  --venv-dir    Where to create/reuse the local numpy<2.4 venv PRScs runs under
+                (default: /mnt/disks/data/prs/venv). Must be on local disk, not a network/synced
+                mount (e.g. Dropbox) -- venvs create many small files/symlinks in quick
+                succession, which FUSE-backed network filesystems handle unreliably.
 
 Chromosomes run one at a time, in order, each in its own PRScs process. This is deliberately
 sequential (no concurrency): PRScs never parallelizes across chromosomes on its own, and running
@@ -38,6 +42,7 @@ PREFIX=""
 FORCE=0
 TEST=0
 CHROM=""
+VENV_DIR=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -51,6 +56,7 @@ while [[ $# -gt 0 ]]; do
         --force) FORCE=1; shift;;
         --test) TEST=1; shift;;
         --chrom) CHROM="$2"; shift 2;;
+        --venv-dir) VENV_DIR="$2"; shift 2;;
         -h|--help) usage; exit 0;;
         *) echo "Unknown argument: $1" >&2; usage; exit 1;;
     esac
@@ -64,6 +70,22 @@ done
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 PRSCS="${SCRIPT_DIR}/../PRScs/PRScs.py"
+
+# ---- local-only: numpy>=2.4 breaks PRScs (see docker/requirements.txt for why) -- create/reuse
+# a venv pinned from that same requirements file so PRScs always runs against a numpy that works.
+# Deliberately kept ABOVE the CORE block: it has no WDL equivalent and should be deleted from
+# here once the docker image itself pins numpy<2.4 -- inside docker there's no venv, PRSCS_PYTHON
+# just becomes plain "python3" (the image's own interpreter, already on the right numpy).
+# Defaults to a fixed local-disk path rather than next to this script: this script lives under
+# ~/Dropbox/..., a FUSE network mount, and venv creation (many rapid small-file/symlink writes)
+# is unreliable there. Override with --venv-dir.
+PRSCS_VENV="${VENV_DIR:-/mnt/disks/data/prs/venv}"
+if [[ ! -x "${PRSCS_VENV}/bin/python3" ]]; then
+    echo "creating PRScs venv at ${PRSCS_VENV} (numpy<2.4, per docker/requirements.txt)"
+    python3 -m venv "$PRSCS_VENV"
+    "${PRSCS_VENV}/bin/pip" install -q -r "${SCRIPT_DIR}/../docker/requirements.txt"
+fi
+PRSCS_PYTHON="${PRSCS_VENV}/bin/python3"
 
 ################################################################################################
 # ---- CORE (WDL-portable) BLOCK -------------------------------------------------------------
@@ -83,7 +105,8 @@ PREFIX="$PREFIX"
 CHROM="$CHROM"
 FORCE="$FORCE"
 TEST="$TEST"
-PRSCS="$PRSCS"   # WDL: absolute path to PRScs.py inside the docker image, e.g. /PRScs/PRScs.py
+PRSCS="$PRSCS"                 # WDL: absolute path to PRScs.py inside the docker image, e.g. /PRScs/PRScs.py
+PRSCS_PYTHON="$PRSCS_PYTHON"   # WDL: just "python3" -- the docker image's numpy is already pinned <2.4
 ################################################################################################
 
 [[ -n "$PREFIX" ]] && PREFIX="${PREFIX}_"
@@ -150,7 +173,7 @@ else
         echo "chromosome ${c}"
         LOG_FILE="${LOG_PATH}/${SS_ROOT}.${c}.weights.log"
         # shellcheck disable=SC2086
-        python3 -u "$PRSCS" --ref_dir "$REF_DIR" --bim_prefix "$BIM_PREFIX" --sst_file "$SUM_STATS" \
+        "$PRSCS_PYTHON" -u "$PRSCS" --ref_dir "$REF_DIR" --bim_prefix "$BIM_PREFIX" --sst_file "$SUM_STATS" \
             --n_gwas "$N" --out_dir "$OUT_DIR_PREFIX" $KWARGS --chrom "$c" > "$LOG_FILE"
     done
 
