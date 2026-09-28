@@ -70,15 +70,22 @@ workflow prs_cs_weights {
       statistic_type = statistic_type,
       rsid_map = rsid_map,
       chainfile = build_chains[build],
+      ref_dir = ref_dir,
       docker = prs_docker,
     }
 
   }
 
+  call munge_summary {
+    input:
+    snp_summaries = munge.snp_summary,
+    docker = general_docker,
+  }
+
   # single flat scatter over (study, chrom) instead of a nested scatter -- this Cromwell setup
   # doesn't track nested scatters properly (shows up as an untracked synthetic "ScatterAt..."
   # node). cross(study_pairs, chrom_list) builds the full (study, chrom) index space up front.
-  Array[Pair[File, String]] study_pairs = zip(munge.munged_file, n_total)
+  Array[Pair[File, String]] study_pairs = zip(munge.munged_file_hm3, n_total)
   Array[Pair[Pair[File, String], Int]] weight_jobs = cross(study_pairs, chrom_list)
 
   scatter (job in weight_jobs) {
@@ -96,7 +103,7 @@ workflow prs_cs_weights {
   scatter (i in range(length(gwas_traits))) {
     call weights_gather {
       input:
-      root_name = basename(munge.munged_file[i], ".munged.gz"),
+      root_name = basename(munge.munged_file_hm3[i], ".munged.hm3.gz"),
       all_weights = weights.weights,
       all_logs = weights.log,
       docker = general_docker,
@@ -106,6 +113,9 @@ workflow prs_cs_weights {
   output {
     Array[File] weights_out = weights_gather.weights
     Array[File] weights_logs = weights_gather.log
+    Array[File] munged_files = munge.munged_file
+    Array[File] munged_files_hm3 = munge.munged_file_hm3
+    File munge_summary_table = munge_summary.summary
   }
 }
 
@@ -173,6 +183,7 @@ task munge {
 
     File rsid_map
     File chainfile
+    String ref_dir
 
     String docker
     Int disk_factor = 4
@@ -180,6 +191,11 @@ task munge {
 
   File ss = gwas_data_path + file_name
   String out_root = prefix + "_" + sub(file_name, ".gz", ".munged.gz")
+  String out_root_hm3 = sub(out_root, ".munged.gz$", ".munged.hm3.gz")
+  String stat_col = if statistic_type == "SE" then "SE" else "P"
+  # tolerate a trailing slash in ref_dir, same as weights task
+  String clean_ref_dir = sub(ref_dir, "/$", "")
+  File snpinfo_file = "~{clean_ref_dir}/snpinfo_1kg_hm3"
   Int disk_size = ceil(size(chainfile, "GB")) + ceil(size(rsid_map, "GB")) + ceil(size(ss, "GB")) * disk_factor + 10
 
   command <<<
@@ -193,11 +209,27 @@ task munge {
   mkdir -p rejected_variants_out
   cp -r tmp_parse/rejected_variants/. rejected_variants_out/ 2>/dev/null || true
   tar -czf rejected_variants.tar.gz -C rejected_variants_out .
+
+  # PRScs only ever uses the HM3 SNPs in snpinfo_file, so pre-filter to that set for weights.
+  awk 'NR>1{print $2}' ~{snpinfo_file} | LC_ALL=C sort -k1,1 > hm3_snps.sorted.txt
+  zcat ~{out_root} | tail -n +2 | LC_ALL=C sort -k1,1 -t$'\t' > munged.sorted.txt
+  LC_ALL=C join -t $'\t' -1 1 -2 1 munged.sorted.txt hm3_snps.sorted.txt > munged.hm3.txt
+  { printf 'SNP\tA1\tA2\tBETA\t%s\n' "~{stat_col}"; cat munged.hm3.txt; } | gzip > ~{out_root_hm3}
+
+  N_SNPS=$(( $(zcat ~{ss} | wc -l) - 1 ))
+  MUNGED_SNPS=$(( $(zcat ~{out_root} | wc -l) - 1 ))
+  HM3_SNPS=$(( $(zcat ~{out_root_hm3} | wc -l) - 1 ))
+  echo "input SNPs: $N_SNPS"
+  echo "munged SNPs: $MUNGED_SNPS"
+  echo "HM3 SNPs: $HM3_SNPS"
+  printf '%s\t%s\t%s\t%s\n' "~{file_name}" "$N_SNPS" "$MUNGED_SNPS" "$HM3_SNPS" > snp_summary.txt
   >>>
 
   output {
     File munged_file = "~{out_root}"
+    File munged_file_hm3 = "~{out_root_hm3}"
     File rejected_variants_tar = "rejected_variants.tar.gz"
+    File snp_summary = "snp_summary.txt"
   }
 
   runtime {
@@ -205,6 +237,41 @@ task munge {
     cpu: 4
     memory: "~{disk_size} GB"
     disks: "local-disk ~{disk_size} HDD"
+    zones: "europe-west1-b"
+    preemptible: 1
+  }
+}
+
+
+task munge_summary {
+  input {
+    Array[File] snp_summaries
+    String docker
+  }
+
+  command <<<
+  set -euo pipefail
+  {
+    printf 'file_name\tn_snps\tmunged_snps\tpct_munged_snps\thm3_snps\tpct_hm3_snps\n'
+    for f in ~{sep=" " snp_summaries}; do
+        awk -F'\t' '{
+            pct_munged = ($2>0) ? 100*$3/$2 : 0
+            pct_hm3 = ($2>0) ? 100*$4/$2 : 0
+            printf "%s\t%s\t%s\t%.2f\t%s\t%.2f\n", $1, $2, $3, pct_munged, $4, pct_hm3
+        }' "$f"
+    done
+  } > munge_summary.txt
+  >>>
+
+  output {
+    File summary = "munge_summary.txt"
+  }
+
+  runtime {
+    docker: "~{docker}"
+    cpu: 1
+    memory: "2 GB"
+    disks: "local-disk 10 HDD"
     zones: "europe-west1-b"
     preemptible: 1
   }
@@ -221,7 +288,7 @@ task weights {
     String docker
   }
 
-  String root_name = basename(munged_gwas, ".munged.gz")
+  String root_name = basename(munged_gwas, ".munged.hm3.gz")
   # tolerate a trailing slash in ref_dir (e.g. ".../ldblk_1kg_eur/") -- left as-is it would build
   # a double-slash gs:// path, which is not a valid object key and would fail to localize
   String clean_ref_dir = sub(ref_dir, "/$", "")
@@ -231,9 +298,6 @@ task weights {
   File snpinfo_file = "~{clean_ref_dir}/snpinfo_1kg_hm3"
   Int disk_size = ceil(size(munged_gwas, "GB")) * 2 + 10
 
-  # cs_wrapper.sh's two essential steps for one (study, chrom) shard: unzip, run PRScs. Its
-  # resumability/PREFIX/KWARGS/FORCE/TEST logic is dropped -- Cromwell's own call-caching covers
-  # resumability per shard, and none of the rest was used here anyway.
   command <<<
   set -euo pipefail
 
