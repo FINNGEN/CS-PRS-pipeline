@@ -308,11 +308,16 @@ task weights {
   }
 
   String root_name = basename(munged_gwas, ".munged.gz")
-  Array[String] ref_dirs = read_lines(ref_dir_list)
+  Array[File] ref_dirs = read_lines(ref_dir_list)
   Int disk_size = ceil(size(munged_gwas, "GB")) * 2 + 10
 
   command <<<
     set -euo pipefail
+    # force localization of every reference-panel file, not just ref_dirs[0] -- Cromwell only
+    # localizes File values actually referenced in the command, and PRScs reads sibling
+    # ldblk_1kg_chrN.hdf5/snpinfo_1kg_hm3 files from ref_dirs[0]'s own directory
+    : ~{sep=" " ref_dirs}
+
     # test mode hardcoded off: cs_wrapper.sh's --test flag (--n_iter=100 smoke test) is never
     # passed here.
     /scripts/cs_wrapper.sh \
@@ -328,7 +333,7 @@ task weights {
   runtime {
     docker: "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-se"
     cpu: 2
-    memory: "8 GB"
+    memory: "16 GB"
     disks: "local-disk ~{disk_size} HDD"
     zones: "europe-west1-b"
     preemptible: 1

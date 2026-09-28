@@ -1,8 +1,7 @@
 {
-    "prs_cs_weights.gwas_meta": "gs://finngen-production-library-green/prs/tmp/PRS_data.txt",
+    "prs_cs_weights.gwas_meta": "gs://finngen-production-library-green/prs/PRS_data_se.txt",
     "prs_cs_weights.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",
     "prs_cs_weights.prefix": "finngen",
-
     "prs_cs_weights.bim_file": "gs://finngen-production-library-green/prs/finngen_R14_hm3.rsid.bim",
-    "prs_cs_weights.ref_dir_list": "gs://finngen-production-library-green/prs/ref_list.txt"
+    "prs_cs_weights.ref_dir": "gs://finngen-production-library-green/prs/ldblk_1kg_eur/"
 }

@@ -183,6 +183,10 @@ def return_header(f):
     with open_func(f) as i:header = i.readline().strip()
     delimiter = identify_separator(f)
     header = header.split(delimiter)
+    # a single-space delimiter guess against a file actually padded with runs of spaces (e.g.
+    # 'A    B') splits into empty-string fragments between real columns ('A','','','','B') --
+    # drop them rather than pass duplicate '' entries downstream as if they were real column names
+    header = [h for h in header if h != '']
     return header
         
         
