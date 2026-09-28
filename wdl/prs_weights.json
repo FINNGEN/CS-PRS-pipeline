@@ -1,0 +1,8 @@
+{
+    "prs_cs_weights.gwas_meta": "gs://finngen-production-library-green/prs/tmp/PRS_data.txt",
+    "prs_cs_weights.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",
+    "prs_cs_weights.prefix": "finngen",
+
+    "prs_cs_weights.bim_file": "gs://finngen-production-library-green/prs/finngen_R14_hm3.rsid.bim",
+    "prs_cs_weights.ref_dir_list": "gs://finngen-production-library-green/prs/ref_list.txt"
+}

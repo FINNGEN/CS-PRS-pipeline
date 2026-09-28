@@ -1,6 +1,6 @@
 {
     #WORKFLOW LEVEL
-    "prs_cs.prefix": "finngen_se",
+    "prs_cs.prefix": "finngen",
     "prs_cs.gwas_meta": "gs://finngen-production-library-green/prs/tmp/PRS_data_se.txt",
     "prs_cs.test": false, # weights are ran with very few iterations
     #"prs_cs.sumstats.last_sumstats": 6, # optional argument to only run latest N sumsats

@@ -1,12 +1,18 @@
 version 1.0
 
-# rsid-space PRS-CS pipeline: rsid_map -> validate_inputs -> [munge -> [weights x chrom] -> weights_gather -> scores] x study
+# rsid-space PRS-CS weights-only pipeline: validate_inputs -> [munge -> [weights x chrom] -> weights_gather] x study
+#
+# Weights-only copy of prs.wdl for the sandbox-unmodifiable-pipelines port: scoring against
+# individual-level genotypes (the scores task in prs.wdl) is not something an unmodifiable
+# pipeline is allowed to do, since its output (.sscore, one row per sample) is individual-level
+# data and this repo's WDLs there auto-export their outputs -- see
+# sandbox-unmodifiable-pipelines/CLAUDE.md's two-expert sign-off policy. This file produces only
+# per-study weight files (variant IDs + effect sizes -- no individual-level content) and stops
+# there; scoring stays a separate, human-run step outside of any unmodifiable pipeline.
 #
 # gwas_meta is the 18-column data/PRS_data.txt (see that file's header). validate_inputs enforces
 # an injection-safe charset on every cell that gets interpolated into a task command, per
-# sandbox-unmodifiable-pipelines/CLAUDE.md's input-parameter policy (this repo isn't that one,
-# but this WDL is the direct basis for the Phase D sandbox port, so it's built to the same bar
-# from the start rather than retrofitted later).
+# sandbox-unmodifiable-pipelines/CLAUDE.md's input-parameter policy.
 #
 # weights is scattered over (study, chrom) rather than one task looping all 22 chromosomes per
 # study: a real 22-chromosome run for one study takes ~1.5-2 days sequential wall-clock (measured
@@ -17,48 +23,43 @@ version 1.0
 # when p=0 -- so every study always scatters over the fixed chrom_list below, no dynamic
 # chromosome-list computation needed.
 
-workflow prs_cs {
+workflow prs_cs_weights {
   input {
     File gwas_meta
     String gwas_data_path
     String prefix
 
-    File bed_file
     File bim_file
-    File fam_file
-    File hm3_rsids
-    File vcf_gz
+
     File ref_dir_list
-
-    File regions_file
-
-    Map[String, File] build_chains
-
-    # Overrides rsid_map.rsid_bim wherever an rsid-keyed bim is needed (weights' --bim-file and
-    # scores' --bim override) -- lets a manually-built rsid bim be supplied directly, independent
-    # of the rsid_map task's own convert_rsids.py step (currently blocked -- see rsid_map task's
-    # header comment). Leave unset to use rsid_map's own output as before.
-    File? rsid_bim_override
 
     Array[Int] chrom_list = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
   }
+
+  # FinnGen's target build is hg38 (not hg19) -- confirmed via tests/test.sh's own
+  # chainfile-selection logic. A study declared hg38 needs no liftover (munge.py's chrompos
+  # branch skips lift() when handed an empty chainfile); hg19/hg37/hg18 studies get lifted up to
+  # hg38 before their chrompos rows can be matched against the (hg38) rsid map.
+  Map[String, File] build_chains = {
+    "hg18": "gs://finngen-production-library-green/prs/chains/hg18ToHg38.over.chain.gz",
+    "hg19": "gs://finngen-production-library-green/prs/chains/hg19ToHg38.over.chain.gz",
+    "hg37": "gs://finngen-production-library-green/prs/chains/hg19ToHg38.over.chain.gz",
+    "hg38": "gs://finngen-production-library-green/prs/chains/empty_file.txt"
+  }
+
+  File rsid_map = "gs://finngen-production-library-green/prs/rsid_mapping/finngen.rsid.map.tsv.pickle.chrompos"
+
+  # general_docker: plain plink2/bash tasks with no PRScs/munge.py dependency (validate_inputs,
+  # weights_gather). prs_docker: tasks that need munge.py and/or PRScs itself.
+  String general_docker = "eu.gcr.io/finngen-sandbox-v3-containers/bioinformatics:0.7"
+  String prs_docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-se"
 
   call validate_inputs {
     input:
     gwas_meta = gwas_meta,
     prefix = prefix,
+    docker = general_docker,
   }
-
-  call rsid_map {
-    input:
-    vcf_gz = vcf_gz,
-    hm3_rsids = hm3_rsids,
-    bed_file = bed_file,
-    bim_file = bim_file,
-    fam_file = fam_file,
-  }
-
-  File rsid_bim = select_first([rsid_bim_override, rsid_map.rsid_bim])
 
   Array[Array[String]] gwas_traits = read_tsv(validate_inputs.sstats)
 
@@ -93,44 +94,35 @@ workflow prs_cs {
       effect = effect_col,
       statistic = statistic,
       statistic_type = statistic_type,
-      rsid_map = rsid_map.rsid,
+      rsid_map = rsid_map,
       chainfile = build_chains[build],
+      docker = prs_docker,
     }
 
     scatter (chrom in chrom_list) {
       call weights {
         input:
         munged_gwas = munge.munged_file,
-        rsid_map = rsid_map.rsid,
-        bim_file = rsid_bim,
+        bim_file = bim_file,
         ref_dir_list = ref_dir_list,
         N = n_total,
         chrom = chrom,
+        docker = prs_docker,
       }
     }
 
     call weights_gather {
       input:
       chrom_weights = weights.weights,
+      chrom_logs = weights.log,
       root_name = basename(munge.munged_file, ".munged.gz"),
-    }
-
-    call scores {
-      input:
-      weights = weights_gather.weights,
-      bed_file = bed_file,
-      fam_file = fam_file,
-      rsid_bim = rsid_bim,
-      rsid_afreq = rsid_map.rsid_afreq,
-      finngen_phenocode = finngen_phenocode,
-      regions_file = regions_file,
+      docker = general_docker,
     }
   }
 
   output {
     Array[File] weights_out = weights_gather.weights
-    Array[File] scores_out = scores.scores
-    Array[Array[File]] scores_logs = scores.logs
+    Array[File] weights_logs = weights_gather.log
     Array[File] rejected_variants = munge.rejected_variants_tar
   }
 }
@@ -140,6 +132,7 @@ task validate_inputs {
   input {
     File gwas_meta
     String prefix
+    String docker
   }
 
   # column layout produced here (1-indexed source columns from data/PRS_data.txt's 18-column
@@ -159,7 +152,7 @@ task validate_inputs {
     # real GWAS column-name/filename value seen in data/PRS_data.txt (e.g. '#chrom',
     # 'Chr:Position', 'p-value', a '+' in one filename) while rejecting quotes, '$', backticks,
     # ';', '|', '&', whitespace, slashes, parens -- anything that could break out of the
-    # double-quoted ~{...} interpolations these values feed into downstream.
+    # double-quoted WDL interpolations these values feed into downstream.
     SAFE='^[a-zA-Z0-9_.:#+-]*$'
 
     : > bad.txt
@@ -174,7 +167,7 @@ task validate_inputs {
   >>>
 
   runtime {
-    docker: "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-se"
+    docker: "~{docker}"
     cpu: 1
     memory: "2 GB"
     disks: "local-disk 10 HDD"
@@ -184,60 +177,6 @@ task validate_inputs {
 
   output {
     File sstats = "sumstats.txt"
-  }
-}
-
-
-task rsid_map {
-  input {
-    File vcf_gz
-    File hm3_rsids
-    File bed_file
-    File bim_file
-    File fam_file
-  }
-
-  String bim_root = basename(bim_file, ".bim")
-
-  command <<<
-    set -euo pipefail
-    mkdir -p variant_mapping
-    mv ~{vcf_gz} variant_mapping/~{basename(vcf_gz)}
-
-    python3 /scripts/rsid_map.py -o . --bim ~{bim_file} --rsids ~{hm3_rsids} --prefix hm3
-    python3 /scripts/convert_rsids.py -o . --file ~{bim_file} --no-header --to-rsid \
-        --map variant_mapping/finngen.rsid.map.tsv --metadata 1
-    mv ~{bim_root}.rsid ~{bim_root}.rsid.bim
-
-    # rsid-relabeled, deduped allele-frequency file for --score/--read-freq: the chrompos->rsid
-    # map is position-only, so real multi-allelic sites (~0.4% of HM3 variants, confirmed) get the
-    # same rsid on more than one bim row -- --read-freq hard-errors on any duplicate ID, so those
-    # rows are dropped from the .afreq (not the bim/bed: .bed is positionally bound to the exact
-    # .bim row order/count, trimming the bim without a matching --make-bed would silently corrupt
-    # genotype-to-variant correspondence). --score's own 'ignore-dup-ids' already handles the same
-    # ambiguity safely on the scoring side (drops the ambiguous ID rather than ever misapplying a
-    # weight to the wrong allele -- confirmed empirically). --bed/--bim/--fam given explicitly
-    # (not --bfile) since bed_file/bim_file/fam_file are three independently-localized Cromwell
-    # inputs, not guaranteed to share a directory the way a plain --bfile prefix would assume.
-    plink2 --bed ~{bed_file} --bim ~{bim_root}.rsid.bim --fam ~{fam_file} \
-        --rm-dup exclude-mismatch --freq \
-        --out ~{bim_root}.rsid
-  >>>
-
-  runtime {
-    docker: "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-se"
-    cpu: 4
-    memory: "16 GB"
-    disks: "local-disk 100 HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
-  }
-
-  output {
-    File rsid = "variant_mapping/finngen.rsid.map.tsv"
-    File hm3_snplist = "variant_mapping/hm3.snplist"
-    File rsid_bim = "~{bim_root}.rsid.bim"
-    File rsid_afreq = "~{bim_root}.rsid.afreq"
   }
 }
 
@@ -261,6 +200,7 @@ task munge {
     File rsid_map
     File chainfile
 
+    String docker
     Int disk_factor = 4
   }
 
@@ -287,7 +227,7 @@ task munge {
   }
 
   runtime {
-    docker: "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-se"
+    docker: "~{docker}"
     cpu: 4
     memory: "~{disk_size} GB"
     disks: "local-disk ~{disk_size} HDD"
@@ -300,24 +240,47 @@ task munge {
 task weights {
   input {
     File munged_gwas
-    File rsid_map
     File bim_file
     File ref_dir_list
     String N
     Int chrom
+    String docker
   }
 
   String root_name = basename(munged_gwas, ".munged.gz")
   Array[String] ref_dirs = read_lines(ref_dir_list)
   Int disk_size = ceil(size(munged_gwas, "GB")) * 2 + 10
 
+  # cs_wrapper.sh reduced to its two essential steps for a single (study, chrom) shard: unzip,
+  # then run PRScs directly. Everything else in the standalone script -- CHROM_LIST/TO_RUN
+  # resumability via file-existence globbing, PREFIX, KWARGS, FORCE, TEST -- existed to let one
+  # invocation safely cover many chromosomes over hours on one machine; here each (study, chrom)
+  # pair is already its own isolated Cromwell call, so Cromwell's own call-caching is the
+  # resumability mechanism, and none of the rest was ever used by this call anyway (KWARGS/PREFIX
+  # empty, FORCE/TEST off).
   command <<<
     set -euo pipefail
-    # test mode hardcoded off: cs_wrapper.sh's --test flag (--n_iter=100 smoke test) is never
-    # passed here.
-    /scripts/cs_wrapper.sh \
-        --ref-file ~{ref_dirs[0]} --bim-file ~{bim_file} --sum-stats ~{munged_gwas} \
-        --N ~{N} --out . --chrom "~{chrom}"
+
+    BIM_PREFIX="~{sub(bim_file, '.bim$', '')}"
+
+    SUM_STATS="~{munged_gwas}"
+    if [[ "$SUM_STATS" == *.gz ]]; then
+        gunzip -k "$SUM_STATS"
+        SUM_STATS="${SUM_STATS%.gz}"
+    fi
+
+    python3 -u /PRScs/PRScs.py \
+        --ref_dir "$(dirname "~{ref_dirs[0]}")" --bim_prefix "$BIM_PREFIX" --sst_file "$SUM_STATS" \
+        --n_gwas ~{N} --out_dir ~{root_name} --chrom ~{chrom} > ~{root_name}.weights.log
+
+    # PRScs' own per-chromosome output file (already rsid-keyed) adopted under the plain name the
+    # rest of the pipeline expects -- possibly empty when this study had no variants on this
+    # chromosome, which is a valid PRScs output, not an error (see workflow-level comment).
+    shopt -s nullglob
+    eff_files=(~{root_name}*chr~{chrom}.txt)
+    shopt -u nullglob
+    : > ~{root_name}.weights.txt
+    for f in "${eff_files[@]}"; do cat "$f" >> ~{root_name}.weights.txt; done
   >>>
 
   output {
@@ -326,7 +289,7 @@ task weights {
   }
 
   runtime {
-    docker: "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-se"
+    docker: "~{docker}"
     cpu: 2
     memory: "8 GB"
     disks: "local-disk ~{disk_size} HDD"
@@ -339,75 +302,33 @@ task weights {
 task weights_gather {
   input {
     Array[File] chrom_weights
+    Array[File] chrom_logs
     String root_name
+    String docker
   }
 
   # each chrom_weights[i] is one chromosome's already rsid-keyed weight rows (cs_wrapper.sh's own
   # per-invocation merge step already produced a well-formed, single-chromosome weights.txt for
   # that shard -- possibly empty when that study had no variants on that chromosome, which is a
   # valid PRScs output, not an error, see the workflow-level comment above). Plain concatenation
-  # in chrom_list order is the entire gather step.
+  # in chrom_list order is the entire gather step. chrom_logs is gathered the same way purely for
+  # debuggability -- one place to look for what each chromosome's PRScs run actually did.
   command <<<
     set -euo pipefail
     cat ~{sep=" " chrom_weights} > ~{root_name}.weights.txt
+    cat ~{sep=" " chrom_logs} > ~{root_name}.weights.log
   >>>
 
   output {
     File weights = "~{root_name}.weights.txt"
+    File log = "~{root_name}.weights.log"
   }
 
   runtime {
-    docker: "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-se"
+    docker: "~{docker}"
     cpu: 1
     memory: "2 GB"
     disks: "local-disk 20 HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
-  }
-}
-
-
-task scores {
-  input {
-    File weights
-    File bed_file
-    File fam_file
-    File rsid_bim
-    File rsid_afreq
-    String finngen_phenocode
-    File regions_file
-  }
-
-  String file_root = basename(weights, ".weights.txt")
-  Int disk_size = ceil(size(bed_file, "GB")) + 10
-
-  command <<<
-    set -euo pipefail
-
-    # finngen_phenocode was already charset-validated by validate_inputs; regions_file is a
-    # workflow File input, never user-composed text -- this grep never interpolates raw,
-    # unvalidated input into a shell context.
-    if [[ "~{finngen_phenocode}" != "NA" ]]; then
-        grep -P "^~{finngen_phenocode}\t" ~{regions_file} | cut -f 2 | tr ';' '\n' | sed 's/_/\t/g' > regions.txt || true
-    else
-        : > regions.txt
-    fi
-
-    /scripts/cs_scores.sh --weight ~{weights} --bed ~{bed_file} \
-        --bim ~{rsid_bim} --fam ~{fam_file} --freq ~{rsid_afreq} \
-        --region regions.txt --out .
-  >>>
-
-  output {
-    Array[File] logs = glob("scores/~{file_root}*log")
-    Array[File] scores = glob("scores/~{file_root}*sscore")
-  }
-
-  runtime {
-    docker: "eu.gcr.io/finngen-sandbox-v3-containers/bioinformatics:0.7"
-    cpu: 2
-    memory: "8 GB"
-    disks: "local-disk ~{disk_size} HDD"
     zones: "europe-west1-b"
     preemptible: 1
   }
