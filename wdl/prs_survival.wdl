@@ -332,21 +332,21 @@ task sort_pheno {
 
   command <<<
   set -euo pipefail
-  for f in ~{sep=" " corr_files}; do tail -n +2 "$f" >> corr.tsv; done
   head -n1 ~{corr_files[0]} | awk '$3="log(pval)"' > tmp.txt
-  # p==0 (underflowed to exact zero -- true value is smaller than a double can represent) maps
-  # to the mathematically correct "inf" rather than a magic-number sentinel, so it needs no
-  # special-casing to sort above every finite value. Must be an if/else (not two separate
-  # patterns): awk evaluates every pattern against $3's *current* value each time, so an earlier
-  # non-exclusive version of this ($3==0{$3=324} $3!=0{...}) let the second pattern immediately
-  # re-fire on the sentinel it had just set (324 != 0), overwriting it with -log10(324) < 0 and
-  # silently dropping every underflowed row at the $3>4 filter below -- confirmed directly against
-  # a real run, where every plain (non-.no_regions) Jansenetal row with pval==0 had vanished from
-  # the final output entirely. Also: assign the literal string "inf", not a computed -log(0)/log(10)
-  # float -- gawk garbles the record when rebuilding $0 after assigning an actual inf value to a
-  # field (confirmed directly), but a plain "inf" string round-trips cleanly and both the $3>4
-  # filter and `sort -g` already treat the string "inf" as numeric and larger than any finite value.
-  awk '{if ($3==0) $3="inf"; else $3=-log($3)/log(10)} 1' corr.tsv | awk '$3>4' | sort -rgk 3 >> tmp.txt
+
+  bodies=()
+  i=0
+  for f in ~{sep=" " corr_files}; do
+      out="body_${i}.tsv"
+      tail -n +2 "$f" > "$out"
+      bodies+=("$out")
+      i=$((i+1))
+  done
+
+  sort -m -t $'\t' -k 3,3 -g "${bodies[@]}" \
+      | awk -F'\t' 'BEGIN{OFS="\t"} $3!="NA"{if ($3==0) $3="inf"; else $3=-log($3)/log(10); print}' \
+      | awk -F'\t' '$3>4' >> tmp.txt
+
   column -t tmp.txt > ~{out_file}
   cat ~{sep=" " log_files} > ~{out_log}
   >>>
