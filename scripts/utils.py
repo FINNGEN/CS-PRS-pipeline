@@ -220,7 +220,12 @@ def isfloat(value):
 def pretty_print(string,l = 30):
     l = l-int(len(string)/2)
     print('-'*l + '> ' + string + ' <' + '-'*l)
-    
+
+
+def pretty_string(string,l = 80):
+    l = int((l-len(string))/2) -2
+    return '-'*l + '> ' + string + ' <' + '-'*l
+
 
 def mapcount_gzip(filename):
     if not os.path.isfile(filename):

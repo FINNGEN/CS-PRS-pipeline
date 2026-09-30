@@ -6,3 +6,12 @@ numpy<2.4
 pandas
 h5py
 scipy
+
+# corr.py / survival_analysis.py (PRS validation scripts, ported from PRS_analysis)
+statsmodels
+lifelines
+seaborn
+matplotlib
+
+# corr.py reads its prebuilt phenotype matrix (see build_pheno_parquet.sh) as Parquet
+pyarrow

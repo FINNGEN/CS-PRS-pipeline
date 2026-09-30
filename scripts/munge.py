@@ -53,12 +53,21 @@ def _process_chunk(chunk,rename,use_pos_cols,effect_type):
     effect_valid = effect_check.notna() & np.isfinite(effect_check)
     rejected_effect = df.loc[~effect_valid]
 
+    # SE or P must be a positive, finite number -- SE==0 makes PRScs' beta/se blow up (division
+    # by zero), and a non-finite/non-positive P is equally meaningless. Checked only among rows
+    # that already passed the effect check, so each row is rejected under exactly one reason.
+    stat_check = pd.to_numeric(df['stat'],errors = 'coerce')
+    stat_valid = stat_check.notna() & np.isfinite(stat_check) & (stat_check > 0)
+    rejected_stat = df.loc[effect_valid & ~stat_valid]
+
+    valid = effect_valid & stat_valid
+
     effect_num = pd.Series(np.nan,index = df.index,dtype = 'float64')
-    effect_num.loc[effect_valid] = df.loc[effect_valid,'effect'].astype(float)
+    effect_num.loc[valid] = df.loc[valid,'effect'].astype(float)
 
     is_rsid = df['variant'].str.contains('rs',regex = False,na = False)
-    rsid_mask = is_rsid & effect_valid
-    chrompos_mask = (~is_rsid) & effect_valid
+    rsid_mask = is_rsid & valid
+    chrompos_mask = (~is_rsid) & valid
 
     beta = np.log(effect_num) if effect_type == 'OR' else effect_num
     beta_valid = np.isfinite(beta)
@@ -99,7 +108,7 @@ def _process_chunk(chunk,rename,use_pos_cols,effect_type):
         'stat': sub.loc[format_ok,'stat'],
     })
 
-    return rsid_out,chrompos_out,rejected_effect,rejected_or,rejected_format
+    return rsid_out,chrompos_out,rejected_effect,rejected_stat,rejected_or,rejected_format
 
 
 def parse_file(args):
@@ -165,17 +174,18 @@ def parse_file(args):
             c.write('\t'.join(['chr','snp','a1','a2','pos','beta','stat']) + '\n')
 
             for chunk in chunks:
-                rsid_out,chrompos_out,rejected_effect,rejected_or,rejected_format = _process_chunk(chunk,rename,use_pos_cols,args.effect_type)
+                rsid_out,chrompos_out,rejected_effect,rejected_stat,rejected_or,rejected_format = _process_chunk(chunk,rename,use_pos_cols,args.effect_type)
 
                 rsid_out.to_csv(r,sep = '\t',index = False,header = False)
                 chrompos_out.to_csv(c,sep = '\t',index = False,header = False)
                 _bulk_reject(rej,file_root,'effect_missing',rejected_effect,reject_cols)
+                _bulk_reject(rej,file_root,'stat_invalid',rejected_stat,reject_cols)
                 _bulk_reject(rej,file_root,'or_problems',rejected_or,reject_cols)
                 _bulk_reject(rej,file_root,'format',rejected_format,reject_cols)
 
                 rsid_count += len(rsid_out)
                 chrompos_count += len(chrompos_out)
-                rejected_count += len(rejected_effect) + len(rejected_or) + len(rejected_format)
+                rejected_count += len(rejected_effect) + len(rejected_stat) + len(rejected_or) + len(rejected_format)
                 processed += len(chunk)
                 if not args.test: progressBar(processed,total_lines)
 
