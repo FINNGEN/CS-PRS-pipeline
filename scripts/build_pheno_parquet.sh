@@ -8,6 +8,9 @@
 # both 1 byte/cell) for a ~2800-column x ~500k-row matrix. corr.py's parquet fast-path converts
 # -1 back to NaN on the small per-fit slice, not the whole matrix.
 #
+# Caller is responsible for only passing binary (0/1) phenotypes in --pheno-list -- a
+# quantitative phenotype would silently get rounded/clamped into this TINYINT cast.
+#
 # Usage:
 #   build_pheno_parquet.sh --pheno-file <gz> --pheno-list <txt> [--cov <comma-list>] --out <parquet>
 set -euo pipefail

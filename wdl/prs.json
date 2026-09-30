@@ -7,5 +7,9 @@
     #SCORES ONLY
     "prs_cs.bed_file": "gs://fg-cromwell-4/fuse_test/hm3_bed/finngen_R14_hm3.bed",
     "prs_cs.fam_file": "gs://finngen-production-library-red/finngen_R14/plink_1.0/data/finngen_R14_hm3.fam",
-    "prs_cs.regions": "gs://finngen-production-library-green/prs/PRS_regions.txt"
+    "prs_cs.regions": "gs://finngen-production-library-green/prs/PRS_regions.txt",
+    #SURVIVAL/CORR
+    "prs_cs.phenos_file": "gs://finngen-production-library-red/finngen_R14/analysis_covariates/data/R14_COV_PHENO_V0.FID.txt.gz",
+    "prs_cs.age_onset": "gs://finngen-production-library-red/finngen_R14/phenotype_2.0/data/finngen_R14_endpoint_2.0.txt.gz",
+    "prs_cs.pheno_list_file": "gs://r14-data/pheno/R14_analysis_binary_endpoints.txt"
 }

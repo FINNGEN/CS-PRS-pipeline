@@ -12,6 +12,12 @@ workflow prs_cs {
     String ref_dir
     File regions
 
+    File phenos_file
+    File pheno_list_file
+    File age_onset
+    String covars = "SEX_IMPUTED,AGE_AT_DEATH_OR_END_OF_FOLLOWUP,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10"
+    Int corr_cpus = 8
+
     # test mode: only chroms 20/21, only the first 2 studies in gwas_meta
     Boolean test = false
   }
@@ -30,14 +36,8 @@ workflow prs_cs {
 
   String general_docker = "eu.gcr.io/finngen-sandbox-v3-containers/bioinformatics:0.7"
   String prs_docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-se.2"
+  String survival_docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-survival.parquet.3"
 
-  call build_dedup_panel {
-    input:
-    bed_file = bed_file,
-    bim_file = bim_file,
-    fam_file = fam_file,
-    docker = general_docker,
-  }
 
   call validate_inputs {
     input:
@@ -84,7 +84,6 @@ workflow prs_cs {
       ref_dir = ref_dir,
       docker = prs_docker,
     }
-
   }
 
   call munge_summary {
@@ -93,24 +92,24 @@ workflow prs_cs {
     docker = general_docker,
   }
 
-  # single flat scatter over (study, chrom) instead of a nested scatter -- this Cromwell setup
-  # doesn't track nested scatters properly (shows up as an untracked synthetic "ScatterAt..."
-  # node). cross(study_pairs, chrom_list) builds the full (study, chrom) index space up front.
-  Array[Pair[File, String]] study_pairs = zip(munge.munged_file_hm3, n_total)
-  Array[Pair[Pair[File, String], Int]] weight_jobs = cross(study_pairs, chrom_list)
-
-  scatter (job in weight_jobs) {
+  # scatter over all (study, chrom) pairs to compute weights for each chromosome of each study
+  Int n_chroms = length(chrom_list)
+  Int n_weight_jobs = length(gwas_traits) * n_chroms
+  scatter (job_idx in range(n_weight_jobs)) {
+    Int study_idx = job_idx / n_chroms
+    Int chrom_idx = job_idx % n_chroms
     call weights {
       input:
-      munged_gwas = job.left.left,
-      N = job.left.right,
+      munged_gwas = munge.munged_file_hm3[study_idx],
+      N = n_total[study_idx],
       bim_file = bim_file,
       ref_dir = ref_dir,
-      chrom = job.right,
+      chrom = chrom_list[chrom_idx],
       docker = prs_docker,
     }
   }
 
+  # merge chrom weights into a single study-level weights file, and merge logs into a single study-level log
   scatter (i in range(length(gwas_traits))) {
     call weights_gather {
       input:
@@ -119,19 +118,94 @@ workflow prs_cs {
       all_logs = weights.log,
       docker = general_docker,
     }
+  }
+
+  # EVERYTHING BELOW HERE IS FOR SCORES AND SURVIVAL ANALYSIS
+  # builds new table to loop over, with one row per (study, pheno, finngen_phenocode) and a boolean column indicating whether the study is in the regions file
+  call gather_regions {
+    input:
+    sstats = validate_inputs.sstats,
+    regions = regions,
+    docker = general_docker,
+  }
+  Array[Array[String]] expanded_traits = read_tsv(gather_regions.expanded)
+
+  # builds a deduplicated panel (removes duplicate variants from the input bed/bim/fam) and computes allele frequencies
+  call build_dedup_panel {
+    input:
+    bed_file = bed_file,
+    bim_file = bim_file,
+    fam_file = fam_file,
+    docker = general_docker,
+  }
+
+  # builds a phenotypes matrix in parquet format, with one row per FINNGENID and one column per phenotype in pheno_list_file, plus covariates for corr
+  call prepare_pheno_matrix {
+    input:
+    phenos_file = phenos_file,
+    pheno_list_file = pheno_list_file,
+    covars = covars,
+    docker = survival_docker,
+  }
+
+  # main action, loop over each study including with/without regions
+  scatter (row in expanded_traits) {
+    Int orig_idx = row[0]
+    String row_pheno = row[2]
+    String row_finngen_phenocode = row[4]
+    Boolean row_is_no_regions = row[15] == "true"
+    String row_root_name = basename(munge.munged_file_hm3[orig_idx], ".munged.hm3.gz")
 
     call scores {
       input:
-      weights = weights_gather.weights,
+      weights = weights_gather.weights[orig_idx],
       bed_file = build_dedup_panel.bed,
-      bim_file = build_dedup_panel.bim,
-      fam_file = build_dedup_panel.fam,
-      freq_file = build_dedup_panel.freq,
-      root_name = basename(munge.munged_file_hm3[i], ".munged.hm3.gz"),
+      root_name = row_root_name,
       regions = regions,
-      pheno = finngen_phenocode[i],
+      pheno = row_finngen_phenocode,
+      is_no_regions = row_is_no_regions,
       docker = general_docker,
     }
+
+    String survival_pheno = if row_finngen_phenocode != "NA" then row_finngen_phenocode else "DEATH"
+    call survival {
+      input:
+      score_file = scores.scores,
+      study = row_root_name,
+      pheno = survival_pheno,
+      age_onset = age_onset,
+      docker = survival_docker,
+    }
+
+    String corr_pheno = if row_finngen_phenocode != "NA" then row_finngen_phenocode else row_pheno
+    call correlate_pheno {
+      input:
+      score_file = scores.scores,
+      pheno = corr_pheno,
+      phenos_file = prepare_pheno_matrix.pheno_parquet,
+      pheno_list_file = pheno_list_file,
+      covars = covars,
+      cpus = corr_cpus,
+      docker = survival_docker,
+    }
+  }
+
+  call merge_figs {
+    input:
+    risk_figs = survival.risk_fig,
+    survival_figs = survival.survival_fig,
+    onset_figs = survival.onset_fig,
+    AUC_figs = survival.auc_fig,
+    AUC_logs = survival.auc_log,
+    prefix = prefix,
+    docker = survival_docker,
+  }
+
+  call sort_pheno {
+    input:
+    prefix = prefix,
+    corr_files = correlate_pheno.corr_file,
+    log_files = correlate_pheno.log,
   }
 
   output {
@@ -140,8 +214,15 @@ workflow prs_cs {
     Array[File] munged_files = munge.munged_file
     Array[File] munged_files_hm3 = munge.munged_file_hm3
     File munge_summary_table = munge_summary.summary
-    Array[File] scores_out = flatten(scores.scores)
-    Array[File] scores_logs = flatten(scores.log)
+    Array[File] scores_out = scores.scores
+    Array[File] scores_logs = scores.log
+    File survival_fig = merge_figs.survival_fig
+    File onset_fig = merge_figs.onset_fig
+    File risk_fig = merge_figs.risk_fig
+    File auc_fig = merge_figs.AUC_fig
+    File auc_log = merge_figs.AUC_log
+    File sorted_pvals = sort_pheno.sorted_pvals
+    File corr_logs = sort_pheno.corr_logs
   }
 }
 
@@ -188,6 +269,36 @@ task validate_inputs {
 
   output {
     File sstats = "sumstats.txt"
+  }
+}
+
+
+task gather_regions {
+  input {
+    File sstats
+    File regions
+    String docker
+  }
+
+  command <<<
+  set -euo pipefail
+  awk -F'\t' 'BEGIN{OFS="\t"}
+      NR==FNR{if(FNR>1) r[$1]=1; next}
+      {idx=FNR-1; print idx, $0, "false"; if ($4 in r) print idx, $0, "true"}
+  ' ~{regions} ~{sstats} > expanded.tsv
+  >>>
+
+  output {
+    File expanded = "expanded.tsv"
+  }
+
+  runtime {
+    docker: "~{docker}"
+    cpu: 1
+    memory: "2 GB"
+    disks: "local-disk 5 HDD"
+    zones: "europe-west1-b"
+    preemptible: 1
   }
 }
 
@@ -409,16 +520,21 @@ task scores {
   input {
     File weights
     String bed_file
-    String bim_file
-    String fam_file
-    String freq_file
     String root_name
     File regions
     String pheno
+    Boolean is_no_regions
     String docker
   }
 
+  # bim/fam/afreq share bed_file's prefix (build_dedup_panel always emits them together as
+  # dedup.bed/.bim/.fam/.afreq) -- derived instead of passed in separately
+  String bim_file = sub(bed_file, ".bed$", ".bim")
+  String fam_file = sub(bed_file, ".bed$", ".fam")
+  String freq_file = sub(bed_file, ".bed$", ".afreq")
+
   Int disk_size = 20
+  String out_root = if is_no_regions then root_name + ".no_regions" else root_name
 
   command <<<
   set -euo pipefail
@@ -427,29 +543,21 @@ task scores {
   fuse_fam=$(echo "~{fam_file}" | sed 's|gs://[^/]*/|/mnt/disks/gcs/|')
   fuse_freq=$(echo "~{freq_file}" | sed 's|gs://[^/]*/|/mnt/disks/gcs/|')
 
-  plink2 --bed "$fuse_bed" --bim "$fuse_bim" --fam "$fuse_fam" --read-freq "$fuse_freq" \
-      --score ~{weights} 2 4 6 header center list-variants ignore-dup-ids \
-      --out ~{root_name}
-
-  # PRS_regions.txt: one row per phenocode that needs a region-excluded PRS variant too, with a
-  # ';'-separated list of chrom_start_end regions (1-based, fully-closed -- matches plink2's
-  # '--exclude bed1' convention). Most phenocodes have no row here, so regions.txt stays empty
-  # and only the plain sscore above is produced.
-  awk -F'\t' -v p="~{pheno}" '$1==p{print $2}' ~{regions} | tr ';' '\n' | tr '_' '\t' | sed '/^$/d' > regions.txt
-
-  if [[ -s regions.txt ]]; then
-      # ".no_regions" (dot, not underscore) matches prs_survival.wdl's sumstats task, which
-      # derives this exact suffix from gwas_meta's filename via 's/.gz/.no_regions/g'
-      plink2 --bed "$fuse_bed" --bim "$fuse_bim" --fam "$fuse_fam" --read-freq "$fuse_freq" \
-          --exclude bed1 regions.txt \
-          --score ~{weights} 2 4 6 header center list-variants ignore-dup-ids \
-          --out ~{root_name}.no_regions
+  EXCLUDE_ARGS=()
+  if [[ "~{is_no_regions}" == "true" ]]; then
+      awk -F'\t' -v p="~{pheno}" '$1==p{print $2}' ~{regions} | tr ';' '\n' | tr '_' '\t' | sed '/^$/d' > regions.txt
+      EXCLUDE_ARGS=(--exclude bed1 regions.txt)
   fi
+
+  plink2 --bed "$fuse_bed" --bim "$fuse_bim" --fam "$fuse_fam" --read-freq "$fuse_freq" \
+      "${EXCLUDE_ARGS[@]}" \
+      --score ~{weights} 2 4 6 header center list-variants ignore-dup-ids \
+      --out ~{out_root}
   >>>
 
   output {
-    Array[File] scores = glob("~{root_name}*.sscore")
-    Array[File] log = glob("~{root_name}*.log")
+    File scores = "~{out_root}.sscore"
+    File log = "~{out_root}.log"
   }
 
   runtime {
@@ -461,6 +569,7 @@ task scores {
     preemptible: 1
   }
 }
+
 
 task build_dedup_panel {
   input {
@@ -494,5 +603,199 @@ task build_dedup_panel {
     disks: "local-disk 500 HDD"
     zones: "europe-west1-b"
     preemptible: 1
+  }
+}
+
+
+task prepare_pheno_matrix {
+  input {
+    File phenos_file
+    File pheno_list_file
+    String covars
+    String docker
+  }
+
+  Int disk_size = ceil(size(phenos_file, "GB")) * 2 + 10
+
+  command <<<
+  set -euo pipefail
+  H=$(zcat -f ~{phenos_file} | head -1) || true
+  IFS=$'\t' read -r -a COLS <<< "$H"
+  ID="IID"; for c in "${COLS[@]}"; do [[ "$c" == "FINNGENID" ]] && ID="FINNGENID"; done
+
+  mapfile -t PHENOS < <(comm -12 <(printf '%s\n' "${COLS[@]}" | LC_ALL=C sort -u) <(LC_ALL=C sort -u ~{pheno_list_file}))
+  echo "${#PHENOS[@]} phenotypes shared" >&2
+
+  PSEL=""; for p in "${PHENOS[@]}"; do PSEL+=", COALESCE(TRY_CAST(\"$p\" AS TINYINT), -1) AS \"$p\""; done
+  CSEL=""; IFS=',' read -r -a COVS <<< "~{covars}"; for c in "${COVS[@]}"; do CSEL+=", TRY_CAST(\"$c\" AS DOUBLE) AS \"$c\""; done
+
+  cat > q.sql <<SQL
+  COPY (SELECT "$ID" AS FINNGENID ${PSEL} ${CSEL}
+        FROM read_csv('~{phenos_file}', delim='\t', header=true, all_varchar=true))
+  TO 'pheno_matrix.parquet' (FORMAT PARQUET);
+  SQL
+  duckdb -c ".read q.sql"
+  >>>
+
+  output {
+    File pheno_parquet = "pheno_matrix.parquet"
+  }
+
+  runtime {
+    docker: "~{docker}"
+    cpu: 4
+    memory: "8 GB"
+    disks: "local-disk ~{disk_size} HDD"
+    zones: "europe-west1-b"
+    preemptible: 1
+  }
+}
+
+
+task survival {
+  input {
+    String pheno
+    String study
+    File score_file
+    File age_onset
+    String docker
+  }
+
+  Int disk_size = ceil(size(age_onset, "GB") + size(score_file, "GB")) * 2 + 2
+
+  command <<<
+  set -euo pipefail
+  mkdir -p survival
+  python3 /scripts/survival_analysis.py \
+      --scores ~{score_file} --age_file ~{age_onset} --pheno ~{pheno} --tag ~{study} --out survival/
+  >>>
+
+  output {
+    File survival_fig = "survival/~{pheno}_~{study}_survival.pdf"
+    File onset_fig = "survival/~{pheno}_~{study}_age_onset.pdf"
+    File risk_fig = "survival/~{pheno}_~{study}_risk.pdf"
+    File auc_fig = "survival/~{pheno}_~{study}_AUC.pdf"
+    File auc_log = "survival/~{pheno}_~{study}_AUC.log"
+  }
+
+  runtime {
+    docker: "~{docker}"
+    memory: "8 GB"
+    disks: "local-disk ~{disk_size} HDD"
+  }
+}
+
+
+task merge_figs {
+  input {
+    Array[File] survival_figs
+    Array[File] onset_figs
+    Array[File] risk_figs
+    Array[File] AUC_figs
+    Array[File] AUC_logs
+    String prefix
+    String docker
+  }
+
+  command <<<
+  set -euo pipefail
+  pdfunite ~{sep=" " survival_figs} ~{prefix}_survival.pdf
+  pdfunite ~{sep=" " onset_figs} ~{prefix}_onset.pdf
+  pdfunite ~{sep=" " AUC_figs} ~{prefix}_AUC.pdf
+  pdfunite ~{sep=" " risk_figs} ~{prefix}_risk.pdf
+  cat ~{sep=" " AUC_logs} > ~{prefix}_AUC.log
+  >>>
+
+  output {
+    File survival_fig = "~{prefix}_survival.pdf"
+    File onset_fig = "~{prefix}_onset.pdf"
+    File risk_fig = "~{prefix}_risk.pdf"
+    File AUC_fig = "~{prefix}_AUC.pdf"
+    File AUC_log = "~{prefix}_AUC.log"
+  }
+
+  runtime {
+    docker: "~{docker}"
+    disks: "local-disk 5 HDD"
+  }
+}
+
+
+task correlate_pheno {
+  input {
+    File phenos_file
+    File pheno_list_file
+    File score_file
+    String pheno
+    String covars
+    Int cpus
+    String docker
+  }
+
+  Int mem_multiplier = 2
+  Int mem = cpus * mem_multiplier
+  String out_file = basename(score_file, ".sscore") + "_corr.txt"
+  String log_file = basename(score_file, ".sscore") + "_corr.log"
+  Int disk_size = ceil(size(phenos_file, "GB") + size(score_file, "GB")) * 2 + 2
+
+  command <<<
+  set -euo pipefail
+  python3 /scripts/corr.py --pheno-file ~{phenos_file} --pheno-list ~{pheno_list_file} \
+      --pheno ~{pheno} --scores ~{score_file} --cov ~{covars} --cpus ~{cpus} \
+      --memfree ~{mem_multiplier}G
+  >>>
+
+  output {
+    File log = log_file
+    File corr_file = out_file
+  }
+
+  runtime {
+    docker: "~{docker}"
+    cpu: cpus
+    memory: "~{mem} GB"
+    disks: "local-disk ~{disk_size} HDD"
+  }
+}
+
+
+task sort_pheno {
+  input {
+    Array[File] corr_files
+    Array[File] log_files
+    String prefix
+  }
+
+  String out_file = prefix + "_prs_pheno_corr.tsv"
+  String out_log = prefix + "_prs_pheno_corr.log"
+
+  command <<<
+  set -euo pipefail
+  head -n1 ~{corr_files[0]} | awk '$3="log(pval)"' > tmp.txt
+
+  bodies=()
+  i=0
+  for f in ~{sep=" " corr_files}; do
+      out="body_${i}.tsv"
+      tail -n +2 "$f" > "$out"
+      bodies+=("$out")
+      i=$((i+1))
+  done
+
+  sort -m -t $'\t' -k 3,3 -g "${bodies[@]}" \
+      | awk -F'\t' 'BEGIN{OFS="\t"} $3!="NA"{if ($3==0) $3="inf"; else $3=-log($3)/log(10); print}' \
+      | awk -F'\t' '$3>4' >> tmp.txt
+
+  column -t tmp.txt > ~{out_file}
+  cat ~{sep=" " log_files} > ~{out_log}
+  >>>
+
+  output {
+    File sorted_pvals = out_file
+    File corr_logs = out_log
+  }
+
+  runtime {
+    disks: "local-disk 5 HDD"
   }
 }
