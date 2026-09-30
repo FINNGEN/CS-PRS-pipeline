@@ -7,7 +7,10 @@ RUN apt-get update && apt-get upgrade --yes
 # poppler-utils (pdfunite) / bsdmainutils: needed by the prs_survival.wdl merge_figs step
 # curl/unzip: needed below to fetch the duckdb CLI (not an apt package -- distributed only as a
 # GitHub release zip)
-RUN apt-get install --yes poppler-utils bsdmainutils curl unzip
+# parallel: corr.py parallelizes per-phenotype fits via `parallel -j cpus --memfree`, not Python
+# multiprocessing -- avoids xargs's early-abort-on-signal-kill behavior and gets proactive,
+# memory-aware job throttling/requeueing for free
+RUN apt-get install --yes poppler-utils bsdmainutils curl unzip parallel
 
 # scripts/build_pheno_parquet.sh's duckdb CLI, pinned to the version already verified working
 # during development (v1.1.3) rather than whatever "latest" resolves to at build time

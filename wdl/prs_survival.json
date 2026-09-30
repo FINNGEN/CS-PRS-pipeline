@@ -9,7 +9,7 @@
     "prs_analysis.age_onset": "gs://finngen-production-library-red/finngen_R14/phenotype_2.0/data/finngen_R14_endpoint_2.0.txt.gz",
     "prs_analysis.pheno_list_file": "gs://r14-data/pheno/R14_analysis_binary_endpoints.txt",
 
-    "prs_analysis.docker": "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-survival",
+    "prs_analysis.docker": "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-survival.parquet.3",
     "prs_analysis.cpus": 16,
     "prs_analysis.test": false
 }

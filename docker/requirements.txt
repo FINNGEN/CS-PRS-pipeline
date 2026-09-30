@@ -13,5 +13,6 @@ lifelines
 seaborn
 matplotlib
 
-# corr.py reads its prebuilt phenotype matrix (see build_pheno_parquet.sh) as Parquet
+# corr.py reads its prebuilt phenotype matrix (see build_pheno_parquet.sh) as Parquet, and
+# build_pheno_parquet.sh's output format is Parquet too
 pyarrow

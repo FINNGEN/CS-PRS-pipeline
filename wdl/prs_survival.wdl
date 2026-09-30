@@ -113,12 +113,6 @@ task prepare_pheno_matrix {
 
   Int disk_size = ceil(size(phenos_file, "GB")) * 2 + 10
 
-  # one-time conversion of the huge gz/tsv phenotype file into a compact, column-pruned parquet
-  # that every correlate_pheno shard reads instead of each re-parsing the same file from scratch.
-  # Phenotype columns are cast to a plain TINYINT with NA as a -1 sentinel (real values are 0/1
-  # only) rather than a nullable type -- a nullable/masked representation would double memory
-  # across ~2800 columns for no benefit here; corr.py's parquet fast-path converts -1 back to
-  # NaN on the small per-fit slice, not the whole matrix.
   command <<<
   set -euo pipefail
   H=$(zcat -f ~{phenos_file} | head -1) || true
@@ -164,15 +158,6 @@ task sumstats {
     Boolean test
   }
 
-  # returns filename/pheno/finngen_phenocode/score_file_index for every study, plus a second pass
-  # appending ".no_regions"-suffixed entries for studies that have a region-exclusion score
-  # variant. score_file_index is this study's position in score_files (matched by filename, not
-  # by a hardcoded prefix pattern), so the workflow can index straight back into score_files to
-  # get the matching path string. score_files is String, not File, here: matching only needs
-  # filenames, and downloading every score file just to read its basename would be wasteful --
-  # the matched string only becomes a real (localized) File where it's actually opened, in
-  # survival/correlate_pheno. Fails hard if any study has no matching score file, rather than
-  # silently skipping it.
   command <<<
   set -euo pipefail
   INPUT=$(sed -E 1d ~{gwas_meta})
@@ -299,7 +284,17 @@ task correlate_pheno {
     String docker
   }
 
-  Int mem = cpus * 2
+  # corr.py runs one independent OS process per phenotype (GNU parallel -j cpus --memfree), not a
+  # shared-memory pool -- per-worker cost varies by phenotype (sample size after dropna,
+  # covariate patterns), measured up to ~3.9GB for one worker vs a ~1-1.5GB typical average. Not
+  # over-provisioning the task's own memory for that worst case: parallel's --memfree throttles
+  # job starts and requeues the youngest job if free memory runs low, and --retries backstops
+  # whatever that doesn't catch in time, so an occasional OOM is an expected, self-healing,
+  # cheap-to-absorb case rather than something to size the task around. --memfree is derived from
+  # the same per-cpu multiplier as mem, not a separately hardcoded value, so they can't drift
+  # out of sync if the multiplier changes.
+  Int mem_multiplier = 2
+  Int mem = cpus * mem_multiplier
   String out_file = basename(score_file, ".sscore") + "_corr.txt"
   String log_file = basename(score_file, ".sscore") + "_corr.log"
   Int disk_size = ceil(size(phenos_file, "GB") + size(score_file, "GB")) * 2 + 2
@@ -307,7 +302,8 @@ task correlate_pheno {
   command <<<
   set -euo pipefail
   python3 /scripts/corr.py --pheno-file ~{phenos_file} --pheno-list ~{pheno_list_file} \
-      --pheno ~{pheno} --scores ~{score_file} --cov ~{covars} --cpus ~{cpus}
+      --pheno ~{pheno} --scores ~{score_file} --cov ~{covars} --cpus ~{cpus} \
+      --memfree ~{mem_multiplier}G
   >>>
 
   output {
