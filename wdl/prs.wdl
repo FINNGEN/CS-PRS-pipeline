@@ -21,6 +21,9 @@ workflow prs_cs {
     String covars = "SEX_IMPUTED,AGE_AT_DEATH_OR_END_OF_FOLLOWUP,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10"
     Int corr_cpus = 8
 
+    String prs_docker
+    String survival_docker
+
     # test mode: only chroms 20/21, only the first 2 studies in gwas_meta
     Boolean test = false
   }
@@ -37,9 +40,6 @@ workflow prs_cs {
 
   File rsid_map = "gs://finngen-production-library-green/prs/rsid_mapping/finngen.rsid.map.tsv.pickle.chrompos"
 
-  String general_docker = "eu.gcr.io/finngen-sandbox-v3-containers/bioinformatics:0.7"
-  String prs_docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-se.2"
-  String survival_docker = "eu.gcr.io/finngen-sandbox-v3-containers/cs-prs:r14-survival.parquet.3"
 
 
   call validate_inputs {
@@ -47,7 +47,6 @@ workflow prs_cs {
     gwas_meta = gwas_meta,
     prefix = prefix,
     test = test,
-    docker = general_docker,
   }
 
   Array[Array[String]] gwas_traits = read_tsv(validate_inputs.sstats)
@@ -92,7 +91,6 @@ workflow prs_cs {
   call munge_summary {
     input:
     snp_summaries = munge.snp_summary,
-    docker = general_docker,
   }
 
   # scatter over all (study, chrom) pairs to compute weights for each chromosome of each study
@@ -119,7 +117,6 @@ workflow prs_cs {
       root_name = basename(munge.munged_file_hm3[i], ".munged.hm3.gz"),
       all_weights = weights.weights,
       all_logs = weights.log,
-      docker = general_docker,
     }
   }
 
@@ -129,7 +126,6 @@ workflow prs_cs {
     input:
     sstats = validate_inputs.sstats,
     regions = regions,
-    docker = general_docker,
   }
   Array[Array[String]] expanded_traits = read_tsv(gather_regions.expanded)
 
@@ -139,7 +135,6 @@ workflow prs_cs {
     bed_file = bed_file,
     bim_file = bim_file,
     fam_file = fam_file,
-    docker = general_docker,
   }
 
   # builds a phenotypes matrix in parquet format, with one row per FINNGENID and one column per phenotype in pheno_list_file, plus covariates for corr
@@ -167,7 +162,6 @@ workflow prs_cs {
       regions = regions,
       pheno = row_finngen_phenocode,
       is_no_regions = row_is_no_regions,
-      docker = general_docker,
     }
 
     String survival_pheno = if row_finngen_phenocode != "NA" then row_finngen_phenocode else "DEATH"
@@ -236,7 +230,6 @@ task validate_inputs {
     File gwas_meta
     String prefix
     Boolean test
-    String docker
   }
 
   # cols 1,2,3,8-18 of PRS_data.txt; n_cases/n_ctrls/publication/ancestry dropped (never
@@ -262,7 +255,6 @@ task validate_inputs {
   >>>
 
   runtime {
-    docker: "~{docker}"
     cpu: 1
     memory: "2 GB"
     disks: "local-disk 10 HDD"
@@ -280,7 +272,6 @@ task gather_regions {
   input {
     File sstats
     File regions
-    String docker
   }
 
   command <<<
@@ -296,7 +287,6 @@ task gather_regions {
   }
 
   runtime {
-    docker: "~{docker}"
     cpu: 1
     memory: "2 GB"
     disks: "local-disk 5 HDD"
@@ -387,7 +377,6 @@ task munge {
 task munge_summary {
   input {
     Array[File] snp_summaries
-    String docker
   }
 
   command <<<
@@ -409,7 +398,6 @@ task munge_summary {
   }
 
   runtime {
-    docker: "~{docker}"
     cpu: 1
     memory: "2 GB"
     disks: "local-disk 10 HDD"
@@ -481,7 +469,6 @@ task weights_gather {
     Array[File] all_weights
     Array[File] all_logs
     String root_name
-    String docker
   }
 
   # all_weights/all_logs is the FULL flat (study, chrom) array, not just this study's slice --
@@ -509,7 +496,6 @@ task weights_gather {
   }
 
   runtime {
-    docker: "~{docker}"
     cpu: 1
     memory: "2 GB"
     disks: "local-disk 20 HDD"
@@ -527,7 +513,6 @@ task scores {
     File regions
     String pheno
     Boolean is_no_regions
-    String docker
   }
 
   # bim/fam/afreq share bed_file's prefix (build_dedup_panel always emits them together as
@@ -564,7 +549,6 @@ task scores {
   }
 
   runtime {
-    docker: "~{docker}"
     cpu: 16
     memory: "8 GB"
     disks: "local-disk ~{disk_size} HDD"
@@ -579,7 +563,6 @@ task build_dedup_panel {
     String bed_file
     File bim_file
     File fam_file
-    String docker
   }
 
   command <<<
@@ -600,7 +583,6 @@ task build_dedup_panel {
   }
 
   runtime {
-    docker: "~{docker}"
     cpu: 8
     memory: "16 GB"
     disks: "local-disk 500 HDD"

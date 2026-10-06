@@ -3,7 +3,9 @@
 # PRScs/mcmc_gtb.py (upstream code predates this numpy change). Confirmed via numpy's own 2.4.0
 # release notes ("Expired deprecations", gh-29841) that anything <2.4 only warns, never errors.
 numpy<2.4
-pandas
+# pandas==2.3.3: lifelines (survival_analysis.py) does not support pandas 3.0 yet -- the fix,
+# lifelines PR #1684, is still unmerged. 2.3.3 is the version validated in the r14-se.3 image.
+pandas==2.3.3
 h5py
 scipy
 

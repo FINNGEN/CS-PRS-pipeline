@@ -1,10 +1,10 @@
 filename	pheno	n_total	n_cases	n_ctrls	publication	ancestry	finngen_phenocode	effect_type	variant	chrom	pos	effect_allele	other_allele	effect	statistic	statistic_type	build
 AD_sumstats_Jansenetal.txt.gz	Alzheimers_Jansen_2019	455258	71880	383378	https://www.nature.com/articles/s41588-018-0311-9	European	G6_ALZHEIMER	BETA	SNP	CHR	BP	A1	A2	BETA	SE	SE	hg19
 Bipolar_vs_control_PGC_Cell_2018_formatted.txt.gz	bipolar_disorder	74194	20129	54065	PGC;Cell;2018;https://doi.org/10.1016/j.cell.2018.05.046	European	F5_BIPO	OR	variant	chr	pos	effect_allele	other_allele	OR	pval	PVAL	hg19
-ICP_FG_DC_EG_DBDS_202012.gz	intrahepatic_cholestatis_of_pregnancy	303871	2138	301733	FG	Scandinavian	O15_ICP_WIDE_EXMORE	beta	SNP	#CHR	POS	ALT	REF	all_inv_var_meta_beta	all_inv_var_meta_sebeta	SE	hg38
+ICP_FG_DC_EG_DBDS_202012.gz	intrahepatic_cholestatis_of_pregnancy	303871	2138	301733	FG	Scandinavian	O15_ICP_WIDE_EXMORE	beta	NA	#CHR	POS	ALT	REF	all_inv_var_meta_beta	all_inv_var_meta_sebeta	SE	hg38
 GCST90027158_buildGRCh38.tsv.gz	alzheimer	11326	677663	688989	https://www.nature.com/articles/s41588-022-01024-z,WARNING:FINNGEN_SAMPLES_INCLUDED	EUR,FIN,Trans-ethnic	G6_ALZHEIMER	BETA	variant_id	chromosome	base_pair_location	effect_allele	other_allele	beta	standard_error	SE	hg38
 METAANALYSIS_DIAGRAM_SE1.txt.gz	T2D_Scott_2017	159208	26676	132532	http://diabetes.diabetesjournals.org/content/66/11/2888	European	T2D	BETA	Chr:Position	NA	NA	Allele1	Allele2	Effect	StdErr	SE	hg19
-Mahajan.NatGenet2018b.T2D.European.txt.gz	T2D_Mahajan_2018	898130	74124	824006	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6287706/	European	T2D	BETA	SNP	Chr	Pos	EA	NEA	Beta	SE	SE	hg19
+Mahajan.NatGenet2018b.T2D.European.txt.gz	T2D_Mahajan_2018	898130	74124	824006	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6287706/	European	T2D	BETA	NA	Chr	Pos	EA	NEA	Beta	SE	SE	hg19
 ALS_sumstats_EUR_only.txt.gz	ALS_Rheenen_2021	138086	27205	110881	https://www.nature.com/articles/s41588-021-00973-1	European	G6_ALS	BETA	rsid	chromosome	base_pair_location	effect_allele	other_allele	beta	standard_error	SE	hg19
 UKBB.asthma-2.assoc.gz	asthma_Zhu_2019	403124	46802	394283	https://erj.ersjournals.com/content/54/6/1901507-0.long	European	J10_ASTHMA_EXMORE	OR	SNP	CHR	POS	A1	A2	OR	SE	SE	hg19
 UKBB_HYPO.txt.gz	hypothyroidism	406300	14871	391429	UKBB	European	E4_HYTHY_AI_STRICT	BETA	rsids	#chrom	pos	alt	ref	beta	sebeta	SE	hg19

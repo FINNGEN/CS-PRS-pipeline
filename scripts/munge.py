@@ -28,9 +28,12 @@ def _bulk_reject(handle,file_root,reason,df,cols):
     loop in disguise and was the actual bottleneck on reject-heavy chunks).
     """
     if df.empty: return
-    lines = f"{file_root}\t{reason}\t" + df[cols[0]].astype(str)
+    # fillna first: under pandas>=3 astype(str) keeps NaN as missing (not 'nan'), which turns the
+    # whole concatenated line into NaN -- e.g. the lift_chr=NA rows of variants that failed liftover
+    as_str = lambda col: df[col].fillna('NA').astype(str)
+    lines = f"{file_root}\t{reason}\t" + as_str(cols[0])
     for col in cols[1:]:
-        lines = lines + '\t' + df[col].astype(str)
+        lines = lines + '\t' + as_str(col)
     handle.write('\n'.join(lines) + '\n')
 
 
@@ -41,6 +44,8 @@ def _process_chunk(chunk,rename,use_pos_cols,effect_type):
     rejected_format), each already in the column shape needed for writing/rejecting.
     """
     df = chunk.rename(columns = rename)
+    # no variant column (--variant NA): a non-rsid placeholder sends every row down the chrom/pos path
+    if 'variant' not in df: df['variant'] = 'NA'
 
     df['a1_up'] = df['a1'].str.upper()
     df['a2_up'] = df['a2'].str.upper()
@@ -142,14 +147,28 @@ def parse_file(args):
     if args.force:
         header_fix = fix_header(args.ss)
 
-        needed = [args.variant,args.ref,args.alt,args.effect,args.statistic]
-        if not all(elem in header_fix for elem in needed):
-            raise Exception(f"Missing columns in header: {[elem for elem in needed if elem not in header_fix]}")
+        # "NA" (or omitted) means "this sumstat has no such column". Any other value must be a real
+        # column -- a typo'd chrom/pos name used to silently switch to parsing positions out of the id.
+        given = lambda col: col not in (None,"NA")
+        has_variant = given(args.variant)
+        use_pos_cols = given(args.chrom) and given(args.pos)
+        if given(args.chrom) != given(args.pos):
+            raise Exception("--chrom and --pos must be both given or both NA")
+        if not has_variant and not use_pos_cols:
+            raise Exception("need a variant column and/or chrom+pos columns, got all NA")
+        if has_variant and args.variant in (args.chrom,args.pos):
+            raise Exception(f"--variant cannot be the same column as --chrom/--pos ({args.variant}), use --variant NA instead")
+
+        needed = [args.ref,args.alt,args.effect,args.statistic] + ([args.variant] if has_variant else [])
+        pos_cols = [args.chrom,args.pos] if use_pos_cols else []
+        missing = [elem for elem in needed + pos_cols if elem not in header_fix]
+        if missing:
+            raise Exception(f"Missing columns in header: {missing}")
 
         print(f"Using statistic type: {args.statistic_type} for column '{args.statistic}'")
+        if not has_variant: print("no variant column: every row is positioned through the chrom/pos columns")
 
-        use_pos_cols = all(elem in header_fix for elem in [args.chrom,args.pos]) and all(elem != "NA" for elem in [args.chrom,args.pos])
-        usecols = list(needed) + ([args.chrom,args.pos] if use_pos_cols else [])
+        usecols = needed + pos_cols
         args.print(f'columns to parse: {usecols}, regular parse: {use_pos_cols}')
 
         sep = identify_separator(args.ss)
@@ -157,7 +176,8 @@ def parse_file(args):
                             keep_default_na = False,na_values = [''],on_bad_lines = 'skip')
         read_kwargs['sep'] = r'\s+' if sep == ' ' else sep
 
-        rename = {args.variant:'variant',args.ref:'a1',args.alt:'a2',args.effect:'effect',args.statistic:'stat'}
+        rename = {args.ref:'a1',args.alt:'a2',args.effect:'effect',args.statistic:'stat'}
+        if has_variant: rename[args.variant] = 'variant'
         if use_pos_cols: rename.update({args.chrom:'in_chrom',args.pos:'in_pos'})
         reject_cols = ['variant','a1','a2','effect','stat'] + (['in_chrom','in_pos'] if use_pos_cols else [])
 
@@ -305,14 +325,14 @@ if __name__ == '__main__':
     parser.add_argument('--chunksize',type = int,default = 500_000,help = 'Rows read/processed per chunk (progress bar granularity).')
 
     parser.add_argument('--effect_type',  type = lambda s : s.upper(), choices=['BETA','OR'])
-    parser.add_argument('--variant', type=str,required=True,help = 'Column entry of variant id')
+    parser.add_argument('--variant', type=str,default = "NA",help = 'Column entry of variant id (rsid or chrom/pos-like); NA if the sumstat has none, then --chrom/--pos are required')
     parser.add_argument('--ref', type=str,required=True,help='Column entry of ref (effect)')
     parser.add_argument('--alt', type=str,required=True,help = 'Column entry of other allel')
     parser.add_argument('--effect', type=str,required=True,help='Column entry of effect column (beta/OR)')
     parser.add_argument('--statistic', type=str,required=True,help='Column entry of statistic (p-value or SE)')
     parser.add_argument('--statistic-type', type = lambda s : s.upper(), choices=['SE','PVAL'],required=True,help='Whether --statistic is a standard error or a p-value')
-    parser.add_argument('--chrom', type=str,help='Column entry of chrom')
-    parser.add_argument('--pos', type=str,help='Column entry of position')
+    parser.add_argument('--chrom', type=str,default = "NA",help='Column entry of chrom (NA: parse it out of --variant)')
+    parser.add_argument('--pos', type=str,default = "NA",help='Column entry of position (NA: parse it out of --variant)')
     parser.add_argument('--prefix',type = str,help = "string to prepend to output",default = "")
 
     args = parser.parse_args()
