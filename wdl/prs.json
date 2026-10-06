@@ -2,9 +2,10 @@
     "prs_cs.gwas_meta": "gs://finngen-production-library-green/prs/PRS_data_se.txt",
     "prs_cs.gwas_data_path": "gs://finngen-production-library-green/prs/sumstats/",
     "prs_cs.prefix": "finngen",
-    "prs_cs.bim_file": "gs://finngen-production-library-green/prs/finngen_R14_hm3.rsid.bim",
+    "prs_cs.weights_bim_file": "gs://finngen-production-library-green/prs/finngen_R14_hm3.rsid.bim",
     "prs_cs.ref_dir": "gs://finngen-production-library-green/prs/ldblk_1kg_eur/",
     #SCORES ONLY
+    "prs_cs.bim_file": "gs://finngen-production-library-green/prs/finngen_R14_hm3.rsid.bim",
     "prs_cs.bed_file": "gs://fg-cromwell-4/fuse_test/hm3_bed/finngen_R14_hm3.bed",
     "prs_cs.fam_file": "gs://finngen-production-library-red/finngen_R14/plink_1.0/data/finngen_R14_hm3.fam",
     "prs_cs.regions": "gs://finngen-production-library-green/prs/PRS_regions.txt",

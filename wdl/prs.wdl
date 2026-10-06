@@ -6,6 +6,9 @@ workflow prs_cs {
     String gwas_data_path
     String prefix
 
+    # PRScs uses weights_bim_file only to subset the summary stats to the target variants;
+    # bim_file is the .bim that pairs with bed_file/fam_file to build the scoring panel
+    File weights_bim_file
     String bed_file
     File bim_file
     File fam_file
@@ -102,7 +105,7 @@ workflow prs_cs {
       input:
       munged_gwas = munge.munged_file_hm3[study_idx],
       N = n_total[study_idx],
-      bim_file = bim_file,
+      bim_file = weights_bim_file,
       ref_dir = ref_dir,
       chrom = chrom_list[chrom_idx],
       docker = prs_docker,
@@ -551,7 +554,7 @@ task scores {
 
   plink2 --bed "$fuse_bed" --bim "$fuse_bim" --fam "$fuse_fam" --read-freq "$fuse_freq" \
       "${EXCLUDE_ARGS[@]}" \
-      --score ~{weights} 2 4 6 header center list-variants ignore-dup-ids \
+      --score ~{weights} 2 4 6 center list-variants ignore-dup-ids \
       --out ~{out_root}
   >>>
 
