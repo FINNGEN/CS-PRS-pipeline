@@ -9,6 +9,8 @@
         "cpu": 2,
         "memory": "4 GB",
         "preemptible": 1,
-        "zones": "europe-west1-b"
+        "zones": "europe-west1-b",
+	"disks": "local-disk 5 HDD"
+
     }
 }

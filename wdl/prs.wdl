@@ -6,12 +6,9 @@ workflow prs_cs {
     String gwas_data_path
     String prefix
 
-    # PRScs uses weights_bim_file only to subset the summary stats to the target variants;
-    # bim_file is the .bim that pairs with bed_file/fam_file to build the scoring panel
-    File weights_bim_file
+    # target dataset: .bim/.fam/.afreq must sit next to it with the same prefix. Read through FUSE
+    # for scoring; only its .bim is localized (rsid_bim task). Variant IDs may be rsid or chrom_pos_ref_alt.
     String bed_file
-    File bim_file
-    File fam_file
     String ref_dir
     File regions
 
@@ -93,6 +90,15 @@ workflow prs_cs {
     snp_summaries = munge.snp_summary,
   }
 
+  # detects the variant ID notation of the input bim and builds its row-aligned companion in the
+  # other notation: PRScs needs the rsid bim, scores need weights in the dataset's own notation
+  call rsid_bim {
+    input:
+    bed_file = bed_file,
+    rsid_map = rsid_map,
+    docker = prs_docker,
+  }
+
   # scatter over all (study, chrom) pairs to compute weights for each chromosome of each study
   Int n_chroms = length(chrom_list)
   Int n_weight_jobs = length(gwas_traits) * n_chroms
@@ -103,11 +109,20 @@ workflow prs_cs {
       input:
       munged_gwas = munge.munged_file_hm3[study_idx],
       N = n_total[study_idx],
-      bim_file = weights_bim_file,
+      bim_file = rsid_bim.rsid_bim,
       ref_dir = ref_dir,
       chrom = chrom_list[chrom_idx],
       docker = prs_docker,
     }
+  }
+
+  # regroup the flat (study, chrom) shard paths into one row per study, so each gather shard only
+  # localizes its own study's files (nested scatters are not available to slice them in WDL)
+  call group_shards {
+    input:
+    weights = weights.weights,
+    logs = weights.log,
+    n = n_chroms,
   }
 
   # merge chrom weights into a single study-level weights file, and merge logs into a single study-level log
@@ -115,9 +130,14 @@ workflow prs_cs {
     call weights_gather {
       input:
       root_name = basename(munge.munged_file_hm3[i], ".munged.hm3.gz"),
-      all_weights = weights.weights,
-      all_logs = weights.log,
+      all_weights = group_shards.weights_grouped[i],
+      all_logs = group_shards.logs_grouped[i],
+      rsid_bim = rsid_bim.rsid_bim,
+      chrompos_bim = rsid_bim.chrompos_bim,
+      docker = prs_docker,
     }
+    # weights in the input dataset's own variant ID notation, used for scoring
+    File score_weights = if rsid_bim.is_rsid then weights_gather.weights else weights_gather.weights_chrompos
   }
 
   # EVERYTHING BELOW HERE IS FOR SCORES AND SURVIVAL ANALYSIS
@@ -128,14 +148,6 @@ workflow prs_cs {
     regions = regions,
   }
   Array[Array[String]] expanded_traits = read_tsv(gather_regions.expanded)
-
-  # builds a deduplicated panel (removes duplicate variants from the input bed/bim/fam) and computes allele frequencies
-  call build_dedup_panel {
-    input:
-    bed_file = bed_file,
-    bim_file = bim_file,
-    fam_file = fam_file,
-  }
 
   # builds a phenotypes matrix in parquet format, with one row per FINNGENID and one column per phenotype in pheno_list_file, plus covariates for corr
   call prepare_pheno_matrix {
@@ -156,8 +168,8 @@ workflow prs_cs {
 
     call scores {
       input:
-      weights = weights_gather.weights[orig_idx],
-      bed_file = build_dedup_panel.bed,
+      weights = score_weights[orig_idx],
+      bed_file = bed_file,
       root_name = row_root_name,
       regions = regions,
       pheno = row_finngen_phenocode,
@@ -168,7 +180,7 @@ workflow prs_cs {
     call survival {
       input:
       score_file = scores.scores,
-      study = row_root_name,
+      study = basename(scores.scores, ".sscore"),
       pheno = survival_pheno,
       age_onset = age_onset,
       docker = survival_docker,
@@ -207,6 +219,7 @@ workflow prs_cs {
 
   output {
     Array[File] weights_out = weights_gather.weights
+    Array[File] weights_chrompos_out = weights_gather.weights_chrompos
     Array[File] weights_logs = weights_gather.log
     Array[File] munged_files = munge.munged_file
     Array[File] munged_files_hm3 = munge.munged_file_hm3
@@ -258,8 +271,6 @@ task validate_inputs {
     cpu: 1
     memory: "2 GB"
     disks: "local-disk 10 HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
   }
 
   output {
@@ -289,9 +300,6 @@ task gather_regions {
   runtime {
     cpu: 1
     memory: "2 GB"
-    disks: "local-disk 5 HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
   }
 }
 
@@ -368,8 +376,6 @@ task munge {
     cpu: 4
     memory: "~{disk_size} GB"
     disks: "local-disk ~{disk_size} HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
   }
 }
 
@@ -401,8 +407,6 @@ task munge_summary {
     cpu: 1
     memory: "2 GB"
     disks: "local-disk 10 HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
   }
 }
 
@@ -458,8 +462,6 @@ task weights {
     cpu: 4
     memory: "8 GB"
     disks: "local-disk ~{disk_size} HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
   }
 }
 
@@ -469,11 +471,16 @@ task weights_gather {
     Array[File] all_weights
     Array[File] all_logs
     String root_name
+    File rsid_bim
+    File chrompos_bim
+    String docker
   }
 
-  # all_weights/all_logs is the FULL flat (study, chrom) array, not just this study's slice --
-  # each weights.txt/log is named "<root_name>.chr<N>.weights.*", so filtering by root_name
-  # prefix here picks out just this study's shards regardless of array order.
+  # all_weights/all_logs are this study's shards (grouped by group_shards), in chrom order. Each is
+  # named "<root_name>.chr<N>.weights.*", so the root_name filter is kept as a guard against misgrouping.
+  # The merged rsid weights are then translated back to chrom_pos_ref_alt IDs: the two bims are
+  # row-aligned, and multiallelic sites sharing an rsid are resolved by the weight's A1/A2 pair
+  # (PRScs always emits the exact bim alleles). Any unmappable or ambiguous weight fails the task.
   command <<<
   set -euo pipefail
 
@@ -485,22 +492,74 @@ task weights_gather {
   for f in ~{sep=" " all_logs}; do
       [[ "$(basename "$f")" == "~{root_name}".chr*.weights.log ]] && logs_match+=("$f")
   done
+  if [[ ${#weights_match[@]} -ne ~{length(all_weights)} || ${#logs_match[@]} -ne ~{length(all_logs)} ]]; then
+      echo "shards not all from ~{root_name}: ${#weights_match[@]}/~{length(all_weights)} weights, ${#logs_match[@]}/~{length(all_logs)} logs" >&2
+      exit 1
+  fi
 
   cat "${weights_match[@]}" > ~{root_name}.weights.txt
   cat "${logs_match[@]}" > ~{root_name}.weights.log
+
+  python3 - ~{chrompos_bim} ~{rsid_bim} ~{root_name}.weights.txt ~{root_name}.weights.chrompos.txt <<'EOF'
+  import sys
+  from collections import defaultdict
+  bim, rbim, weights, out = sys.argv[1:]
+  lookup = defaultdict(list)
+  with open(bim) as b, open(rbim) as r:
+      for n, (x, y) in enumerate(zip(b, r, strict=True), 1):
+          x, y = x.split(), y.split()
+          if x[0] != y[0] or x[2:] != y[2:]: sys.exit(f'bims not row-aligned at line {n}')
+          lookup[y[1]].append((x[1], {x[4], x[5]}))
+  rows, bad, seen = [], [], set()
+  for line in open(weights):
+      f = line.rstrip('\n').split('\t')
+      hits = [vid for vid, alleles in lookup.get(f[1], []) if alleles == {f[3], f[4]}]
+      if len(hits) != 1 or hits[0] in seen: bad.append(line); continue
+      seen.add(hits[0]); f[1] = hits[0]; rows.append('\t'.join(f) + '\n')
+  if bad or not rows: sys.exit(f'{len(bad)} unmappable/ambiguous weights out of {len(bad) + len(rows)}, e.g.:\n' + ''.join(bad[:5]))
+  open(out, 'w').writelines(rows)
+  print(f'{len(rows)} weights translated to chrom_pos_ref_alt')
+  EOF
   >>>
 
   output {
     File weights = "~{root_name}.weights.txt"
+    File weights_chrompos = "~{root_name}.weights.chrompos.txt"
     File log = "~{root_name}.weights.log"
   }
 
   runtime {
+    docker: "~{docker}"
     cpu: 1
-    memory: "2 GB"
     disks: "local-disk 20 HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
+  }
+}
+
+
+task group_shards {
+  input {
+    # String, not File: shard paths are only regrouped here, never localized
+    Array[String] weights
+    Array[String] logs
+    Int n
+  }
+
+  # flat (study, chrom) shard paths -> one row of n paths per study (scatter index = study * n + chrom)
+  command <<<
+  set -euo pipefail
+  group() { awk -v n=~{n} '{printf "%s%s", $0, (NR % n ? "\t" : "\n")} END{if (NR % n) {print "path count " NR " not a multiple of " n > "/dev/stderr"; exit 1}}' "$1"; }
+  group ~{write_lines(weights)} > weights_grouped.tsv
+  group ~{write_lines(logs)} > logs_grouped.tsv
+  >>>
+
+  output {
+    Array[Array[String]] weights_grouped = read_tsv("weights_grouped.tsv")
+    Array[Array[String]] logs_grouped = read_tsv("logs_grouped.tsv")
+  }
+
+  runtime {
+    cpu: 1
+    memory: "1 GB"
   }
 }
 
@@ -515,8 +574,7 @@ task scores {
     Boolean is_no_regions
   }
 
-  # bim/fam/afreq share bed_file's prefix (build_dedup_panel always emits them together as
-  # dedup.bed/.bim/.fam/.afreq) -- derived instead of passed in separately
+  # bim/fam/afreq share bed_file's prefix (the workflow requires them next to the input bed)
   String bim_file = sub(bed_file, ".bed$", ".bim")
   String fam_file = sub(bed_file, ".bed$", ".fam")
   String freq_file = sub(bed_file, ".bed$", ".afreq")
@@ -552,42 +610,62 @@ task scores {
     cpu: 16
     memory: "8 GB"
     disks: "local-disk ~{disk_size} HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
   }
 }
 
 
-task build_dedup_panel {
+task rsid_bim {
   input {
     String bed_file
-    File bim_file
-    File fam_file
+    File rsid_map
+    String docker
   }
 
+  File bim = sub(bed_file, "\\.bed$", ".bim")
+  String root = basename(bim, ".bim")
+  Int disk_size = ceil(size(rsid_map, "GB")) + ceil(size(bim, "GB")) * 3 + 5
+
+  # notation is detected from the first 10 IDs (rsid if they start with "rs"). The input bim is
+  # copied to its own notation's output and the other one is built row-aligned (only col 2 changes):
+  # chrompos -> rsid via the chrom_pos -> rsid map (unmapped positions keep their ID),
+  # rsid -> chrompos as chr{CHR}_{POS}_{A2}_{A1} from the bim columns.
   command <<<
   set -euo pipefail
-  fuse_bed=$(echo "~{bed_file}" | sed 's|gs://[^/]*/|/mnt/disks/gcs/|')
-
-  plink2 --bed "$fuse_bed" --bim ~{bim_file} --fam ~{fam_file} \
-      --rm-dup force-first --make-bed --out dedup
-
-  plink2 --bfile dedup --freq --out dedup
+  python3 - ~{bim} ~{rsid_map} ~{root} <<'EOF'
+  import itertools, shutil, sys
+  sys.path.insert(0, '/scripts')
+  from utils import load_rsid_mapping
+  bim, rsid_map, root = sys.argv[1:]
+  with open(bim) as f: ids = [line.split()[1] for line in itertools.islice(f, 10)]
+  n_rs = sum(i.lower().startswith('rs') for i in ids)
+  if not ids or 0 < n_rs < len(ids): sys.exit(f'empty bim or mixed variant ID notation in its first rows: {ids}')
+  is_rsid = n_rs > 0
+  if is_rsid:
+      new_id, out = lambda f: f'chr{f[0]}_{f[3]}_{f[5]}_{f[4]}', f'{root}.chrompos.bim'
+  else:
+      to_rsid = load_rsid_mapping(rsid_map, inverse=True)
+      new_id, out = lambda f: to_rsid.get(f'{f[0]}_{f[3]}', f[1]), f'{root}.rsid.bim'
+  n = n_new = 0
+  with open(bim) as i, open(out, 'w') as o:
+      for line in i:
+          f = line.split(); vid = new_id(f); n += 1; n_new += vid != f[1]; f[1] = vid; o.write('\t'.join(f) + '\n')
+  shutil.copy(bim, f'{root}.rsid.bim' if is_rsid else f'{root}.chrompos.bim')
+  open('is_rsid.txt', 'w').write(str(is_rsid).lower())
+  print(f'{bim}: {"rsid" if is_rsid else "chrompos"} notation, built {out}')
+  print(f'{n} rows, {n_new} mapped to {"chrompos" if is_rsid else "rsid"}, {n - n_new} kept original ID')
+  EOF
   >>>
 
   output {
-    File bed = "dedup.bed"
-    File bim = "dedup.bim"
-    File fam = "dedup.fam"
-    File freq = "dedup.afreq"
+    File rsid_bim = "~{root}.rsid.bim"
+    File chrompos_bim = "~{root}.chrompos.bim"
+    Boolean is_rsid = read_boolean("is_rsid.txt")
   }
 
   runtime {
-    cpu: 8
-    memory: "16 GB"
-    disks: "local-disk 500 HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
+    docker: "~{docker}"
+    memory: "8 GB"
+    disks: "local-disk ~{disk_size} HDD"
   }
 }
 
@@ -631,8 +709,6 @@ task prepare_pheno_matrix {
     cpu: 4
     memory: "8 GB"
     disks: "local-disk ~{disk_size} HDD"
-    zones: "europe-west1-b"
-    preemptible: 1
   }
 }
 
@@ -701,7 +777,6 @@ task merge_figs {
 
   runtime {
     docker: "~{docker}"
-    disks: "local-disk 5 HDD"
   }
 }
 
@@ -753,6 +828,7 @@ task sort_pheno {
 
   String out_file = prefix + "_prs_pheno_corr.tsv"
   String out_log = prefix + "_prs_pheno_corr.log"
+  Int disk_size = ceil(size(corr_files, "GB")) * 2
 
   command <<<
   set -euo pipefail
@@ -781,6 +857,6 @@ task sort_pheno {
   }
 
   runtime {
-    disks: "local-disk 5 HDD"
+    disks: "local-disk ~{disk_size} HDD"
   }
 }
