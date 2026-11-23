@@ -1,6 +1,16 @@
 {
     "google_labels":{
-        "project":"r13-prs",
-        "product":"core-analysis-r13"
+        "project":"r14-prs",
+        "product":"core-analysis-r14"
+    },
+
+    "default_runtime_attributes": {
+        "docker": "eu.gcr.io/finngen-sandbox-v3-containers/bioinformatics:0.7",
+        "cpu": 2,
+        "memory": "4 GB",
+        "preemptible": 1,
+        "zones": "europe-west1-b",
+	"disks": "local-disk 5 HDD"
+
     }
 }
