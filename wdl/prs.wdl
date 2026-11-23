@@ -629,10 +629,11 @@ task rsid_bim {
   # copied to its own notation's output and the other one is built row-aligned (only col 2 changes):
   # chrompos -> rsid via the chrom_pos -> rsid map (unmapped positions keep their ID),
   # rsid -> chrompos as chr{CHR}_{POS}_{A2}_{A1} from the bim columns.
+  # PAR1/PAR2 chromosome codes are converted to 23 in both outputs, as the rsid map uses 23.
   command <<<
   set -euo pipefail
   python3 - ~{bim} ~{rsid_map} ~{root} <<'EOF'
-  import itertools, shutil, sys
+  import itertools, sys
   sys.path.insert(0, '/scripts')
   from utils import load_rsid_mapping
   bim, rsid_map, root = sys.argv[1:]
@@ -646,10 +647,13 @@ task rsid_bim {
       to_rsid = load_rsid_mapping(rsid_map, inverse=True)
       new_id, out = lambda f: to_rsid.get(f'{f[0]}_{f[3]}', f[1]), f'{root}.rsid.bim'
   n = n_new = 0
-  with open(bim) as i, open(out, 'w') as o:
+  own = f'{root}.rsid.bim' if is_rsid else f'{root}.chrompos.bim'
+  with open(bim) as i, open(own, 'w') as c, open(out, 'w') as o:
       for line in i:
-          f = line.split(); vid = new_id(f); n += 1; n_new += vid != f[1]; f[1] = vid; o.write('\t'.join(f) + '\n')
-  shutil.copy(bim, f'{root}.rsid.bim' if is_rsid else f'{root}.chrompos.bim')
+          f = line.split()
+          if f[0] in ('PAR1', 'PAR2'): f[0] = '23'
+          c.write('\t'.join(f) + '\n')
+          vid = new_id(f); n += 1; n_new += vid != f[1]; f[1] = vid; o.write('\t'.join(f) + '\n')
   open('is_rsid.txt', 'w').write(str(is_rsid).lower())
   print(f'{bim}: {"rsid" if is_rsid else "chrompos"} notation, built {out}')
   print(f'{n} rows, {n_new} mapped to {"chrompos" if is_rsid else "rsid"}, {n - n_new} kept original ID')
